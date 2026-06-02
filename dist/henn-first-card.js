@@ -31,6 +31,5 @@ class HennSecondCard extends HTMLElement {
     }
 }
 
-customElements
-    .define("henn-first-card", HennFirstCard)
-    .define("henn-second-card", HennSecondCard);
+customElements.define("henn-first-card", HennFirstCard);
+customElements.define("henn-second-card", HennSecondCard);
