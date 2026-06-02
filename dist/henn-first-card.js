@@ -14,5 +14,23 @@ class HennFirstCard extends HTMLElement {
         return 2;
     }
 }
+class HennSecondCard extends HTMLElement {
+    setConfig(config) {
+        this.innerHTML = `
+            <ha-card header="Hennu teine kaart">
+                <div style="padding:16px">
+                    <p>Tere Henn!</p>
+                    <p>Minu teine Home Assistant uuendatud ilus kaart töötab.</p>
+                </div>
+            </ha-card>
+        `;
+    }
 
-customElements.define("henn-first-card", HennFirstCard);
+    getCardSize() {
+        return 2;
+    }
+}
+
+customElements
+    .define("henn-first-card", HennFirstCard)
+    .define("henn-second-card", HennSecondCard);
