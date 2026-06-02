@@ -4,7 +4,7 @@ class HennFirstCard extends HTMLElement {
             <ha-card header="Hennu esimene kaart">
                 <div style="padding:16px">
                     <p>Tere Henn!</p>
-                    <p>Minu esimene Home Assistant kaart töötab.</p>
+                    <p>Minu esimene Home Assistant uuendatud kaart töötab.</p>
                 </div>
             </ha-card>
         `;
