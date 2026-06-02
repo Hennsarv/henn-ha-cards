@@ -1,5 +1,4 @@
 class HennFirstCard extends HTMLElement {
-
     setConfig(config) {
         this.innerHTML = `
             <ha-card header="Hennu esimene kaart">
