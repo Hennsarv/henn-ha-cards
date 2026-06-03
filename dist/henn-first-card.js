@@ -133,10 +133,29 @@ class HennLayerCard extends HTMLElement {
 
             if (value === undefined || value === null) continue;
 
+            if (rule.template) {
+                value = this.applyTemplate(value, rule.template);
+            }
+
             this.setPath(clone, rule.target, value);
         }
 
         return clone;
+    }
+
+    applyTemplate(value, template) {
+        try {
+            const fn = new Function("value", `
+            value = Number(value);
+            return (${template});
+        `);
+
+            return fn(value);
+        }
+        catch (e) {
+            console.warn("henn-layer-card template error", e);
+            return value;
+        }
     }
 
     setPath(obj, path, value) {
