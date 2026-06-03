@@ -75,8 +75,13 @@ class HennLayerCard extends HTMLElement {
                 ...(layerConfig.style || {})
             });
 
-            const cardConfig = { ...layerConfig };
-            delete cardConfig.style;
+            // const cardConfig = { ...layerConfig };
+            // delete cardConfig.style;
+
+            const rawConfig = { ...layerConfig };
+            delete rawConfig.style;
+
+            const cardConfig = this.resolveConfig(rawConfig);
 
             const card = helpers.createCardElement(cardConfig);
 
@@ -107,6 +112,45 @@ class HennLayerCard extends HTMLElement {
     getCardSize() {
         return 6;
     }
+
+    resolveConfig(config) {
+        const clone = structuredClone(config);
+
+        const rules = clone.henn_resolve || [];
+        delete clone.henn_resolve;
+
+        for (const rule of rules) {
+            const entity = this._hass?.states?.[rule.entity];
+            if (!entity) continue;
+
+            let value;
+
+            if (rule.attribute) {
+                value = entity.attributes?.[rule.attribute];
+            } else {
+                value = entity.state;
+            }
+
+            if (value === undefined || value === null) continue;
+
+            this.setPath(clone, rule.target, value);
+        }
+
+        return clone;
+    }
+
+    setPath(obj, path, value) {
+        const parts = path.split(".");
+        let current = obj;
+
+        for (let i = 0; i < parts.length - 1; i++) {
+            current = current[parts[i]];
+            if (!current) return;
+        }
+
+        current[parts[parts.length - 1]] = value;
+    }
+
 }
 
 customElements.define("henn-first-card", HennFirstCard);
