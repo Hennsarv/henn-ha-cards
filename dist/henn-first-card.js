@@ -342,16 +342,14 @@ class HennStonehengeCard extends HTMLElement {
         this.config = {
             value_entity: null,
 
-            bucketing: "day",        // day | month | year | direction
-            bucket_size: "1h",       // 5m, 1h, 1d, 5
+            bucketing: "day",        // day | month | year
+            bucket_size: "1h",       // 5m, 1h, 1d
             history_period: "1d",
 
             diagram_type: "color",   // color | bar | line
 
             lower_radius: 30,
             upper_radius: 90,
-
-            direction: "outward",    // outward | inward
 
             color: "orange",
             min_opacity: 0.15,
@@ -364,20 +362,38 @@ class HennStonehengeCard extends HTMLElement {
             ticks: {
                 show: true,
                 tight: false,
-                position: "outer",
-                radius: 96,
-                margin: 3,
+
+                radius: 98,
                 font_size: 5,
                 color: "white",
-                stroke: 1
+
+                inner_line: {
+                    stroke: 0,
+                    color: "white",
+                    radius: 93
+                },
+
+                outer_line: {
+                    stroke: 0,
+                    color: "white",
+                    radius: 103
+                },
+
+                minor: {
+                    stroke: 0.5,
+                    color: "white",
+                    radius: 96,
+                    length: 2
+                }
             },
 
             label: {
                 show: false,
-                position: "center",
+                position: "center",    // center | top | bottom
                 text: "",
                 font_size: 7,
-                color: "white"
+                color: "white",
+                margin: 12
             },
 
             ...config
@@ -449,6 +465,7 @@ class HennStonehengeCard extends HTMLElement {
         if (b === "day") return Math.ceil(24 * 60 / size);
         if (b === "month") return Math.ceil(31 * 24 * 60 / size);
         if (b === "year") return 360;
+
         return Math.ceil(24 * 60 / size);
     }
 
@@ -462,7 +479,11 @@ class HennStonehengeCard extends HTMLElement {
         }
 
         if (b === "month") {
-            const m = (date.getDate() - 1) * 24 * 60 + date.getHours() * 60 + date.getMinutes();
+            const m =
+                (date.getDate() - 1) * 24 * 60 +
+                date.getHours() * 60 +
+                date.getMinutes();
+
             return Math.floor(m / size);
         }
 
@@ -508,8 +529,14 @@ class HennStonehengeCard extends HTMLElement {
         const max = values.length ? Math.max(...values) : 1;
         const span = max - min || 1;
 
-        const lower = Math.min(Number(c.lower_radius), Number(c.upper_radius));
-        const upper = Math.max(Number(c.lower_radius), Number(c.upper_radius));
+        let lower = Number(c.lower_radius);
+        let upper = Number(c.upper_radius);
+
+        // Color-diagrammil on need füüsilised rööpad.
+        // Bar/line puhul on need väärtusskaala otsad ja järjekorda EI muuda.
+        if (c.diagram_type === "color" && lower > upper) {
+            [lower, upper] = [upper, lower];
+        }
 
         const body =
             c.diagram_type === "bar" ? this.renderBars(buckets, min, span, lower, upper) :
@@ -539,9 +566,6 @@ class HennStonehengeCard extends HTMLElement {
     }
 
     valueRadius(p, lower, upper) {
-        if (this.config.direction === "inward") {
-            return upper - p * (upper - lower);
-        }
         return lower + p * (upper - lower);
     }
 
@@ -554,11 +578,11 @@ class HennStonehengeCard extends HTMLElement {
             if (b.value === null) return "";
 
             const p = this.norm(b.value, min, span);
-            const opacity = Number(c.min_opacity) + p * (Number(c.max_opacity) - Number(c.min_opacity));
-            const a1 = i * step;
-            const a2 = (i + 1) * step;
+            const opacity =
+                Number(c.min_opacity) +
+                p * (Number(c.max_opacity) - Number(c.min_opacity));
 
-            return `<path d="${this.ringSectorPath(50, 50, lower, upper, a1, a2)}"
+            return `<path d="${this.ringSectorPath(50, 50, lower, upper, i * step, (i + 1) * step)}"
                     fill="${c.color}"
                     fill-opacity="${opacity}"></path>`;
         }).join("");
@@ -578,10 +602,7 @@ class HennStonehengeCard extends HTMLElement {
             const r1 = Math.min(lower, r);
             const r2 = Math.max(lower, r);
 
-            const a1 = i * step;
-            const a2 = (i + 1) * step;
-
-            return `<path d="${this.ringSectorPath(50, 50, r1, r2, a1, a2)}"
+            return `<path d="${this.ringSectorPath(50, 50, r1, r2, i * step, (i + 1) * step)}"
                     fill="${c.color}"
                     fill-opacity="${c.max_opacity}"></path>`;
         }).join("");
@@ -603,9 +624,9 @@ class HennStonehengeCard extends HTMLElement {
 
         if (!points.length) return "";
 
-        const d = points.map((p, i) =>
-            `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`
-        ).join(" ") + " Z";
+        const d = points
+            .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
+            .join(" ") + " Z";
 
         return `<path d="${d}"
                   fill="none"
@@ -617,26 +638,20 @@ class HennStonehengeCard extends HTMLElement {
 
     renderRails(lower, upper) {
         const c = this.config;
-        const lowerCfg = { ...c.lower };
-        const upperCfg = { ...c.upper };
+        const lowerCfg = c.lower || {};
+        const upperCfg = c.upper || {};
+
+        let s = "";
 
         const lowerRadius = lowerCfg.radius ?? lower;
         const upperRadius = upperCfg.radius ?? upper;
 
-        let s = "";
-
         if (Number(lowerCfg.stroke) > 0) {
-            s += `<circle cx="50" cy="50" r="${lowerRadius}"
-                    fill="none"
-                    stroke="${lowerCfg.color || "white"}"
-                    stroke-width="${lowerCfg.stroke}"></circle>`;
+            s += this.circleLine(lowerRadius, lowerCfg.color || "white", lowerCfg.stroke);
         }
 
         if (Number(upperCfg.stroke) > 0) {
-            s += `<circle cx="50" cy="50" r="${upperRadius}"
-                    fill="none"
-                    stroke="${upperCfg.color || "white"}"
-                    stroke-width="${upperCfg.stroke}"></circle>`;
+            s += this.circleLine(upperRadius, upperCfg.color || "white", upperCfg.stroke);
         }
 
         return s;
@@ -646,26 +661,45 @@ class HennStonehengeCard extends HTMLElement {
         const t = this.config.ticks || {};
         if (!t.show) return "";
 
-        const b = this.config.bucketing;
-        if (b === "day") return this.renderDayTicks(t);
-        if (b === "month") return this.renderMonthTicks(t);
-        if (b === "year") return this.renderYearTicks(t);
-        if (b === "direction") return this.renderDirectionTicks(t);
+        let s = "";
 
-        return "";
+        if (t.inner_line && Number(t.inner_line.stroke) > 0) {
+            s += this.circleLine(
+                t.inner_line.radius,
+                t.inner_line.color || t.color || "white",
+                t.inner_line.stroke
+            );
+        }
+
+        if (t.outer_line && Number(t.outer_line.stroke) > 0) {
+            s += this.circleLine(
+                t.outer_line.radius,
+                t.outer_line.color || t.color || "white",
+                t.outer_line.stroke
+            );
+        }
+
+        const b = this.config.bucketing;
+
+        if (b === "day") s += this.renderDayTicks(t);
+        else if (b === "month") s += this.renderMonthTicks(t);
+        else if (b === "year") s += this.renderYearTicks(t);
+
+        return s;
     }
 
     renderDayTicks(t) {
         let s = "";
-        const labels = ["00", "03", "06", "09", "12", "15", "18", "21"];
+        const labelHours = [0, 3, 6, 9, 12, 15, 18, 21];
 
-        for (let i = 0; i < labels.length; i++) {
-            s += this.textAt(labels[i], i * 45, t.radius, t.font_size, t.color);
+        for (const h of labelHours) {
+            s += this.textAt(String(h).padStart(2, "0"), h * 15, t.radius, t.font_size, t.color);
         }
 
         if (t.tight) {
             for (let h = 0; h < 24; h++) {
-                s += this.tickLine(h * 15, t.radius - 2, t.radius, t.color, t.stroke);
+                if (labelHours.includes(h)) continue;
+                s += this.minorTick(h * 15, t);
             }
         }
 
@@ -674,13 +708,16 @@ class HennStonehengeCard extends HTMLElement {
 
     renderMonthTicks(t) {
         let s = "";
-        [5, 10, 15, 20, 25, 30].forEach(d => {
+        const labelDays = [5, 10, 15, 20, 25, 30];
+
+        for (const d of labelDays) {
             s += this.textAt(String(d), (d - 1) * 360 / 31, t.radius, t.font_size, t.color);
-        });
+        }
 
         if (t.tight) {
             for (let d = 1; d <= 31; d++) {
-                s += this.tickLine((d - 1) * 360 / 31, t.radius - 2, t.radius, t.color, t.stroke);
+                if (labelDays.includes(d)) continue;
+                s += this.minorTick((d - 1) * 360 / 31, t);
             }
         }
 
@@ -697,27 +734,24 @@ class HennStonehengeCard extends HTMLElement {
 
         if (t.tight) {
             for (let i = 0; i < 12; i++) {
-                s += this.tickLine(i * 30 + 10, t.radius - 2, t.radius, t.color, t.stroke);
-                s += this.tickLine(i * 30 + 20, t.radius - 2, t.radius, t.color, t.stroke);
+                s += this.minorTick(i * 30 + 10, t);
+                s += this.minorTick(i * 30 + 20, t);
             }
         }
 
         return s;
     }
 
-    renderDirectionTicks(t) {
-        let s = "";
-        [["N", 0], ["E", 90], ["S", 180], ["W", 270]].forEach(x => {
-            s += this.textAt(x[0], x[1], t.radius, t.font_size, t.color);
-        });
+    minorTick(angle, t) {
+        const m = t.minor || {};
+        const radius = Number(m.radius ?? t.radius);
+        const length = Number(m.length ?? 2);
+        const stroke = Number(m.stroke ?? 0.5);
+        const color = m.color || t.color || "white";
 
-        if (t.tight) {
-            [["NE", 45], ["SE", 135], ["SW", 225], ["NW", 315]].forEach(x => {
-                s += this.textAt(x[0], x[1], t.radius, Number(t.font_size) * 0.8, t.color);
-            });
-        }
+        if (stroke <= 0 || length <= 0) return "";
 
-        return s;
+        return this.tickLine(angle, radius - length / 2, radius + length / 2, color, stroke);
     }
 
     renderLabel() {
@@ -726,7 +760,15 @@ class HennStonehengeCard extends HTMLElement {
 
         const lines = String(l.text).split("\n");
         const size = Number(l.font_size || 7);
-        const startY = 50 - ((lines.length - 1) * size * 0.6);
+        const margin = Number(l.margin || 12);
+
+        let y;
+
+        if (l.position === "top") y = margin;
+        else if (l.position === "bottom") y = 100 - margin;
+        else y = 50;
+
+        const startY = y - ((lines.length - 1) * size * 0.6);
 
         return lines.map((line, i) => `
       <text x="50" y="${startY + i * size * 1.2}"
@@ -735,6 +777,13 @@ class HennStonehengeCard extends HTMLElement {
             font-size="${size}"
             fill="${l.color || "white"}">${line}</text>
     `).join("");
+    }
+
+    circleLine(radius, color, stroke) {
+        return `<circle cx="50" cy="50" r="${radius}"
+                    fill="none"
+                    stroke="${color}"
+                    stroke-width="${stroke}"></circle>`;
     }
 
     textAt(text, angle, radius, size, color) {
@@ -749,10 +798,11 @@ class HennStonehengeCard extends HTMLElement {
     tickLine(angle, r1, r2, color, width) {
         const p1 = this.polar(50, 50, r1, angle);
         const p2 = this.polar(50, 50, r2, angle);
+
         return `<line x1="${p1.x}" y1="${p1.y}"
                   x2="${p2.x}" y2="${p2.y}"
                   stroke="${color}"
-                  stroke-width="${width || 1}"></line>`;
+                  stroke-width="${width}"></line>`;
     }
 
     polar(cx, cy, r, angleDeg) {
