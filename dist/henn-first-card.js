@@ -283,7 +283,7 @@ class HennWindRoseCard extends HTMLElement {
         const max = Math.max(...buckets, 0.0001);
 
         const inner = Math.max(0, Math.min(50, Number(c.inner_radius)));
-        const outer = Math.max(inner, Math.min(50, Number(c.outer_radius)));
+        const outer = Math.max(inner, Math.min(100, Number(c.outer_radius)));
         const bucketSize = Number(c.bucket_size);
 
         const paths = buckets.map((sum, i) => {
