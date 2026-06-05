@@ -38,7 +38,9 @@ class HennLayerCard extends HTMLElement {
 
         this._cards = [];
 
-        for (const layerConfig of (this.config.layers || [])) {
+        const layers = this.getOrderedLayers(this.config.layers || []);
+
+        for (const layerConfig of layers) {
 
             const layerDiv = document.createElement("div");
             layerDiv.className = "layer";
@@ -54,6 +56,7 @@ class HennLayerCard extends HTMLElement {
 
             const rawConfig = { ...layerConfig };
             delete rawConfig.style;
+            delete rawConfig.layer_seq;
 
             const cardConfig = this.resolveConfig(rawConfig);
 
@@ -68,6 +71,33 @@ class HennLayerCard extends HTMLElement {
 
             this._cards.push(card);
         }
+    }
+
+    getOrderedLayers(layers) {
+        const ordered = layers
+            .map((layer, index) => ({ layer, index }))
+            .sort((a, b) => {
+                const aHasSeq = a.layer.layer_seq !== undefined && a.layer.layer_seq !== null;
+                const bHasSeq = b.layer.layer_seq !== undefined && b.layer.layer_seq !== null;
+
+                if (aHasSeq && bHasSeq) {
+                    const diff = Number(a.layer.layer_seq) - Number(b.layer.layer_seq);
+                    if (diff !== 0) return diff;
+                    return a.index - b.index;
+                }
+
+                if (aHasSeq) return -1;
+                if (bHasSeq) return 1;
+
+                return a.index - b.index;
+            })
+            .map(x => x.layer);
+
+        if (this.config.order?.reverse) {
+            ordered.reverse();
+        }
+
+        return ordered;
     }
 
     set hass(hass) {
@@ -90,6 +120,12 @@ class HennLayerCard extends HTMLElement {
     resolveConfig(config) {
         const clone = structuredClone(config);
 
+        // 1. Uus üldine preprocessor:
+        // teeb {@entity} ja {@@global} asendused kogu config-puus,
+        // kaasa arvatud henn_resolve reeglite sees.
+        this.resolveReferencesInPlace(clone);
+
+        // 2. Vana deklaratiivne henn_resolve loogika
         const rules = clone.henn_resolve || [];
         delete clone.henn_resolve;
 
@@ -115,6 +151,85 @@ class HennLayerCard extends HTMLElement {
         }
 
         return clone;
+    }
+
+    resolveReferencesInPlace(obj) {
+        if (Array.isArray(obj)) {
+            for (let i = 0; i < obj.length; i++) {
+                obj[i] = this.resolveReferencesInPlace(obj[i]);
+            }
+            return obj;
+        }
+
+        if (obj && typeof obj === "object") {
+            for (const key of Object.keys(obj)) {
+                obj[key] = this.resolveReferencesInPlace(obj[key]);
+            }
+            return obj;
+        }
+
+        if (typeof obj === "string") {
+            return this.resolveReferenceString(obj);
+        }
+
+        return obj;
+    }
+
+    resolveReferenceString(text) {
+
+        // kõigepealt globalid
+        text = text.replace(/\{@@([^}]+)\}/g, (match, name) => {
+
+            const value = this.getGlobalValue(name.trim());
+
+            if (value === undefined || value === null) {
+                return match;
+            }
+
+            return String(value);
+        });
+
+        // siis entity viited
+        text = text.replace(/\{@([^}]+)\}/g, (match, ref) => {
+
+            const value = this.getEntityReferenceValue(ref.trim());
+
+            if (value === undefined || value === null) {
+                return match;
+            }
+
+            return String(value);
+        });
+
+        return text;
+    }
+
+    getGlobalValue(name) {
+        const globals = this.config?.globals || [];
+
+        for (const item of globals) {
+            if (!item) continue;
+            if (item.name !== name) continue;
+
+            if (item.value_source) {
+                return this.getEntityReferenceValue(item.value_source);
+            }
+
+            return item.value;
+        }
+
+        return undefined;
+    }
+
+    getEntityReferenceValue(ref) {
+
+        const entity = this._hass?.states?.[ref];
+
+        if (!entity) {
+            return undefined;
+        }
+
+        return entity.state;
     }
 
     applyTemplate(value, template) {
