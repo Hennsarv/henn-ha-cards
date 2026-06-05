@@ -359,6 +359,28 @@ class HennStonehengeCard extends HTMLElement {
             lower: { stroke: 1, color: "white", radius: null },
             upper: { stroke: 1, color: "white", radius: null },
 
+            bar: {
+                series_count: 1,
+                series_index: 0,
+                gap: 0,
+
+                margin_left: 0,
+                margin_right: 0
+            },
+
+            line: {
+                show: true,
+                color: null,
+                stroke: 2,
+                smooth: false
+            },
+
+            fill: {
+                show: true,
+                color: null,
+                opacity: null
+            },
+
             ticks: {
                 show: true,
                 tight: false,
@@ -396,6 +418,8 @@ class HennStonehengeCard extends HTMLElement {
                 margin: 12
             },
 
+
+
             ...config
         };
     }
@@ -427,6 +451,32 @@ class HennStonehengeCard extends HTMLElement {
 
         this._buckets = this.calculateBuckets(rows);
         this.render();
+    }
+
+    barAngles(bucketStart, step) {
+        const bar = this.config.bar || {};
+
+        const count = Math.max(1, Number(bar.series_count || 1));
+        const index = Math.max(0, Math.min(count - 1, Number(bar.series_index || 0)));
+        const gap = Math.max(0, Number(bar.gap || 0));
+
+        if (count > 1 || gap > 0) {
+            const usable = Math.max(0, step - gap * (count + 1));
+            const width = usable / count;
+
+            const a1 = bucketStart + gap + index * (width + gap);
+            const a2 = a1 + width;
+
+            return [a1, a2];
+        }
+
+        const ml = Math.max(0, Number(bar.margin_left || 0));
+        const mr = Math.max(0, Number(bar.margin_right || 0));
+
+        const a1 = bucketStart + step * ml / 100;
+        const a2 = bucketStart + step - step * mr / 100;
+
+        return [a1, Math.max(a1, a2)];
     }
 
     periodStart(end, period) {
@@ -602,9 +652,29 @@ class HennStonehengeCard extends HTMLElement {
             const r1 = Math.min(lower, r);
             const r2 = Math.max(lower, r);
 
-            return `<path d="${this.ringSectorPath(50, 50, r1, r2, i * step, (i + 1) * step)}"
-                    fill="${c.color}"
-                    fill-opacity="${c.max_opacity}"></path>`;
+            const [a1, a2] = this.barAngles(i * step, step);
+
+            const fill = c.fill || {};
+            const line = c.line || {};
+
+            const fillShow = fill.show !== false;
+            const lineShow = line.show === true || Number(line.stroke || 0) > 0;
+
+            const fillColor = fill.color || c.color;
+            const fillOpacity = fill.opacity ?? c.max_opacity;
+
+            const strokeColor = line.color || c.color;
+            const strokeWidth = line.stroke ?? 0;
+
+            return `<path d="${this.ringSectorPath(50, 50, r1, r2, a1, a2)}"
+              fill="${fillShow ? fillColor : "none"}"
+              fill-opacity="${fillShow ? fillOpacity : 0}"
+              stroke="${lineShow ? strokeColor : "none"}"
+              stroke-width="${lineShow ? strokeWidth : 0}"></path>`;
+
+            // return `<path d="${this.ringSectorPath(50, 50, r1, r2, i * step, (i + 1) * step)}"
+            //         fill="${c.color}"
+            //         fill-opacity="${c.max_opacity}"></path>`;
         }).join("");
     }
 
