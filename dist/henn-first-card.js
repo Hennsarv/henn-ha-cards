@@ -206,7 +206,7 @@ class HennLayerCard extends HTMLElement {
 
     getGlobalValue(name) {
         const globals = this.config?.globals || [];
-        console.log("GLOBALS=", globals);
+        // console.log("GLOBALS=", globals);
         // Lihtkuju:
         // globals:
         //   test: testtext
