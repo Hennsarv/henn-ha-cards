@@ -1,5 +1,5 @@
 
-class HennLayerCard extends HTMLElement {
+class HennLayeredCard extends HTMLElement {
 
     setConfig(config) {
         this.config = {
@@ -10,6 +10,7 @@ class HennLayerCard extends HTMLElement {
             layers: [],
             ...config
         };
+
         this.render();
     }
 
@@ -286,12 +287,12 @@ class HennLayerCard extends HTMLElement {
 
 }
 
-customElements.define("henn-layer-card", HennLayerCard);
+customElements.define("henn-layered-card", HennLayeredCard);
 
 window.customCards = window.customCards || [];
 window.customCards.push({
-    type: "henn-layer-card",
-    name: "Henn Layer Card",
+    type: "henn-layered-card",
+    name: "Henn Layered Card",
     description: "Custom layered card containing multiple cards stacked for Home Assistant"
 });
 
