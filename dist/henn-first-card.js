@@ -9,7 +9,8 @@ class HennLayerCard extends HTMLElement {
             },
             layers: [],
             ...config
-        }.render();
+        };
+        this.render();
     }
 
     async render() {
