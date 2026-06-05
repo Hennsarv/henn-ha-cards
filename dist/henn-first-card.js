@@ -1,41 +1,15 @@
-class HennFirstCard extends HTMLElement {
-    setConfig(config) {
-        this.innerHTML = `
-            <ha-card header="Hennu esimene kaart">
-                <div style="padding:16px">
-                    <p>Tere Henn!</p>
-                    <p>Minu esimene Home Assistant uuendatud ilus kaart töötab.</p>
-                </div>
-            </ha-card>
-        `;
-    }
-
-    getCardSize() {
-        return 2;
-    }
-}
-class HennSecondCard extends HTMLElement {
-    setConfig(config) {
-        this.innerHTML = `
-            <ha-card header="Hennu teine kaart">
-                <div style="padding:16px">
-                    <p>Tere Henn!</p>
-                    <p>Minu teine Home Assistant uuendatud ilus kaart töötab.</p>
-                </div>
-            </ha-card>
-        `;
-    }
-
-    getCardSize() {
-        return 2;
-    }
-}
 
 class HennLayerCard extends HTMLElement {
 
     setConfig(config) {
-        this.config = config;
-        this.render();
+        this.config = {
+            globals: [],
+            order: {
+                reverse: false
+            },
+            layers: [],
+            ...config
+        };
     }
 
     async render() {
@@ -1013,7 +987,5 @@ window.customCards.push({
     description: "Transparent wind rose ring from wind direction and speed history"
 });
 
-customElements.define("henn-first-card", HennFirstCard);
-customElements.define("henn-second-card", HennSecondCard);
 customElements.define("henn-layer-card", HennLayerCard);
 customElements.define("henn-wind-rose-card", HennWindRoseCard);
