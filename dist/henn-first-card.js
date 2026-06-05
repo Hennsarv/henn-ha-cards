@@ -6,7 +6,7 @@ class HennLayeredCard extends HTMLElement {
             globals: [],
             order: {
                 reverse: false,
-                nulls: last
+                nulls: "last"
             },
             layers: [],
             ...config
