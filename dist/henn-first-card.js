@@ -9,7 +9,7 @@ class HennLayerCard extends HTMLElement {
             },
             layers: [],
             ...config
-        };
+        }.render();
     }
 
     async render() {
@@ -284,6 +284,16 @@ class HennLayerCard extends HTMLElement {
     }
 
 }
+
+customElements.define("henn-layer-card", HennLayerCard);
+
+window.customCards = window.customCards || [];
+window.customCards.push({
+    type: "henn-layer-card",
+    name: "Henn Layer Card",
+    description: "Custom layered card containing multiple cards stacked for Home Assistant"
+});
+
 
 class HennWindRoseCard extends HTMLElement {
     setConfig(config) {
@@ -1126,5 +1136,4 @@ window.customCards.push({
     description: "Transparent wind rose ring from wind direction and speed history"
 });
 
-customElements.define("henn-layer-card", HennLayerCard);
 customElements.define("henn-wind-rose-card", HennWindRoseCard);
