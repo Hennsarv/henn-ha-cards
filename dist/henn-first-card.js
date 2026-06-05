@@ -206,7 +206,32 @@ class HennLayerCard extends HTMLElement {
 
     getGlobalValue(name) {
         const globals = this.config?.globals || [];
+        console.log("GLOBALS=", globals);
+        // Lihtkuju:
+        // globals:
+        //   test: testtext
+        if (!Array.isArray(globals) && typeof globals === "object") {
+            const item = globals[name];
 
+            if (item === undefined || item === null) {
+                return undefined;
+            }
+
+            if (typeof item === "object" && item.value_source) {
+                return this.getEntityReferenceValue(item.value_source);
+            }
+
+            if (typeof item === "object" && item.value !== undefined) {
+                return item.value;
+            }
+
+            return item;
+        }
+
+        // Pikk kuju:
+        // globals:
+        //   - name: test
+        //     value: testtext
         for (const item of globals) {
             if (!item) continue;
             if (item.name !== name) continue;
@@ -220,7 +245,6 @@ class HennLayerCard extends HTMLElement {
 
         return undefined;
     }
-
     getEntityReferenceValue(ref) {
 
         const entity = this._hass?.states?.[ref];
