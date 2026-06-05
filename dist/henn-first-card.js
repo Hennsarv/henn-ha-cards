@@ -680,6 +680,102 @@ class HennStonehengeCard extends HTMLElement {
 
     renderLine(buckets, min, span, lower, upper) {
         const c = this.config;
+        const line = c.line || {};
+        const fill = c.fill || {};
+
+        const count = buckets.length || 1;
+        const step = 360 / count;
+
+        const points = buckets
+            .map((b, i) => {
+                if (b.value === null) return null;
+                const p = this.norm(b.value, min, span);
+                const r = this.valueRadius(p, lower, upper);
+                return this.polar(50, 50, r, i * step);
+            })
+            .filter(Boolean);
+
+        if (!points.length) return "";
+
+        const strokeShow = line.show !== false;
+        const strokeColor = line.color || c.color;
+        const strokeWidth = Number(line.stroke ?? c.line_width ?? 2);
+
+        const fillShow = fill.show === true;
+        const fillColor = fill.color || c.color;
+        const fillOpacity = fill.opacity ?? 0.2;
+
+        const dLine = this.pathFromPoints(points, line.smooth === true, true);
+
+        let result = "";
+
+        if (fillShow) {
+            const baseRadius = lower;
+            const fillPoints = [];
+
+            for (let i = 0; i < buckets.length; i++) {
+                const angle = i * step;
+                fillPoints.push(this.polar(50, 50, baseRadius, angle));
+            }
+
+            const outerPath = this.pathFromPoints(points, line.smooth === true, false);
+            const innerPath = this.pathFromPoints(fillPoints.reverse(), line.smooth === true, false);
+
+            const dFill = `${outerPath} L ${fillPoints[0].x} ${fillPoints[0].y} ${innerPath.replace(/^M [^LQCS]+/, "")} Z`;
+
+            result += `<path d="${dFill}"
+                     fill="${fillColor}"
+                     fill-opacity="${fillOpacity}"
+                     stroke="none"></path>`;
+        }
+
+        if (strokeShow && strokeWidth > 0) {
+            result += `<path d="${dLine}"
+                     fill="none"
+                     stroke="${strokeColor}"
+                     stroke-width="${strokeWidth}"
+                     stroke-linejoin="round"
+                     stroke-linecap="round"></path>`;
+        }
+
+        return result;
+    }
+
+    pathFromPoints(points, smooth, close) {
+        if (!points.length) return "";
+
+        if (!smooth || points.length < 3) {
+            return points
+                .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
+                .join(" ") + (close ? " Z" : "");
+        }
+
+        let d = `M ${points[0].x} ${points[0].y}`;
+
+        for (let i = 0; i < points.length; i++) {
+            const p0 = points[(i - 1 + points.length) % points.length];
+            const p1 = points[i];
+            const p2 = points[(i + 1) % points.length];
+            const p3 = points[(i + 2) % points.length];
+
+            const cp1 = {
+                x: p1.x + (p2.x - p0.x) / 6,
+                y: p1.y + (p2.y - p0.y) / 6
+            };
+
+            const cp2 = {
+                x: p2.x - (p3.x - p1.x) / 6,
+                y: p2.y - (p3.y - p1.y) / 6
+            };
+
+            d += ` C ${cp1.x} ${cp1.y}, ${cp2.x} ${cp2.y}, ${p2.x} ${p2.y}`;
+        }
+
+        return d + (close ? " Z" : "");
+    }
+
+    renderLineOld(buckets, min, span, lower, upper) {
+        const c = this.config;
         const count = buckets.length || 1;
         const step = 360 / count;
 
