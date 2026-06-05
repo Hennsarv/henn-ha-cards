@@ -5,7 +5,8 @@ class HennLayeredCard extends HTMLElement {
         this.config = {
             globals: [],
             order: {
-                reverse: false
+                reverse: false,
+                nulls: last
             },
             layers: [],
             ...config
@@ -76,30 +77,36 @@ class HennLayeredCard extends HTMLElement {
     }
 
     getOrderedLayers(layers) {
-        const ordered = layers
+        const reverse = this.config.order?.reverse === false;
+        const nulls = this.config.order?.nulls || "last";
+
+        return layers
             .map((layer, index) => ({ layer, index }))
             .sort((a, b) => {
                 const aHasSeq = a.layer.layer_seq !== undefined && a.layer.layer_seq !== null;
                 const bHasSeq = b.layer.layer_seq !== undefined && b.layer.layer_seq !== null;
 
-                if (aHasSeq && bHasSeq) {
-                    const diff = Number(a.layer.layer_seq) - Number(b.layer.layer_seq);
-                    if (diff !== 0) return diff;
+                if (!aHasSeq && !bHasSeq) {
                     return a.index - b.index;
                 }
 
-                if (aHasSeq) return -1;
-                if (bHasSeq) return 1;
+                if (!aHasSeq) {
+                    return nulls === "first" ? -1 : 1;
+                }
+
+                if (!bHasSeq) {
+                    return nulls === "first" ? 1 : -1;
+                }
+
+                const diff = Number(a.layer.layer_seq) - Number(b.layer.layer_seq);
+
+                if (diff !== 0) {
+                    return reverse ? -diff : diff;
+                }
 
                 return a.index - b.index;
             })
             .map(x => x.layer);
-
-        if (this.config.order?.reverse) {
-            ordered.reverse();
-        }
-
-        return ordered;
     }
 
     set hass(hass) {
