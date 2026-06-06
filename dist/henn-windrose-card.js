@@ -239,7 +239,7 @@ class HennWindRoseCardEditor extends HTMLElement {
                 this,
                 "color",
                 "Color",
-                this._config.color || "deepskyblue"
+                this._config.color || "blue"  // võtsin deepskyeblue maha, et näha
             )
         );
 
