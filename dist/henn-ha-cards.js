@@ -1,4 +1,4 @@
-import "./henn-windrose-card.js";
+import "./henn-wind-rose-card.js";
 import "./henn-stonehenge-card.js";
 import "./henn-layered-card.js";
 
