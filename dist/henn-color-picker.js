@@ -111,7 +111,7 @@ export function hennCreateColorField(editor, key, label, value) {
         list.style.display = "block";
 
         list.querySelectorAll("[data-color]").forEach(item => {
-            item.addEventListener("click", () => {
+            item.addEventListener("mousedown", () => {
                 const name = item.dataset.color;
                 text.value = name;
                 picker.value = HENN_CSS_COLORS[name];
