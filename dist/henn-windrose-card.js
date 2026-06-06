@@ -1,3 +1,9 @@
+import {
+    HENN_CSS_COLORS,
+    hennColorToHex,
+    hennHexToColorName
+} from "./henn-color-picker.js";
+
 class HennWindRoseCard extends HTMLElement {
     setConfig(config) {
         if (!config.direction_entity) throw new Error("direction_entity is required");
