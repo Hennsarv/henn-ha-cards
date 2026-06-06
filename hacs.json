@@ -2,6 +2,11 @@
   "name": "Henn HA Cards",
   "content_in_root": false,
   "render_readme": true,
-  "filename": "henn-ha-cards.js",
+  "filename": [
+    "henn-ha-cards.js",
+    "henn-layered-card.js",
+    "henn-stonehenge-card.js",
+    "henn-windrose-card.js"
+  ],
   "homeassistant": "2025.1.0"
 }
