@@ -226,8 +226,8 @@ class HennWindRoseCardEditor extends HTMLElement {
         ])}
 
                 ${this._rangeField("bucket_size", "Bucket size", this._config.bucket_size ?? 5, 5, 30, 5)}
-                ${this._rangeField("inner_radius", "Inner radius", this._config.inner_radius ?? 30, 0, 80, 5)}
                 ${this._rangeField("outer_radius", "Outer radius", this._config.outer_radius ?? 50, 20, 100, 5)}
+                ${this._rangeField("inner_radius", "Inner radius", this._config.inner_radius ?? 30, 0, 80, 5)}
                 ${this._rangeField("rotation", "Rotation", this._config.rotation ?? 0, -180, 180, 5)}
                 <div id="color_field"></div>
                 ${this._rangeField("min_opacity", "Min opacity", this._config.min_opacity ?? 0.05, 0, 1, 0.05)}
