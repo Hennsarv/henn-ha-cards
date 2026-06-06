@@ -504,43 +504,77 @@ window.customCards.push({
 customElements.define("henn-wind-rose-card", HennWindRoseCard);
 
 class HennWindRoseCardEditor extends HTMLElement {
+    set hass(hass) {
+        this._hass = hass;
+        this.render();
+    }
+
     setConfig(config) {
         this._config = { ...config };
         this.render();
     }
 
     render() {
-        const c = this._config || {};
+        if (!this._config) return;
 
         this.innerHTML = `
-            <div style="display:grid; gap:10px;">
-                ${this._field("direction_entity", "Direction entity", c.direction_entity)}
-                ${this._field("speed_entity", "Speed entity", c.speed_entity)}
-                ${this._field("period", "Period", c.period || "30d")}
-                ${this._numberField("bucket_size", "Bucket size", c.bucket_size ?? 5)}
-                ${this._numberField("inner_radius", "Inner radius", c.inner_radius ?? 30)}
-                ${this._numberField("outer_radius", "Outer radius", c.outer_radius ?? 50)}
-                ${this._numberField("rotation", "Rotation", c.rotation ?? 0)}
-                ${this._field("color", "Color", c.color || "deepskyblue")}
-                ${this._numberField("min_opacity", "Min opacity", c.min_opacity ?? 0.05, "0.01")}
-                ${this._numberField("max_opacity", "Max opacity", c.max_opacity ?? 0.9, "0.01")}
+            <div style="display:grid; gap:14px;">
+                <div id="direction_entity"></div>
+                <div id="speed_entity"></div>
+
+                ${this._selectField("period", "Period", this._config.period || "30d", [
+            ["1d", "1 day"],
+            ["7d", "7 days"],
+            ["14d", "14 days"],
+            ["30d", "30 days"],
+            ["90d", "90 days"]
+        ])}
+
+                ${this._rangeField("bucket_size", "Bucket size", this._config.bucket_size ?? 5, 5, 30, 5)}
+                ${this._rangeField("inner_radius", "Inner radius", this._config.inner_radius ?? 30, 0, 80, 5)}
+                ${this._rangeField("outer_radius", "Outer radius", this._config.outer_radius ?? 50, 20, 100, 5)}
+                ${this._rangeField("rotation", "Rotation", this._config.rotation ?? 0, -180, 180, 5)}
+                ${this._textField("color", "Color", this._config.color || "deepskyblue")}
+                ${this._rangeField("min_opacity", "Min opacity", this._config.min_opacity ?? 0.05, 0, 1, 0.05)}
+                ${this._rangeField("max_opacity", "Max opacity", this._config.max_opacity ?? 0.9, 0, 1, 0.05)}
             </div>
         `;
 
-        this.querySelectorAll("input").forEach(input => {
-            input.addEventListener("input", ev => {
+        this._addEntityPicker("direction_entity", "Direction entity");
+        this._addEntityPicker("speed_entity", "Speed entity");
+
+        this.querySelectorAll("input, select").forEach(el => {
+            el.addEventListener("change", ev => {
                 const key = ev.target.dataset.key;
-                const value =
-                    ev.target.type === "number"
-                        ? Number(ev.target.value)
-                        : ev.target.value;
+                let value = ev.target.value;
+
+                if (ev.target.type === "range" || ev.target.type === "number") {
+                    value = Number(value);
+                }
 
                 this._valueChanged(key, value);
             });
         });
     }
 
-    _field(key, label, value) {
+    _addEntityPicker(key, label) {
+        const host = this.querySelector(`#${key}`);
+        if (!host || !this._hass) return;
+
+        const picker = document.createElement("ha-entity-picker");
+        picker.hass = this._hass;
+        picker.value = this._config[key] || "";
+        picker.label = label;
+        picker.includeDomains = ["sensor"];
+
+        picker.addEventListener("value-changed", ev => {
+            this._valueChanged(key, ev.detail.value);
+        });
+
+        host.appendChild(picker);
+    }
+
+    _textField(key, label, value) {
         return `
             <label>
                 <div>${label}</div>
@@ -549,11 +583,31 @@ class HennWindRoseCardEditor extends HTMLElement {
         `;
     }
 
-    _numberField(key, label, value, step = "1") {
+    _selectField(key, label, value, options) {
         return `
             <label>
                 <div>${label}</div>
-                <input type="number" step="${step}" data-key="${key}" value="${value ?? ""}" style="width:100%;">
+                <select data-key="${key}" style="width:100%;">
+                    ${options.map(([v, t]) =>
+            `<option value="${v}" ${v === value ? "selected" : ""}>${t}</option>`
+        ).join("")}
+                </select>
+            </label>
+        `;
+    }
+
+    _rangeField(key, label, value, min, max, step) {
+        return `
+            <label>
+                <div>${label}: <b>${value}</b></div>
+                <input
+                    type="range"
+                    data-key="${key}"
+                    value="${value}"
+                    min="${min}"
+                    max="${max}"
+                    step="${step}"
+                    style="width:100%;">
             </label>
         `;
     }
@@ -573,6 +627,8 @@ class HennWindRoseCardEditor extends HTMLElement {
         }));
     }
 }
+
+customElements.define("henn-wind-rose-card-editor", HennWindRoseCardEditor);
 
 customElements.define("henn-wind-rose-card-editor", HennWindRoseCardEditor);
 
