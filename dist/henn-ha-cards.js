@@ -1,6 +1,5 @@
 const HENN_CARDS_VERSION = "1.0.18";
-console.info("Henn HA Cards", HENN_CARDS_VERSION);
-
+//console.info("Henn HA Cards", HENN_CARDS_VERSION);
 console.info(
     `%c HENN HA CARDS %c ${HENN_CARDS_VERSION} `,
     "background:blue;color:white;font-weight:bold;",
@@ -473,7 +472,110 @@ class HennWindRoseCard extends HTMLElement {
             "Z"
         ].join(" ");
     }
+
+    static getConfigElement() {
+        return document.createElement("henn-wind-rose-card-editor");
+    }
+
+    static getStubConfig() {
+        return {
+            type: "custom:henn-wind-rose-card",
+            direction_entity: "",
+            speed_entity: "",
+            period: "30d",
+            bucket_size: 5,
+            inner_radius: 30,
+            outer_radius: 50,
+            rotation: 0,
+            color: "deepskyblue",
+            min_opacity: 0.05,
+            max_opacity: 0.9
+        };
+    }
 }
+
+window.customCards = window.customCards || [];
+window.customCards.push({
+    type: "henn-wind-rose-card",
+    name: "Henn Wind Rose Card",
+    description: "Transparent wind rose ring from wind direction and speed history"
+});
+
+customElements.define("henn-wind-rose-card", HennWindRoseCard);
+
+class HennWindRoseCardEditor extends HTMLElement {
+    setConfig(config) {
+        this._config = { ...config };
+        this.render();
+    }
+
+    render() {
+        const c = this._config || {};
+
+        this.innerHTML = `
+            <div style="display:grid; gap:10px;">
+                ${this._field("direction_entity", "Direction entity", c.direction_entity)}
+                ${this._field("speed_entity", "Speed entity", c.speed_entity)}
+                ${this._field("period", "Period", c.period || "30d")}
+                ${this._numberField("bucket_size", "Bucket size", c.bucket_size ?? 5)}
+                ${this._numberField("inner_radius", "Inner radius", c.inner_radius ?? 30)}
+                ${this._numberField("outer_radius", "Outer radius", c.outer_radius ?? 50)}
+                ${this._numberField("rotation", "Rotation", c.rotation ?? 0)}
+                ${this._field("color", "Color", c.color || "deepskyblue")}
+                ${this._numberField("min_opacity", "Min opacity", c.min_opacity ?? 0.05, "0.01")}
+                ${this._numberField("max_opacity", "Max opacity", c.max_opacity ?? 0.9, "0.01")}
+            </div>
+        `;
+
+        this.querySelectorAll("input").forEach(input => {
+            input.addEventListener("input", ev => {
+                const key = ev.target.dataset.key;
+                const value =
+                    ev.target.type === "number"
+                        ? Number(ev.target.value)
+                        : ev.target.value;
+
+                this._valueChanged(key, value);
+            });
+        });
+    }
+
+    _field(key, label, value) {
+        return `
+            <label>
+                <div>${label}</div>
+                <input data-key="${key}" value="${value ?? ""}" style="width:100%;">
+            </label>
+        `;
+    }
+
+    _numberField(key, label, value, step = "1") {
+        return `
+            <label>
+                <div>${label}</div>
+                <input type="number" step="${step}" data-key="${key}" value="${value ?? ""}" style="width:100%;">
+            </label>
+        `;
+    }
+
+    _valueChanged(key, value) {
+        const newConfig = {
+            ...this._config,
+            [key]: value
+        };
+
+        this._config = newConfig;
+
+        this.dispatchEvent(new CustomEvent("config-changed", {
+            detail: { config: newConfig },
+            bubbles: true,
+            composed: true
+        }));
+    }
+}
+
+customElements.define("henn-wind-rose-card-editor", HennWindRoseCardEditor);
+
 
 class HennStonehengeCard extends HTMLElement {
     setConfig(config) {
@@ -1146,11 +1248,3 @@ window.customCards.push({
     description: "Circular normalized time-bucket chart: color, bar or line"
 });
 
-window.customCards = window.customCards || [];
-window.customCards.push({
-    type: "henn-wind-rose-card",
-    name: "Henn Wind Rose Card",
-    description: "Transparent wind rose ring from wind direction and speed history"
-});
-
-customElements.define("henn-wind-rose-card", HennWindRoseCard);
