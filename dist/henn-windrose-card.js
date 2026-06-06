@@ -161,12 +161,12 @@ class HennWindRoseCard extends HTMLElement {
     }
 
     static getConfigElement() {
-        return document.createElement("henn-wind-rose-card-editor");
+        return document.createElement("henn-windrose-card-editor");
     }
 
     static getStubConfig() {
         return {
-            type: "custom:henn-wind-rose-card",
+            type: "custom:henn-windrose-card",
             direction_entity: "",
             speed_entity: "",
             period: "30d",
@@ -181,11 +181,11 @@ class HennWindRoseCard extends HTMLElement {
     }
 }
 
-customElements.define("henn-wind-rose-card", HennWindRoseCard);
+customElements.define("henn-windrose-card", HennWindRoseCard);
 
 window.customCards = window.customCards || [];
 window.customCards.push({
-    type: "henn-wind-rose-card",
+    type: "henn-windrose-card",
     name: "Henn Wind Rose Card",
     description: "Transparent wind rose ring from wind direction and speed history"
 });
@@ -323,4 +323,4 @@ class HennWindRoseCardEditor extends HTMLElement {
     }
 }
 
-customElements.define("henn-wind-rose-card-editor", HennWindRoseCardEditor);
+customElements.define("henn-windrose-card-editor", HennWindRoseCardEditor);
