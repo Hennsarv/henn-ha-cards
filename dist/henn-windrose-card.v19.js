@@ -213,6 +213,7 @@ class HennWindRoseCardEditor extends HTMLElement {
         if (!this._config) return;
 
         this.innerHTML = `
+            <!-- versioon 19 -->
             <div style="display:grid; gap:14px;">
                 <div id="direction_entity"></div>
                 <div id="speed_entity"></div>
@@ -224,7 +225,6 @@ class HennWindRoseCardEditor extends HTMLElement {
             ["30d", "30 days"],
             ["90d", "90 days"]
         ])}
-
                 ${this._rangeField("bucket_size", "Bucket size", this._config.bucket_size ?? 5, 5, 30, 5)}
                 <div id="color_field"></div>
                 ${this._rangeField("outer_radius", "Outer radius", this._config.outer_radius ?? 50, 20, 100, 5)}
