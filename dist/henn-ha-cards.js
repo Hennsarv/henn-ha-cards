@@ -1,5 +1,11 @@
-const HENN_CARDS_VERSION = "1.0.17";
+const HENN_CARDS_VERSION = "1.0.18";
 console.info("Henn HA Cards", HENN_CARDS_VERSION);
+
+console.info(
+    `%c HENN HA CARDS %c ${HENN_CARDS_VERSION} `,
+    "background:blue;color:white;font-weight:bold;",
+    "color:darkblue;font-weight:bold;"
+);
 
 class HennLayeredCard extends HTMLElement {
 
