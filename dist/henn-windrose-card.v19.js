@@ -3,7 +3,7 @@ import {
     hennColorToHex,
     hennHexToColorName,
     hennCreateColorField
-} from "./henn-color-picker.v18.js";
+} from "./henn-color-picker.v19.js";
 
 class HennWindRoseCard extends HTMLElement {
     setConfig(config) {
