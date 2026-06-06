@@ -2,7 +2,7 @@ import "./henn-windrose-card.js";
 import "./henn-stonehenge-card.js";
 import "./henn-layered-card.js";
 
-const HENN_CARDS_VERSION = "1.0.17";
+const HENN_CARDS_VERSION = "1.0.18";
 
 console.info(
     `%c HENN HA CARDS %c v${HENN_CARDS_VERSION} `,
