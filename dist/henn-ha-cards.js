@@ -540,8 +540,10 @@ class HennWindRoseCardEditor extends HTMLElement {
             </div>
         `;
 
-        this._addEntityPicker("direction_entity", "Direction entity");
-        this._addEntityPicker("speed_entity", "Speed entity");
+        customElements.whenDefined("ha-selector").then(() => {
+            this._addEntityPicker("direction_entity", "Direction entity");
+            this._addEntityPicker("speed_entity", "Speed entity");
+        });
 
         this.querySelectorAll("input, select").forEach(el => {
             el.addEventListener("change", ev => {
