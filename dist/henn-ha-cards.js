@@ -561,17 +561,22 @@ class HennWindRoseCardEditor extends HTMLElement {
         const host = this.querySelector(`#${key}`);
         if (!host || !this._hass) return;
 
-        const picker = document.createElement("ha-entity-picker");
-        picker.hass = this._hass;
-        picker.value = this._config[key] || "";
-        picker.label = label;
-        picker.includeDomains = ["sensor"];
+        const selector = document.createElement("ha-selector");
 
-        picker.addEventListener("value-changed", ev => {
+        selector.hass = this._hass;
+        selector.label = label;
+        selector.value = this._config[key] || "";
+        selector.selector = {
+            entity: {
+                domain: "sensor"
+            }
+        };
+
+        selector.addEventListener("value-changed", ev => {
             this._valueChanged(key, ev.detail.value);
         });
 
-        host.appendChild(picker);
+        host.appendChild(selector);
     }
 
     _textField(key, label, value) {
