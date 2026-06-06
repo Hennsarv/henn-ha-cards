@@ -1,17 +1,20 @@
-# henn-ha-cards
+# Henn Home Assistant Cards
 
-Hennu esimesed Home Assistanti Lovelace custom-kaardid.
+Custom cards for Home Assistant.
 
-See repo on õppimise ja katsetamise koht: kõigepealt Hello World,
-siis esimene lihtne kaart, ja lõpuks kodu/maja/tuulekompassi tüüpi
-oma Lovelace komponendid.
+## Cards
 
-## Esimene kaart
+### Henn Layered Card
+Host card that can contain multiple embedded cards and preprocess their configuration.
 
-Fail:
+➡️ [Documentation](docs/layered-card.md)
 
-```text
-henn-first-card.js
+### Henn Wind Rose Card
+Wind rose visualization for weather station data.
 
-Tõestada, et oma JavaScripti kaart laadib Home Assistantis ära
-ja kuvab midagi Lovelace dashboardil.
+➡️ [Documentation](docs/wind-rose-card.md)
+
+### Henn Stonehenge Card
+Stonehenge / compass style visualization.
+
+➡️ [Documentation](docs/stonehenge-card.md)
