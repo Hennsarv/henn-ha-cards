@@ -1,5 +1,5 @@
 
-class HennLayeredCard extends HTMLElement {
+class HennLayerCard extends HTMLElement {
 
     setConfig(config) {
         this.config = {
@@ -294,7 +294,7 @@ class HennLayeredCard extends HTMLElement {
 
 }
 
-customElements.define("henn-layered-card", HennLayeredCard);
+customElements.define("henn-layer-card", HennLayerCard);
 
 window.customCards = window.customCards || [];
 window.customCards.push({
