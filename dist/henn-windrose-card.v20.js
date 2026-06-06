@@ -3,7 +3,7 @@ import {
     hennColorToHex,
     hennHexToColorName,
     hennCreateColorField
-} from "./henn-color-picker.v19.js";
+} from "./henn-color-picker.v20.js";
 
 class HennWindRoseCard extends HTMLElement {
     setConfig(config) {
@@ -213,7 +213,7 @@ class HennWindRoseCardEditor extends HTMLElement {
         if (!this._config) return;
 
         this.innerHTML = `
-            <!-- versioon 19 -->
+            <!-- versioon 20 -->
             <div style="display:grid; gap:14px;">
                 <div id="direction_entity"></div>
                 <div id="speed_entity"></div>

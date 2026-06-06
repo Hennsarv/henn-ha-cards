@@ -46,53 +46,78 @@ export function hennCreateColorField(editor, key, label, value) {
     const currentHex = hennColorToHex(currentValue);
 
     wrapper.innerHTML = `
-        <div>${label}</div>
+    <div style="
+        font-size: var(--mdc-typography-subtitle2-font-size, 14px);
+        color: var(--secondary-text-color);
+        margin-bottom: 2px;
+    ">${label}</div>
 
-        <div style="display:grid; grid-template-columns: 1fr 70px; gap:8px; align-items:start;">
-            <div class="henn-color-combo" style="position:relative;">
-                <input class="henn-color-text"
-                       value="${currentValue}"
-                       placeholder="type color name or #hex"
-                       autocomplete="off"
-                       style="
-                            width:100%;
-                            box-sizing:border-box;
-                            padding-right:26px;
-                       ">
-
-                <span class="henn-color-arrow"
-                      style="
-                            position:absolute;
-                            right:8px;
-                            top:7px;
-                            pointer-events:none;
-                            opacity:.7;
-                      ">▼</span>
-
-                <div class="henn-color-list"
-                     style="
-                        display:none;
-                        position:absolute;
-                        z-index:1000;
+    <div style="display:grid; grid-template-columns: 1fr 56px; gap:8px; align-items:start;">
+        <div class="henn-color-combo" style="position:relative;">
+            <input class="henn-color-text"
+                   value="${currentValue}"
+                   placeholder="type color name or #hex"
+                   autocomplete="off"
+                   style="
+                        width:100%;
+                        height:40px;
+                        box-sizing:border-box;
+                        padding:0 34px 0 12px;
+                        border:1px solid var(--divider-color, #ccc);
+                        border-radius:4px;
                         background:var(--card-background-color, white);
                         color:var(--primary-text-color, black);
-                        border:1px solid var(--divider-color, #ccc);
-                        max-height:220px;
-                        overflow:auto;
-                        width:100%;
-                        box-sizing:border-box;
-                     ">
-                </div>
+                        font:inherit;
+                        outline:none;
+                   ">
+
+            <span class="henn-color-arrow"
+                  style="
+                        position:absolute;
+                        right:11px;
+                        top:50%;
+                        transform:translateY(-50%);
+                        pointer-events:none;
+                        color:var(--secondary-text-color);
+                        font-size:14px;
+                        line-height:1;
+                  ">▼</span>
+
+            <div class="henn-color-list"
+                 style="
+                    display:none;
+                    position:absolute;
+                    z-index:1000;
+                    margin-top:4px;
+                    background:var(--card-background-color, white);
+                    color:var(--primary-text-color, black);
+                    border:1px solid var(--divider-color, #ccc);
+                    border-radius:4px;
+                    box-shadow: var(--ha-card-box-shadow, 0 2px 6px rgba(0,0,0,.2));
+                    max-height:220px;
+                    overflow:auto;
+                    width:100%;
+                    box-sizing:border-box;
+                 ">
             </div>
-
-            <input class="henn-color-picker"
-                   type="color"
-                   value="${currentHex}"
-                   title="Pick color"
-                   style="width:70px; height:34px;">
         </div>
-    `;
 
+        <input class="henn-color-picker"
+               type="color"
+               value="${currentHex}"
+               title="Pick color"
+               style="
+                    width:56px;
+                    height:40px;
+                    padding:2px;
+                    box-sizing:border-box;
+                    border:1px solid var(--divider-color, #ccc);
+                    border-radius:4px;
+                    background:var(--card-background-color, white);
+                    cursor:pointer;
+               ">
+    </div>
+`;
     const combo = wrapper.querySelector(".henn-color-combo");
     const text = wrapper.querySelector(".henn-color-text");
     const list = wrapper.querySelector(".henn-color-list");
