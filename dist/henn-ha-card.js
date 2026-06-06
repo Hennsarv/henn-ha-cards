@@ -1,3 +1,5 @@
+const HENN_CARDS_VERSION = "1.0.17";
+console.info("Henn HA Cards", HENN_CARDS_VERSION);
 
 class HennLayeredCard extends HTMLElement {
 

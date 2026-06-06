@@ -4,6 +4,12 @@ Custom cards for Home Assistant.
 
 ## Cards
 
+Included cards
+
+- Henn Layer Card
+- Henn Wind Rose Card
+- Henn Stonehenge Card
+
 ### Henn Layered Card
 Host card that can contain multiple embedded cards and preprocess their configuration.
 
