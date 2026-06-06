@@ -630,7 +630,6 @@ class HennWindRoseCardEditor extends HTMLElement {
 
 customElements.define("henn-wind-rose-card-editor", HennWindRoseCardEditor);
 
-customElements.define("henn-wind-rose-card-editor", HennWindRoseCardEditor);
 
 
 class HennStonehengeCard extends HTMLElement {
