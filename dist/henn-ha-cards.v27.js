@@ -2006,7 +2006,7 @@ function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valu
         return distMin <= distMax ? "min" : "max";
     }
 
-    function setActiveValue(value) {
+    function setActiveValue(value, commit = false) {
         if (activeThumb === "min") {
             vMin = Math.min(value, vMax);
         } else {
@@ -2014,7 +2014,10 @@ function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valu
         }
 
         updateVisuals();
-        fireChange();
+
+        if (commit) {
+            fireChange();
+        }
     }
 
     trackWrap.addEventListener("pointerdown", (ev) => {
@@ -2030,10 +2033,11 @@ function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valu
 
     trackWrap.addEventListener("pointermove", (ev) => {
         if (!activeThumb) return;
-        setActiveValue(valueFromEvent(ev));
+        setActiveValue(valueFromEvent(ev, false));
     });
 
     trackWrap.addEventListener("pointerup", (ev) => {
+        setActiveValue(valueFromEvent(ev), true);
         activeThumb = null;
         trackWrap.releasePointerCapture(ev.pointerId);
     });
