@@ -117,7 +117,7 @@ const HENN_SLIDER_STYLE = `
             height: 34px;
             margin: 0;
             opacity: 0;
-            pointer-events: none;
+            /*pointer-events: none;*/
         }
     </style>
 `;
