@@ -1,4 +1,4 @@
-import "./henn-windrose-card.v20.js";
+import "./henn-windrose-card.v21.js";
 import "./henn-stonehenge-card.js";
 import "./henn-layered-card.js";
 
