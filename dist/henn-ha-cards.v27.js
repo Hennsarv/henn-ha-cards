@@ -1910,8 +1910,9 @@ function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valu
 
     let vMin = Number(valueMin ?? min);
     let vMax = Number(valueMax ?? max);
+    let activeThumb = null;
 
-    function clampValues() {
+    function clampAndOrder() {
         vMin = Math.max(min, Math.min(max, vMin));
         vMax = Math.max(min, Math.min(max, vMax));
 
@@ -1922,44 +1923,46 @@ function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valu
         }
     }
 
-    clampValues();
+    function snap(value) {
+        const snapped = Math.round((value - min) / step) * step + min;
+        return Number(snapped.toFixed(6));
+    }
+
+    function pct(value) {
+        return ((value - min) / (max - min)) * 100;
+    }
+
+    clampAndOrder();
 
     wrapper.innerHTML = `
         <div class="henn-slider-header">
             <span>${label}</span>
-            <strong><span class="henn-slider-value-min">${vMin}</span> – <span class="henn-slider-value-max">${vMax}</span></strong>
+            <strong>
+                <span class="henn-slider-value-min">${vMin}</span> – 
+                <span class="henn-slider-value-max">${vMax}</span>
+            </strong>
         </div>
 
-        <div class="henn-slider-track-wrap">
+        <div class="henn-slider-track-wrap" tabindex="0" role="slider"
+             aria-label="${label}"
+             aria-valuemin="${min}"
+             aria-valuemax="${max}">
             <div class="henn-slider-track"></div>
             <div class="henn-slider-range"></div>
-            <input class="henn-slider-input henn-slider-input-min" type="range" min="${min}" max="${max}" step="${step}" value="${vMin}">
-            <input class="henn-slider-input henn-slider-input-max" type="range" min="${min}" max="${max}" step="${step}" value="${vMax}">
             <div class="henn-slider-thumb henn-slider-thumb-min"></div>
             <div class="henn-slider-thumb henn-slider-thumb-max"></div>
         </div>
     `;
 
-    const inputMin = wrapper.querySelector(".henn-slider-input-min");
-    const inputMax = wrapper.querySelector(".henn-slider-input-max");
-    const valueMinEl = wrapper.querySelector(".henn-slider-value-min");
-    const valueMaxEl = wrapper.querySelector(".henn-slider-value-max");
+    const trackWrap = wrapper.querySelector(".henn-slider-track-wrap");
     const rangeEl = wrapper.querySelector(".henn-slider-range");
     const thumbMinEl = wrapper.querySelector(".henn-slider-thumb-min");
     const thumbMaxEl = wrapper.querySelector(".henn-slider-thumb-max");
-
-    function pct(v) {
-        return ((v - min) / (max - min)) * 100;
-    }
+    const valueMinEl = wrapper.querySelector(".henn-slider-value-min");
+    const valueMaxEl = wrapper.querySelector(".henn-slider-value-max");
 
     function updateVisuals() {
-        clampValues();
-
-        inputMin.value = vMin;
-        inputMax.value = vMax;
-
-        valueMinEl.textContent = vMin;
-        valueMaxEl.textContent = vMax;
+        clampAndOrder();
 
         const left = pct(vMin);
         const right = pct(vMax);
@@ -1969,6 +1972,11 @@ function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valu
 
         thumbMinEl.style.left = `${left}%`;
         thumbMaxEl.style.left = `${right}%`;
+
+        valueMinEl.textContent = vMin;
+        valueMaxEl.textContent = vMax;
+
+        trackWrap.setAttribute("aria-valuetext", `${vMin} – ${vMax}`);
     }
 
     function fireChange() {
@@ -1985,18 +1993,74 @@ function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valu
         }));
     }
 
-    inputMin.addEventListener("input", () => {
-        vMin = Number(inputMin.value);
-        if (vMin > vMax) vMin = vMax;
+    function valueFromEvent(ev) {
+        const rect = trackWrap.getBoundingClientRect();
+        const x = Math.max(0, Math.min(rect.width, ev.clientX - rect.left));
+        const raw = min + (x / rect.width) * (max - min);
+        return Math.max(min, Math.min(max, snap(raw)));
+    }
+
+    function chooseThumb(value) {
+        const distMin = Math.abs(value - vMin);
+        const distMax = Math.abs(value - vMax);
+        return distMin <= distMax ? "min" : "max";
+    }
+
+    function setActiveValue(value) {
+        if (activeThumb === "min") {
+            vMin = Math.min(value, vMax);
+        } else {
+            vMax = Math.max(value, vMin);
+        }
+
         updateVisuals();
         fireChange();
+    }
+
+    trackWrap.addEventListener("pointerdown", (ev) => {
+        ev.preventDefault();
+        trackWrap.focus();
+
+        const value = valueFromEvent(ev);
+        activeThumb = chooseThumb(value);
+
+        trackWrap.setPointerCapture(ev.pointerId);
+        setActiveValue(value);
     });
 
-    inputMax.addEventListener("input", () => {
-        vMax = Number(inputMax.value);
-        if (vMax < vMin) vMax = vMin;
-        updateVisuals();
-        fireChange();
+    trackWrap.addEventListener("pointermove", (ev) => {
+        if (!activeThumb) return;
+        setActiveValue(valueFromEvent(ev));
+    });
+
+    trackWrap.addEventListener("pointerup", (ev) => {
+        activeThumb = null;
+        trackWrap.releasePointerCapture(ev.pointerId);
+    });
+
+    trackWrap.addEventListener("pointercancel", () => {
+        activeThumb = null;
+    });
+
+    trackWrap.addEventListener("keydown", (ev) => {
+        const keyStep =
+            ev.key === "PageUp" || ev.key === "PageDown"
+                ? step * 10
+                : step;
+
+        if (!["ArrowLeft", "ArrowRight", "ArrowDown", "ArrowUp", "PageDown", "PageUp"].includes(ev.key)) return;
+
+        ev.preventDefault();
+
+        if (!activeThumb) activeThumb = "min";
+
+        const delta =
+            ev.key === "ArrowLeft" || ev.key === "ArrowDown" || ev.key === "PageDown"
+                ? -keyStep
+                : keyStep;
+
+        const current = activeThumb === "min" ? vMin : vMax;
+        setActiveValue(snap(current + delta));
     });
 
     updateVisuals();
