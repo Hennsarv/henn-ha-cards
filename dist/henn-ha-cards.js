@@ -2239,7 +2239,14 @@ function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valu
         trackWrap.focus();
 
         const value = valueFromEvent(ev);
-        activeThumb = chooseThumb(value);
+
+        if (ev.target === thumbMinEl) {
+            activeThumb = "min";
+        } else if (ev.target === thumbMaxEl) {
+            activeThumb = "max";
+        } else {
+            activeThumb = chooseThumb(value);
+        }
 
         trackWrap.setPointerCapture(ev.pointerId);
 
@@ -2254,15 +2261,13 @@ function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valu
     trackWrap.addEventListener("pointerup", (ev) => {
         setActiveValue(valueFromEvent(ev), true);
 
-        activeThumb = null;
-
         try {
             trackWrap.releasePointerCapture(ev.pointerId);
         } catch { }
     });
 
     trackWrap.addEventListener("pointercancel", () => {
-        activeThumb = null;
+        
     });
 
     trackWrap.addEventListener("keydown", (ev) => {
