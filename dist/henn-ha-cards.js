@@ -480,8 +480,8 @@ class HennWindRoseCardEditor extends HTMLElement {
                 <div id="bucket-field"></div>
                 <div id="color-field"></div>
                 <div id="slider-field"></div>
-                <div id="radius-fields" style="display:grid; gap:14px;"></div>
-                <div id="opacity-fields" style="display:grid; gap:14px;"></div>
+                <div id="radius-fields"></div>
+                <div id="opacity-fields"></div>
             </div>
         `;
         this.querySelector("#color-field").appendChild(
