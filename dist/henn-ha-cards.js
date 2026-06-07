@@ -1907,8 +1907,9 @@ function hennCreateColorField(editor, key, label, value) {
 
 function hennCreateSingleSlider(editor, key, label, value, min, max, step = 1, unit = "") {
     const wrapper = document.createElement("div");
-
+    let dirty = false;
     let currentValue = normalize(value ?? min);
+    let committedValue = currentValue;
 
     wrapper.innerHTML = `
         <div class="henn-slider-root">
@@ -1948,6 +1949,7 @@ function hennCreateSingleSlider(editor, key, label, value, min, max, step = 1, u
 
     trackWrap.addEventListener("pointerdown", ev => {
         ev.preventDefault();
+        commitIfDirty();
         trackWrap.focus();
 
         dragging = true;
@@ -1964,8 +1966,14 @@ function hennCreateSingleSlider(editor, key, label, value, min, max, step = 1, u
         if (!dragging) return;
 
         dragging = false;
-        trackWrap.releasePointerCapture(ev.pointerId);
+
         setFromPointer(ev, true);
+
+        try {
+            trackWrap.releasePointerCapture(ev.pointerId);
+        } catch (_) {
+            // ignore
+        }
     });
 
     trackWrap.addEventListener("pointercancel", ev => {
@@ -1976,13 +1984,33 @@ function hennCreateSingleSlider(editor, key, label, value, min, max, step = 1, u
     });
 
     trackWrap.addEventListener("keydown", ev => {
+
+        if (ev.key === "Enter") {
+            ev.preventDefault();
+            commitIfDirty();
+            return;
+        }
+
+        if (ev.key === "Escape") {
+            ev.preventDefault();
+
+            currentValue = committedValue;
+            dirty = false;
+
+            updateUi();
+            return;
+        }
+
         let delta = 0;
 
         if (ev.key === "ArrowRight" || ev.key === "ArrowUp") {
-            delta = ev.shiftKey ? step * 5 : step;
-        } else if (ev.key === "ArrowLeft" || ev.key === "ArrowDown") {
-            delta = ev.shiftKey ? -step * 5 : -step;
-        } else {
+            delta = ev.shiftKey ? step / 10 : step;
+        }
+        else if (ev.key === "ArrowLeft" || ev.key === "ArrowDown") {
+            delta = ev.shiftKey ? -step / 10 : -step;
+        }
+        else {
+            commitIfDirty();
             return;
         }
 
@@ -1990,7 +2018,12 @@ function hennCreateSingleSlider(editor, key, label, value, min, max, step = 1, u
 
         currentValue = normalize(currentValue + delta);
         updateUi();
-        commit();
+
+        dirty = true;
+    });
+
+    trackWrap.addEventListener("blur", () => {
+        commitIfDirty();
     });
 
     function setFromPointer(ev, doCommit) {
@@ -2034,6 +2067,27 @@ function hennCreateSingleSlider(editor, key, label, value, min, max, step = 1, u
 
     function clamp(v, lo, hi) {
         return Math.min(hi, Math.max(lo, v));
+    }
+
+    function setValue(newValue, commit = false) {
+        currentValue = normalize(newValue);
+        updateVisuals();
+
+        if (commit) {
+            committedValue = currentValue;
+            dirty = false;
+            fireChange();
+        } else {
+            dirty = true;
+        }
+    }
+
+    function commitIfDirty() {
+        if (!dirty) return;
+
+        committedValue = currentValue;
+        dirty = false;
+        fireChange();
     }
 
     return wrapper;
