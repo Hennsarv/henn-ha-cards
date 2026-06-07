@@ -1,11 +1,106 @@
-const HENN_CARDS_VERSION = "1.0.25";
-const HENN_VERSION = "v25";
+const HENN_CARDS_VERSION = "1.0.26";
+const HENN_VERSION = "v26";
 console.info(
     `%c HENN HA CARDS %c v${HENN_CARDS_VERSION} `,
     "background:#87CEFA;color:black;font-weight:bold;padding:2px 8px;",
     "color:#87CEFA;font-weight:bold;"
 );
 
+const HENN_CSS_COLORS = {
+    black: "#000000",
+    white: "#ffffff",
+    red: "#ff0000",
+    green: "#008000",
+    blue: "#0000ff",
+    deepskyblue: "#00bfff",
+    dodgerblue: "#1e90ff",
+    steelblue: "#4682b4",
+    royalblue: "#4169e1",
+    orange: "#ffa500",
+    gold: "#ffd700",
+    crimson: "#dc143c",
+    purple: "#800080"
+};
+
+const HENN_SLIDER_STYLE = `
+    <style>
+        .henn-slider-root {
+            display: grid;
+            gap: 6px;
+            padding: 8px 0;
+        }
+
+        .henn-slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--primary-text-color);
+            font-size: 14px;
+        }
+
+        .henn-slider-track-wrap {
+            position: relative;
+            height: 34px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .henn-slider-track {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 12px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--divider-color, #ddd);
+            overflow: hidden;
+        }
+
+        .henn-slider-fill {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            background: var(--primary-color, #03a9f4);
+        }
+
+        .henn-slider-minmax {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 12px;
+            height: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+            font-size: 9px;
+            line-height: 10px;
+            color: var(--secondary-text-color);
+            opacity: .75;
+            padding: 0 8px;
+            box-sizing: border-box;
+        }
+
+        .henn-slider-thumb {
+            position: absolute;
+            top: 9px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary-color, #03a9f4);
+            border: 2px solid var(--card-background-color, white);
+            box-shadow: 0 1px 3px rgba(0,0,0,.35);
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+
+        .henn-slider-track-wrap:focus .henn-slider-thumb {
+            box-shadow: 0 0 0 4px rgba(3,169,244,.22);
+        }
+    </style>
+`;
 
 class HennWindRoseCard extends HTMLElement {
     setConfig(config) {
@@ -216,6 +311,7 @@ class HennWindRoseCardEditor extends HTMLElement {
 
         this.innerHTML = `
             <!-- versioon ${HENN_CARDS_VERSION} -->
+            ${HENN_SLIDER_STYLE}
             <div style="display:grid; gap:14px;">
                 <div id="direction_entity"></div>
                 <div id="speed_entity"></div>
@@ -230,6 +326,8 @@ class HennWindRoseCardEditor extends HTMLElement {
                 ${this._rangeField("bucket_size", "Bucket size", this._config.bucket_size ?? 5, 5, 30, 5)}
                 <div id="color_field"></div>
                 <div id="slider-field"></div>
+                <div id="radius-fields" style="display:grid; gap:14px;">
+                <div id="opacity-fields" style="display:grid; gap:14px;">"
                 ${this._rangeField("outer_radius", "Outer radius", this._config.outer_radius ?? 50, 20, 100, 5)}
                 ${this._rangeField("inner_radius", "Inner radius", this._config.inner_radius ?? 30, 0, 80, 5)}
                 ${this._rangeField("min_opacity", "Min opacity", this._config.min_opacity ?? 0.05, 0, 1, 0.05)}
@@ -254,6 +352,34 @@ class HennWindRoseCardEditor extends HTMLElement {
                 -180,
                 180,
                 5
+            )
+        );
+
+        this.querySelector("#radius-fields").appendChild(
+            hennCreateDoubleSlider(
+                this,
+                "inner_radius",
+                "outer_radius",
+                "Radius",
+                this._config.inner_radius ?? 30,
+                this._config.outer_radius ?? 50,
+                0,
+                100,
+                5
+            )
+        );
+
+        this.querySelector("#opacity-fields").appendChild(
+            hennCreateDoubleSlider(
+                this,
+                "min_opacity",
+                "max_opacity",
+                "Opacity",
+                this._config.min_opacity ?? 0.05,
+                this._config.max_opacity ?? 0.9,
+                0,
+                1,
+                0.05
             )
         );
 
@@ -1329,29 +1455,15 @@ window.customCards.push({
     description: "Custom layered card containing multiple cards, stacked for Home Assistant"
 });
 
-export const HENN_CSS_COLORS = {
-    black: "#000000",
-    white: "#ffffff",
-    red: "#ff0000",
-    green: "#008000",
-    blue: "#0000ff",
-    deepskyblue: "#00bfff",
-    dodgerblue: "#1e90ff",
-    steelblue: "#4682b4",
-    royalblue: "#4169e1",
-    orange: "#ffa500",
-    gold: "#ffd700",
-    crimson: "#dc143c",
-    purple: "#800080"
-};
 
-export function hennColorToHex(color) {
+
+function hennColorToHex(color) {
     const ctx = document.createElement("canvas").getContext("2d");
     ctx.fillStyle = color || "";
     return ctx.fillStyle || "#000000";
 }
 
-export function hennHexToColorName(hex) {
+function hennHexToColorName(hex) {
     if (!hex) return "";
 
     const h = hex.toLowerCase();
@@ -1365,7 +1477,7 @@ export function hennHexToColorName(hex) {
     return "";
 }
 
-export function hennCreateColorField(editor, key, label, value) {
+function hennCreateColorField(editor, key, label, value) {
     const wrapper = document.createElement("div");
     wrapper.style.display = "grid";
     wrapper.style.gap = "6px";
@@ -1638,102 +1750,12 @@ export function hennCreateColorField(editor, key, label, value) {
     return wrapper;
 }
 
-//const HENN_SLIDER_VERSION = "1.0.25";
-
-console.info(
-    "%c HENN SLIDER %c v" + HENN_CARDS_VERSION + " ",
-    "background:#87CEFA;color:black;font-weight:bold;padding:2px 8px;",
-    "color:#87CEFA;font-weight:bold;"
-);
-
-const HENN_SLIDER_STYLE = `
-    <style>
-        .henn-slider-root {
-            display: grid;
-            gap: 6px;
-            padding: 8px 0;
-        }
-
-        .henn-slider-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--primary-text-color);
-            font-size: 14px;
-        }
-
-        .henn-slider-track-wrap {
-            position: relative;
-            height: 34px;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .henn-slider-track {
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 12px;
-            height: 10px;
-            border-radius: 999px;
-            background: var(--divider-color, #ddd);
-            overflow: hidden;
-        }
-
-        .henn-slider-fill {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            width: 0%;
-            background: var(--primary-color, #03a9f4);
-        }
-
-        .henn-slider-minmax {
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 12px;
-            height: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            pointer-events: none;
-            font-size: 9px;
-            line-height: 10px;
-            color: var(--secondary-text-color);
-            opacity: .75;
-            padding: 0 8px;
-            box-sizing: border-box;
-        }
-
-        .henn-slider-thumb {
-            position: absolute;
-            top: 9px;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: var(--primary-color, #03a9f4);
-            border: 2px solid var(--card-background-color, white);
-            box-shadow: 0 1px 3px rgba(0,0,0,.35);
-            transform: translateX(-50%);
-            pointer-events: none;
-        }
-
-        .henn-slider-track-wrap:focus .henn-slider-thumb {
-            box-shadow: 0 0 0 4px rgba(3,169,244,.22);
-        }
-    </style>
-`;
-
-export function hennCreateSingleSlider(editor, key, label, value, min, max, step = 1, unit = "") {
+function hennCreateSingleSlider(editor, key, label, value, min, max, step = 1, unit = "") {
     const wrapper = document.createElement("div");
 
     let currentValue = normalize(value ?? min);
 
     wrapper.innerHTML = `
-        ${HENN_SLIDER_STYLE}
-
         <div class="henn-slider-root">
             <div class="henn-slider-header">
                 <div><span>${label}</span> <b class="henn-slider-value">${format(currentValue)}</b></div>
@@ -1858,6 +1880,99 @@ export function hennCreateSingleSlider(editor, key, label, value, min, max, step
     function clamp(v, lo, hi) {
         return Math.min(hi, Math.max(lo, v));
     }
+
+    return wrapper;
+}
+
+function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valueMax, min, max, step) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "henn-slider-root";
+
+    let vMin = Number(valueMin ?? min);
+    let vMax = Number(valueMax ?? max);
+
+    function clampValues() {
+        vMin = Math.max(min, Math.min(max, vMin));
+        vMax = Math.max(min, Math.min(max, vMax));
+
+        if (vMin > vMax) {
+            const t = vMin;
+            vMin = vMax;
+            vMax = t;
+        }
+    }
+
+    clampValues();
+
+    wrapper.innerHTML = `
+        <div class="henn-slider-header">
+            <span>${label}</span>
+            <strong><span class="henn-slider-value-min">${vMin}</span> – <span class="henn-slider-value-max">${vMax}</span></strong>
+        </div>
+
+        <div class="henn-slider-track-wrap">
+            <div class="henn-slider-track"></div>
+            <div class="henn-slider-range"></div>
+            <input class="henn-slider-input henn-slider-input-min" type="range" min="${min}" max="${max}" step="${step}" value="${vMin}">
+            <input class="henn-slider-input henn-slider-input-max" type="range" min="${min}" max="${max}" step="${step}" value="${vMax}">
+        </div>
+    `;
+
+    const inputMin = wrapper.querySelector(".henn-slider-input-min");
+    const inputMax = wrapper.querySelector(".henn-slider-input-max");
+    const valueMinEl = wrapper.querySelector(".henn-slider-value-min");
+    const valueMaxEl = wrapper.querySelector(".henn-slider-value-max");
+    const rangeEl = wrapper.querySelector(".henn-slider-range");
+
+    function pct(v) {
+        return ((v - min) / (max - min)) * 100;
+    }
+
+    function updateVisuals() {
+        clampValues();
+
+        inputMin.value = vMin;
+        inputMax.value = vMax;
+
+        valueMinEl.textContent = vMin;
+        valueMaxEl.textContent = vMax;
+
+        const left = pct(vMin);
+        const right = pct(vMax);
+
+        rangeEl.style.left = `${left}%`;
+        rangeEl.style.width = `${right - left}%`;
+    }
+
+    function fireChange() {
+        owner._config = {
+            ...owner._config,
+            [fieldMin]: vMin,
+            [fieldMax]: vMax
+        };
+
+        owner.dispatchEvent(new CustomEvent("config-changed", {
+            detail: { config: owner._config },
+            bubbles: true,
+            composed: true
+        }));
+    }
+
+    inputMin.addEventListener("input", () => {
+        vMin = Number(inputMin.value);
+        if (vMin > vMax) vMin = vMax;
+        updateVisuals();
+        fireChange();
+    });
+
+    inputMax.addEventListener("input", () => {
+        vMax = Number(inputMax.value);
+        if (vMax < vMin) vMax = vMin;
+        updateVisuals();
+        fireChange();
+    });
+
+    updateVisuals();
 
     return wrapper;
 }
