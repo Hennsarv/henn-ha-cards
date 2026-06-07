@@ -1905,7 +1905,7 @@ function hennCreateColorField(editor, key, label, value) {
     return wrapper;
 }
 
-function hennCreateSingleSlider(editor, key, label, value, min, max, step = 1, unit = "") {
+function hennCreateSingleSlider(editor, key, label, value, min, max, step = 1, unit = "", smallStep = 1) {
     const wrapper = document.createElement("div");
     let dirty = false;
     let currentValue = normalize(value ?? min);
@@ -2004,10 +2004,10 @@ function hennCreateSingleSlider(editor, key, label, value, min, max, step = 1, u
         let delta = 0;
 
         if (ev.key === "ArrowRight" || ev.key === "ArrowUp") {
-            delta = ev.shiftKey ? step / 10 : step;
+            delta = ev.shiftKey ? smallStep : step;
         }
         else if (ev.key === "ArrowLeft" || ev.key === "ArrowDown") {
-            delta = ev.shiftKey ? -step / 10 : -step;
+            delta = ev.shiftKey ? -smallStep : -step;
         }
         else {
             commitIfDirty();
@@ -2087,7 +2087,8 @@ function hennCreateSingleSlider(editor, key, label, value, min, max, step = 1, u
 
         committedValue = currentValue;
         dirty = false;
-        fireChange();
+        //fireChange();
+        commit();
     }
 
     return wrapper;
