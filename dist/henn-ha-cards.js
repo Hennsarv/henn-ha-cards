@@ -1,5 +1,5 @@
-const HENN_CARDS_VERSION = "1.0.27";
-const HENN_VERSION = "v27";
+const HENN_CARDS_VERSION = "1.0.28";
+const HENN_VERSION = "v28";
 console.info(
     `%c HENN HA CARDS %c v${HENN_CARDS_VERSION} `,
     "background:#87CEFA;color:black;font-weight:bold;padding:2px 8px;",

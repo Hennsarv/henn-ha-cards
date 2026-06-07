@@ -2,6 +2,6 @@
   "name": "Henn HA Cards",
   "content_in_root": false,
   "render_readme": true,
-  "filename": "henn-ha-cards.v27.js",
+  "filename": "henn-ha-cards.js",
   "homeassistant": "2025.1.0"
 }
