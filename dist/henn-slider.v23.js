@@ -1,6 +1,10 @@
 ﻿function hennEnsureSliderStyles() {
     if (document.getElementById("henn-slider-styles")) return;
 
+    console.info("%c HENN SLIDER STYLES %c v1.0.23 ",
+        "background:#87CEFA;color:black;font-weight:bold;padding:2px 8px;",
+        "color:#87CEFA;font-weight:bold;");
+        
     const style = document.createElement("style");
     style.id = "henn-slider-styles";
     style.textContent = `

@@ -3,11 +3,11 @@ import {
     hennColorToHex,
     hennHexToColorName,
     hennCreateColorField
-} from "./henn-color-picker.v22.js";
+} from "./henn-color-picker.v23.js";
 
 import {
     hennCreateSingleSlider
-} from "./henn-slider.v22.js"
+} from "./henn-slider.v23.js"
 
 
 class HennWindRoseCard extends HTMLElement {
