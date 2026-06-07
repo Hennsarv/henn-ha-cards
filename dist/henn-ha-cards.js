@@ -449,7 +449,6 @@ window.customCards.push({
     description: "Transparent wind rose ring from wind direction and speed history"
 });
 
-
 class HennWindRoseCardEditor extends HTMLElement {
     set hass(hass) {
         this._hass = hass;
@@ -478,18 +477,14 @@ class HennWindRoseCardEditor extends HTMLElement {
             ["30d", "30 days"],
             ["90d", "90 days"]
         ])}
-                ${this._rangeField("bucket_size", "Bucket size", this._config.bucket_size ?? 5, 5, 30, 5)}
-                <div id="color_field"></div>
+                <div id="bucket-field"></div>
+                <div id="color-field"></div>
                 <div id="slider-field"></div>
                 <div id="radius-fields" style="display:grid; gap:14px;"></div>
                 <div id="opacity-fields" style="display:grid; gap:14px;"></div>
-                ${this._rangeField("outer_radius", "Outer radius", this._config.outer_radius ?? 50, 20, 100, 5)}
-                ${this._rangeField("inner_radius", "Inner radius", this._config.inner_radius ?? 30, 0, 80, 5)}
-                ${this._rangeField("min_opacity", "Min opacity", this._config.min_opacity ?? 0.05, 0, 1, 0.05)}
-                ${this._rangeField("max_opacity", "Max opacity", this._config.max_opacity ?? 0.9, 0, 1, 0.05)}
             </div>
         `;
-        this.querySelector("#color_field").appendChild(
+        this.querySelector("#color-field").appendChild(
             hennCreateColorField(
                 this,
                 "color",
@@ -535,6 +530,19 @@ class HennWindRoseCardEditor extends HTMLElement {
                 0,
                 1,
                 0.05
+            )
+        );
+        // ${this._rangeField("bucket_size", "Bucket size", this._config.bucket_size ?? 5, 5, 30, 5)}
+
+        this.querySelector("#bucket-field").appendChild(
+            hennCreateSingleSlider(
+                this,
+                "bucket_size",
+                "Bucket size",
+                this._config.bucket_size ?? 5,
+                5,
+                30,
+                1
             )
         );
 
