@@ -2321,6 +2321,7 @@ function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valu
     });
 
     trackWrap.addEventListener("blur", () => {
+        activeThumb = null;
         commitIfDirty();
     });
 
