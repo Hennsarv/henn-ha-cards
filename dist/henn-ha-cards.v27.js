@@ -1,5 +1,5 @@
-const HENN_CARDS_VERSION = "1.0.26";
-const HENN_VERSION = "v26";
+const HENN_CARDS_VERSION = "1.0.27";
+const HENN_VERSION = "v27";
 console.info(
     `%c HENN HA CARDS %c v${HENN_CARDS_VERSION} `,
     "background:#87CEFA;color:black;font-weight:bold;padding:2px 8px;",
@@ -98,6 +98,26 @@ const HENN_SLIDER_STYLE = `
 
         .henn-slider-track-wrap:focus .henn-slider-thumb {
             box-shadow: 0 0 0 4px rgba(3,169,244,.22);
+        }
+
+        .henn-slider-range {
+            position: absolute;
+            top: 12px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--primary-color, #03a9f4);
+            pointer-events: none;
+        }
+
+        .henn-slider-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 34px;
+            margin: 0;
+            opacity: 0;
+            pointer-events: none;
         }
     </style>
 `;
@@ -1915,6 +1935,8 @@ function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valu
             <div class="henn-slider-range"></div>
             <input class="henn-slider-input henn-slider-input-min" type="range" min="${min}" max="${max}" step="${step}" value="${vMin}">
             <input class="henn-slider-input henn-slider-input-max" type="range" min="${min}" max="${max}" step="${step}" value="${vMax}">
+            <div class="henn-slider-thumb henn-slider-thumb-min"></div>
+            <div class="henn-slider-thumb henn-slider-thumb-max"></div>
         </div>
     `;
 
@@ -1923,6 +1945,8 @@ function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valu
     const valueMinEl = wrapper.querySelector(".henn-slider-value-min");
     const valueMaxEl = wrapper.querySelector(".henn-slider-value-max");
     const rangeEl = wrapper.querySelector(".henn-slider-range");
+    const thumbMinEl = wrapper.querySelector(".henn-slider-thumb-min");
+    const thumbMaxEl = wrapper.querySelector(".henn-slider-thumb-max");
 
     function pct(v) {
         return ((v - min) / (max - min)) * 100;
@@ -1942,6 +1966,9 @@ function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valu
 
         rangeEl.style.left = `${left}%`;
         rangeEl.style.width = `${right - left}%`;
+
+        thumbMinEl.style.left = `${left}%`;
+        thumbMaxEl.style.left = `${right}%`;
     }
 
     function fireChange() {
