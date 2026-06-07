@@ -162,7 +162,7 @@ const HENN_SLIDER_STYLE = `
         .henn-slider-root {
             display: grid;
             gap: 6px;
-            padding: 8px 0;
+            padding: 8px 10px;
         }
 
         .henn-slider-header {
