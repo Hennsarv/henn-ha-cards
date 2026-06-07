@@ -3,7 +3,12 @@ import {
     hennColorToHex,
     hennHexToColorName,
     hennCreateColorField
-} from "./henn-color-picker.v20.js";
+} from "./henn-color-picker.v21.js";
+
+import {
+    hennCreateSingleSlider
+} from "./henn-slider.v21.js"
+
 
 class HennWindRoseCard extends HTMLElement {
     setConfig(config) {
@@ -213,7 +218,7 @@ class HennWindRoseCardEditor extends HTMLElement {
         if (!this._config) return;
 
         this.innerHTML = `
-            <!-- versioon 20 -->
+            <!-- versioon 21 -->
             <div style="display:grid; gap:14px;">
                 <div id="direction_entity"></div>
                 <div id="speed_entity"></div>
@@ -227,6 +232,7 @@ class HennWindRoseCardEditor extends HTMLElement {
         ])}
                 ${this._rangeField("bucket_size", "Bucket size", this._config.bucket_size ?? 5, 5, 30, 5)}
                 <div id="color_field"></div>
+                <div id="slider-field"></div>
                 ${this._rangeField("outer_radius", "Outer radius", this._config.outer_radius ?? 50, 20, 100, 5)}
                 ${this._rangeField("inner_radius", "Inner radius", this._config.inner_radius ?? 30, 0, 80, 5)}
                 ${this._rangeField("rotation", "Rotation", this._config.rotation ?? 0, -180, 180, 5)}
@@ -240,6 +246,18 @@ class HennWindRoseCardEditor extends HTMLElement {
                 "color",
                 "Color",
                 this._config.color || "blue"  // võtsin deepskyeblue maha, et näha
+            )
+        );
+
+        this.querySelector("#slider-field").appendChild(
+                        hennCreateSingleSlider(
+                this,
+                "rotation",
+                "Rotation",
+                this._config.rotation ?? 0,
+                -180,
+                180,
+                5
             )
         );
 
