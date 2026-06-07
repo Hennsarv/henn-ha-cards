@@ -254,8 +254,93 @@ const HENN_SLIDER_STYLE = `
             opacity: 0;
             /*pointer-events: none;*/
         }
+
+        .henn-line-selector-root {
+            display: grid;
+            gap: 6px;
+            padding: 8px 10px;
+        }
+
+        .henn-line-selector-header {
+            color: var(--primary-text-color);
+            font-size: 14px;
+        }
+
+        .henn-line-selector-track-wrap {
+            position: relative;
+            height: 44px;
+        }
+
+        .henn-line-selector-track {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 18px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--divider-color, #ddd);
+        }
+
+        .henn-line-selector-option {
+            position: absolute;
+            top: 15px;
+            transform: translateX(-50%);
+            display: grid;
+            justify-items: center;
+            gap: 4px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .henn-line-selector-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--card-background-color, white);
+            border: 2px solid var(--primary-color, #03a9f4);
+            box-shadow: 0 1px 3px rgba(0,0,0,.25);
+            box-sizing: border-box;
+            display: grid;
+            place-items: center;
+        }
+
+        .henn-line-selector-option.selected .henn-line-selector-dot::after {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--primary-text-color, black);
+        }
+
+        .henn-line-selector-label {
+            font-size: 12px;
+            color: var(--secondary-text-color);
+            white-space: nowrap;
+        }
+
+        .henn-line-selector-option.selected .henn-line-selector-label {
+            color: var(--primary-text-color);
+            font-weight: 700;
+        }
     </style>
 `;
+
+const HENN_PERIOD_OPTIONS = [
+    ["1d", "1 day"],
+    ["7d", "7 days"],
+    ["14d", "14 days"],
+    ["30d", "30 days"],
+    ["90d", "90 days"]
+];
+
+const HENN_BUCKET_OPTIONS = [
+    [5, "5"],
+    [6, "6"],
+    [10, "10"],
+    [12, "12"],
+    [15, "15"],
+    [20, "20"]
+];
 
 class HennWindRoseCard extends HTMLElement {
     setConfig(config) {
@@ -477,7 +562,9 @@ class HennWindRoseCardEditor extends HTMLElement {
             ["30d", "30 days"],
             ["90d", "90 days"]
         ])}
+                <div id="period-field2"></div>
                 <div id="bucket-field"></div>
+                <div id="bucket-field2"></div>
                 <div id="color-field"></div>
                 <div id="slider-field"></div>
                 <div id="radius-fields"></div>
@@ -543,6 +630,26 @@ class HennWindRoseCardEditor extends HTMLElement {
                 5,
                 30,
                 1
+            )
+        );
+
+        this.querySelector("#period-field2").appendChild(
+            hennCreateLineSelector(
+                this,
+                "period",
+                "Period",
+                this._config.period || "30d",
+                HENN_PERIOD_OPTIONS
+            )
+        );
+
+        this.querySelector("#bucket-field2").appendChild(
+            hennCreateLineSelector(
+                this,
+                "bucket_size",
+                "Bucket size",
+                this._config.bucket_size ?? 5,
+                HENN_BUCKET_OPTIONS
             )
         );
 
@@ -2326,6 +2433,63 @@ function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valu
     });
 
     updateVisuals();
+
+    return wrapper;
+}
+
+function hennCreateLineSelector(editor, key, label, value, options) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "henn-line-selector-root";
+
+    const currentValue = value;
+
+    wrapper.innerHTML = `
+        <div class="henn-line-selector-header">
+            ${label} <strong>${currentValue ?? ""}</strong>
+        </div>
+
+        <div class="henn-line-selector-track-wrap">
+            <div class="henn-line-selector-track"></div>
+        </div>
+    `;
+
+    const trackWrap = wrapper.querySelector(".henn-line-selector-track-wrap");
+
+    options.forEach((opt, index) => {
+        const optValue = opt[0];
+        const optLabel = opt[1];
+
+        const edgePad = 4; // protsenti mõlemast servast
+
+        const pct = options.length === 1
+            ? 50
+            : edgePad + (index / (options.length - 1)) * (100 - edgePad * 2);
+
+        const isSelected = String(optValue) === String(currentValue);
+
+        const item = document.createElement("div");
+        item.className = "henn-line-selector-option" + (isSelected ? " selected" : "");
+        item.style.left = `${pct}%`;
+        item.innerHTML = `
+            <div class="henn-line-selector-dot"></div>
+            <div class="henn-line-selector-label">${optLabel}</div>
+        `;
+
+        item.addEventListener("click", () => {
+            editor._config = {
+                ...editor._config,
+                [key]: optValue
+            };
+
+            editor.dispatchEvent(new CustomEvent("config-changed", {
+                detail: { config: editor._config },
+                bubbles: true,
+                composed: true
+            }));
+        });
+
+        trackWrap.appendChild(item);
+    });
 
     return wrapper;
 }
