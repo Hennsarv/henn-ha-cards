@@ -3,11 +3,11 @@ import {
     hennColorToHex,
     hennHexToColorName,
     hennCreateColorField
-} from "./henn-color-picker.v21.js";
+} from "./henn-color-picker.v22.js";
 
 import {
     hennCreateSingleSlider
-} from "./henn-slider.v21.js"
+} from "./henn-slider.v22.js"
 
 
 class HennWindRoseCard extends HTMLElement {
@@ -218,7 +218,7 @@ class HennWindRoseCardEditor extends HTMLElement {
         if (!this._config) return;
 
         this.innerHTML = `
-            <!-- versioon 21 -->
+            <!-- versioon 22 -->
             <div style="display:grid; gap:14px;">
                 <div id="direction_entity"></div>
                 <div id="speed_entity"></div>
@@ -235,7 +235,6 @@ class HennWindRoseCardEditor extends HTMLElement {
                 <div id="slider-field"></div>
                 ${this._rangeField("outer_radius", "Outer radius", this._config.outer_radius ?? 50, 20, 100, 5)}
                 ${this._rangeField("inner_radius", "Inner radius", this._config.inner_radius ?? 30, 0, 80, 5)}
-                ${this._rangeField("rotation", "Rotation", this._config.rotation ?? 0, -180, 180, 5)}
                 ${this._rangeField("min_opacity", "Min opacity", this._config.min_opacity ?? 0.05, 0, 1, 0.05)}
                 ${this._rangeField("max_opacity", "Max opacity", this._config.max_opacity ?? 0.9, 0, 1, 0.05)}
             </div>

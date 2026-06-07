@@ -2,6 +2,7 @@
     const wrapper = document.createElement("div");
     wrapper.style.display = "grid";
     wrapper.style.gap = "6px";
+    wrapper.style.padding = "8px 0";
 
     let currentValue = normalize(value ?? min);
 
@@ -25,7 +26,7 @@
              aria-valuenow="${currentValue}"
              style="
                 position:relative;
-                height:34px;
+                height:40px;
                 outline:none;
                 cursor:pointer;
              ">
@@ -34,8 +35,8 @@
                     position:absolute;
                     left:0;
                     right:0;
-                    top:14px;
-                    height:6px;
+                    top:18px;
+                    height:4px;
                     border-radius:999px;
                     background:var(--divider-color, #ddd);
                     overflow:hidden;
@@ -57,7 +58,7 @@
                     position:absolute;
                     left:0;
                     right:0;
-                    top:10px;
+                    top:14px;
                     display:flex;
                     justify-content:space-between;
                     pointer-events:none;
@@ -74,9 +75,9 @@
             <div class="henn-slider-thumb"
                  style="
                     position:absolute;
-                    top:8px;
-                    width:18px;
-                    height:18px;
+                    top:11px;
+                    width:20px;
+                    height:20px;
                     border-radius:50%;
                     background:var(--primary-color, #03a9f4);
                     border:2px solid var(--card-background-color, white);

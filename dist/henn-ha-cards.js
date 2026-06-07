@@ -1,8 +1,8 @@
-import "./henn-windrose-card.v21.js";
+import "./henn-windrose-card.v22.js";
 import "./henn-stonehenge-card.js";
 import "./henn-layered-card.js";
 
-const HENN_CARDS_VERSION = "1.0.20";
+const HENN_CARDS_VERSION = "1.0.22";
 
 console.info(
     `%c HENN HA CARDS %c v${HENN_CARDS_VERSION} `,
