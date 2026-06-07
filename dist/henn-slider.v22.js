@@ -1,19 +1,101 @@
-﻿export function hennCreateSingleSlider(editor, key, label, value, min, max, step = 1, unit = "") {
+﻿function hennEnsureSliderStyles() {
+    if (document.getElementById("henn-slider-styles")) return;
+
+    const style = document.createElement("style");
+    style.id = "henn-slider-styles";
+    style.textContent = `
+        .henn-slider-root {
+            display: grid;
+            gap: 6px;
+            padding: 8px 0;
+        }
+
+        .henn-slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--primary-text-color);
+            font-size: 14px;
+        }
+
+        .henn-slider-track-wrap {
+            position: relative;
+            height: 34px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .henn-slider-track {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 13px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--divider-color, #ddd);
+            overflow: hidden;
+        }
+
+        .henn-slider-fill {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            background: var(--primary-color, #03a9f4);
+        }
+
+        .henn-slider-minmax {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 12px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            font-size: 10px;
+            line-height: 10px;
+            color: var(--secondary-text-color);
+            opacity: .75;
+            padding: 0 8px;
+            box-sizing: border-box;
+        }
+
+        .henn-slider-fill .henn-slider-minmax {
+            color: var(--text-primary-color, white);
+        }
+
+        .henn-slider-thumb {
+            position: absolute;
+            top: 10px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary-color, #03a9f4);
+            border: 2px solid var(--card-background-color, white);
+            box-shadow: 0 1px 3px rgba(0,0,0,.35);
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+
+        .henn-slider-track-wrap:focus .henn-slider-thumb {
+            box-shadow: 0 0 0 4px rgba(3,169,244,.22);
+        }
+    `;
+
+    document.head.appendChild(style);
+}
+
+export function hennCreateSingleSlider(editor, key, label, value, min, max, step = 1, unit = "") {
+    hennEnsureSliderStyles();
+
     const wrapper = document.createElement("div");
-    wrapper.style.display = "grid";
-    wrapper.style.gap = "6px";
-    wrapper.style.padding = "8px 0";
+    wrapper.className = "henn-slider-root";
 
     let currentValue = normalize(value ?? min);
 
     wrapper.innerHTML = `
-        <div style="
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            color:var(--primary-text-color);
-            font-size:14px;
-        ">
+        <div class="henn-slider-header">
             <div><span>${label}</span> <b class="henn-slider-value">${format(currentValue)}</b></div>
         </div>
 
@@ -23,69 +105,17 @@
              aria-label="${label}"
              aria-valuemin="${min}"
              aria-valuemax="${max}"
-             aria-valuenow="${currentValue}"
-             style="
-                position:relative;
-                height:40px;
-                outline:none;
-                cursor:pointer;
-             ">
-            <div class="henn-slider-track"
-                 style="
-                    position:absolute;
-                    left:0;
-                    right:0;
-                    top:18px;
-                    height:4px;
-                    border-radius:999px;
-                    background:var(--divider-color, #ddd);
-                    overflow:hidden;
-                 ">
-                <div class="henn-slider-fill"
-                     style="
-                        position:absolute;
-                        top:0;
-                        bottom:0;
-                        left:0;
-                        width:0%;
-                        background:var(--primary-color, #03a9f4);
-                     ">
-                </div>
+             aria-valuenow="${currentValue}">
+            <div class="henn-slider-track">
+                <div class="henn-slider-fill"></div>
             </div>
 
-            <div class="henn-slider-minmax"
-                 style="
-                    position:absolute;
-                    left:0;
-                    right:0;
-                    top:14px;
-                    display:flex;
-                    justify-content:space-between;
-                    pointer-events:none;
-                    font-size:10px;
-                    color:var(--secondary-text-color);
-                    opacity:.65;
-                    padding:0 6px;
-                    box-sizing:border-box;
-                 ">
+            <div class="henn-slider-minmax">
                 <span>${format(min)}</span>
                 <span>${format(max)}</span>
             </div>
 
-            <div class="henn-slider-thumb"
-                 style="
-                    position:absolute;
-                    top:11px;
-                    width:20px;
-                    height:20px;
-                    border-radius:50%;
-                    background:var(--primary-color, #03a9f4);
-                    border:2px solid var(--card-background-color, white);
-                    box-shadow:0 1px 4px rgba(0,0,0,.35);
-                    transform:translateX(-50%);
-                    pointer-events:none;
-                 ">
-            </div>
+            <div class="henn-slider-thumb"></div>
         </div>
     `;
 
@@ -104,7 +134,6 @@
 
         dragging = true;
         trackWrap.setPointerCapture(ev.pointerId);
-
         setFromPointer(ev, false);
     });
 
@@ -118,7 +147,6 @@
 
         dragging = false;
         trackWrap.releasePointerCapture(ev.pointerId);
-
         setFromPointer(ev, true);
     });
 
@@ -148,9 +176,7 @@
         currentValue = normalize(raw);
         updateUi();
 
-        if (doCommit) {
-            commit();
-        }
+        if (doCommit) commit();
     }
 
     function updateUi() {
