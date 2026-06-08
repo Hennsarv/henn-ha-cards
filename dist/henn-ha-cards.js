@@ -2642,15 +2642,16 @@ function hennCreateListSelector(editor, key, label, value, options) {
     }
 
     function fireChanged(v) {
-        editor._config[key] = v;
+        editor._config = {
+            ...editor._config,
+            [key]: v
+        };
 
-        if (typeof editor._updateUi === "function") {
-            editor._updateUi();
-        }
-
-        if (typeof editor._fireConfigChanged === "function") {
-            editor._fireConfigChanged();
-        }
+        editor.dispatchEvent(new CustomEvent("config-changed", {
+            detail: { config: editor._config },
+            bubbles: true,
+            composed: true
+        }));
     }
 
     function closePopup() {
