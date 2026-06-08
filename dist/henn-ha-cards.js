@@ -458,10 +458,15 @@ const HENN_SLIDER_STYLE = `
 
 const HENN_PERIOD_OPTIONS = [
     ["1d", "1 day"],
+    ["5d", "5 days"],
     ["7d", "7 days"],
+    ["1w", "1 week"],
     ["14d", "14 days"],
+    ["2w", "2 weeks"],
     ["30d", "30 days"],
-    ["90d", "90 days"]
+    ["1M", "1 month"], 
+    ["90d", "90 days"],
+    ["3M", "3 months"]
 ];
 
 const HENN_PERIOD_OPTIONS2 = [
