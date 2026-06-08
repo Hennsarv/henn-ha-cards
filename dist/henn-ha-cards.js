@@ -833,18 +833,6 @@ class HennWindRoseCardEditor extends HTMLElement {
 
 }
 
-function hennNormalizeOptions(options) {
-    return (options ?? []).map(o => {
-        if (Array.isArray(o)) {
-            return { value: o[0], label: o[1] ?? o[0] };
-        }
-
-        return {
-            value: o.value,
-            label: o.label ?? o.value
-        };
-    });
-}
 
 customElements.define("henn-windrose-card-editor", HennWindRoseCardEditor);
 
