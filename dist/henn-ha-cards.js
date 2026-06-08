@@ -397,6 +397,14 @@ const HENN_PERIOD_OPTIONS = [
     ["90d", "90 days"]
 ];
 
+const HENN_PERIOD_OPTIONS2 = [
+    { value: "1h", label: "Hour" },
+    { value: "1d", label: "Day" },
+    { value: "1w", label: "Week" },
+    { value: "1M", label: "Month" },
+    { value: "1y", label: "Year" }
+];
+
 const HENN_BUCKET_OPTIONS = [
     [5, "5"],
     [6, "6"],
@@ -705,7 +713,7 @@ class HennWindRoseCardEditor extends HTMLElement {
                 "period",
                 "Period",
                 this._config.period || "30d",
-                HENN_PERIOD_OPTIONS
+                HENN_PERIOD_OPTIONS2
             )
         );
 
