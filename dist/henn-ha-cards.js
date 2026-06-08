@@ -727,16 +727,14 @@ class HennWindRoseCardEditor extends HTMLElement {
             )
         );
 
-        const periodSelect = hennCreateSelectField({
-            value: this._config.period,
-            options: HENN_PERIOD_OPTIONS2,
-            onChange: value => {
-                this._config.period = value;
-                this._fireConfigChanged();
-            }
-        });
         this.querySelector('#period-field3').appendChild(
-            periodSelect
+            hennCreateSelectField(
+                this,
+                "period",
+                "Period",
+                this._config.period || "30d",
+                HENN_PERIOD_OPTIONS
+            )
         );
 
         customElements.whenDefined("ha-selector").then(() => {
@@ -832,6 +830,20 @@ class HennWindRoseCardEditor extends HTMLElement {
             composed: true
         }));
     }
+
+}
+
+function hennNormalizeOptions(options) {
+    return (options ?? []).map(o => {
+        if (Array.isArray(o)) {
+            return { value: o[0], label: o[1] ?? o[0] };
+        }
+
+        return {
+            value: o.value,
+            label: o.label ?? o.value
+        };
+    });
 }
 
 customElements.define("henn-windrose-card-editor", HennWindRoseCardEditor);
@@ -2580,50 +2592,80 @@ function hennCreateLineSelector(editor, key, label, value, options) {
     return wrapper;
 }
 
-function hennCreateSelectField(cfg) {
+function hennCreateSelectField(label, value, options, onChange) {
+    options = hennNormalizeOptions(options);
+
+    let currentValue = value ?? "";
+    let popup = null;
+    let activeIndex = findIndexByValue(currentValue);
+
     const root = document.createElement("div");
     root.className = "henn-select-root";
+
+    const header = document.createElement("div");
+    header.className = "henn-select-header";
+    header.textContent = label ?? "";
 
     const preview = document.createElement("div");
     preview.className = "henn-select-preview";
     preview.tabIndex = 0;
 
     const valueText = document.createElement("span");
-    valueText.textContent = cfg.value ?? "";
+    valueText.textContent = getLabelByValue(currentValue);
 
     const arrow = document.createElement("span");
     arrow.className = "henn-select-arrow";
     arrow.textContent = "▾";
 
     preview.append(valueText, arrow);
-    root.appendChild(preview);
+    root.append(header, preview);
 
-    let popup = null;
-    let activeIndex = Math.max(0, cfg.options.findIndex(o => o.value === cfg.value));
+    function findIndexByValue(v) {
+        return options.findIndex(o => o.value === v);
+    }
+
+    function getLabelByValue(v) {
+        const opt = options.find(o => o.value === v);
+        return opt?.label ?? v ?? "";
+    }
 
     function close() {
         popup?.remove();
         popup = null;
     }
 
+    function refreshActiveRow() {
+        if (!popup) return;
+
+        popup.querySelectorAll(".henn-select-row").forEach((row, i) => {
+            row.classList.toggle("active", i === activeIndex);
+        });
+
+        popup.querySelector(".henn-select-row.active")
+            ?.scrollIntoView({ block: "nearest" });
+    }
+
     function commit(index) {
-        const opt = cfg.options[index];
+        const opt = options[index];
         if (!opt) return;
 
-        const newValue = opt.value;
-        const newLabel = opt.label ?? opt.value;
+        currentValue = opt.value;
+        activeIndex = index;
+        valueText.textContent = opt.label ?? opt.value;
 
-        valueText.textContent = newLabel;
-
-        if (cfg.onChange) {
-            cfg.onChange(newValue, opt);
-        }
+        onChange?.(currentValue, opt);
 
         close();
     }
 
     function open() {
-        if (popup) return close();
+        if (popup) {
+            close();
+            return;
+        }
+
+        activeIndex = findIndexByValue(currentValue);
+        if (activeIndex < 0) activeIndex = 0;
 
         popup = document.createElement("div");
         popup.className = "henn-select-popup";
@@ -2631,16 +2673,26 @@ function hennCreateSelectField(cfg) {
         const list = document.createElement("div");
         list.className = "henn-select-list";
 
-        cfg.options.forEach((opt, i) => {
+        options.forEach((opt, i) => {
             const row = document.createElement("div");
             row.className = "henn-select-row";
             row.textContent = opt.label ?? opt.value;
-            row.dataset.index = i;
 
-            if (i === activeIndex) row.classList.add("active");
+            if (i === activeIndex) {
+                row.classList.add("active");
+            }
 
-            row.addEventListener("click", () => commit(i));
-            row.addEventListener("dblclick", () => commit(i));
+            row.addEventListener("click", e => {
+                e.preventDefault();
+                e.stopPropagation();
+                commit(i);
+            });
+
+            row.addEventListener("dblclick", e => {
+                e.preventDefault();
+                e.stopPropagation();
+                commit(i);
+            });
 
             list.appendChild(row);
         });
@@ -2648,27 +2700,28 @@ function hennCreateSelectField(cfg) {
         popup.appendChild(list);
         root.appendChild(popup);
 
-        requestAnimationFrame(() => {
-            const active = popup.querySelector(".henn-select-row.active");
-            active?.scrollIntoView({ block: "nearest" });
-        });
+        requestAnimationFrame(refreshActiveRow);
     }
 
     function setActive(delta) {
-        if (!popup) open();
+        if (!popup) {
+            open();
+            return;
+        }
 
         activeIndex += delta;
-        activeIndex = Math.max(0, Math.min(cfg.options.length - 1, activeIndex));
+        activeIndex = Math.max(0, Math.min(options.length - 1, activeIndex));
 
-        popup.querySelectorAll(".henn-select-row").forEach((r, i) => {
-            r.classList.toggle("active", i === activeIndex);
-        });
-
-        popup.querySelector(".henn-select-row.active")
-            ?.scrollIntoView({ block: "nearest" });
+        refreshActiveRow();
     }
 
-    preview.addEventListener("click", open);
+    preview.addEventListener("click", e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        preview.focus();
+        open();
+    });
 
     preview.addEventListener("keydown", e => {
         if (e.key === "ArrowDown") {
@@ -2683,22 +2736,18 @@ function hennCreateSelectField(cfg) {
 
         if (e.key === "Enter") {
             e.preventDefault();
-            if (popup) commit(activeIndex);
-            else open();
+
+            if (popup) {
+                commit(activeIndex);
+            } else {
+                open();
+            }
         }
 
         if (e.key === "Escape") {
             e.preventDefault();
             close();
         }
-    });
-
-    preview.addEventListener("pointerdown", e => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        preview.focus();
-        open();
     });
 
     return root;
