@@ -713,7 +713,7 @@ class HennWindRoseCardEditor extends HTMLElement {
         );
 
         this.querySelector("#period-field3").appendChild(
-            hennCreateLineSelector(
+            hennCreateListSelector(
                 this,
                 "period",
                 "Period",
