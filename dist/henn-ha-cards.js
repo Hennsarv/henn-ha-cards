@@ -379,6 +379,19 @@ const HENN_SLIDER_STYLE = `
             color: var(--primary-text-color);
         }
 
+        .henn-select-row-label {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .henn-select-row-value {
+            color: var(--secondary-text-color);
+            opacity: .7;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
         .henn-select-row:hover,
         .henn-select-row.active {
             background: rgba(127,127,127,.24);
@@ -2706,8 +2719,11 @@ function hennCreateListSelector(editor, key, label, value, options) {
         items.forEach((item, i) => {
             const row = document.createElement("div");
             row.className = "henn-select-row";
-            row.textContent = item.label;
-
+        //    row.textContent = item.label;
+            row.innerHTML = `
+    <span class="henn-select-row-label">${item.label}</span>
+    <span class="henn-select-row-value">${item.value}</span>
+`;
             row.addEventListener("click", e => {
                 e.preventDefault();
                 e.stopPropagation();
