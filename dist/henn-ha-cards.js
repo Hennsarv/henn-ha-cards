@@ -2726,7 +2726,7 @@ function hennCreateListSelector(editor, key, label, value, options) {
         });
 
         popup.appendChild(list);
-        document.body.appendChild(popup);
+        root.appendChild(popup);
 
         const r = preview.getBoundingClientRect();
 
