@@ -355,11 +355,8 @@ const HENN_SLIDER_STYLE = `
         }
 
         .henn-select-popup {
-            position: absolute;
+            position: fixed;
             z-index: 1000;
-            left: 0;
-            right: 0;
-            margin-top: 6px;
             padding: 6px;
             border-radius: 12px;
             background: var(--card-background-color);
@@ -2729,7 +2726,22 @@ function hennCreateListSelector(editor, key, label, value, options) {
         });
 
         popup.appendChild(list);
-        root.appendChild(popup);
+        document.body.appendChild(popup);
+
+        const r = preview.getBoundingClientRect();
+
+        const popupMaxHeight = 220;
+        const gap = 6;
+
+        let top = r.bottom + gap;
+
+        if (top + popupMaxHeight > window.innerHeight) {
+            top = r.top - gap - popupMaxHeight;
+        }
+
+        popup.style.left = `${r.left}px`;
+        popup.style.top = `${Math.max(6, top)}px`;
+        popup.style.width = `${r.width}px`;
 
         requestAnimationFrame(markActive);
     }
