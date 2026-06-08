@@ -721,13 +721,7 @@ class HennWindRoseCardEditor extends HTMLElement {
 
         const periodSelect = hennCreateSelectField({
             value: this._config.period,
-            options: [
-                { value: "hour", label: "Hour" },
-                { value: "day", label: "Day" },
-                { value: "week", label: "Week" },
-                { value: "month", label: "Month" },
-                { value: "year", label: "Year" }
-            ],
+            options: HENN_PERIOD_OPTIONS,
             onChange: value => {
                 this._config.period = value;
                 this._fireConfigChanged();
