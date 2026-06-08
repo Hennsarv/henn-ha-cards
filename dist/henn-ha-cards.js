@@ -257,6 +257,7 @@ const HENN_SLIDER_STYLE = `
 
         .henn-line-selector-root {
             display: grid;
+            position: relative;
             gap: 6px;
             padding: 8px 10px;
         }
@@ -324,6 +325,9 @@ const HENN_SLIDER_STYLE = `
         }
         .henn-select-root {
             position: relative;
+            display: grid;
+            gap: 6px;
+            padding: 8px 10px;
         }
 
         .henn-select-preview {
