@@ -712,6 +712,16 @@ class HennWindRoseCardEditor extends HTMLElement {
             )
         );
 
+        this.querySelector("#period-field3").appendChild(
+            hennCreateLineSelector(
+                this,
+                "period",
+                "Period",
+                this._config.period || "30d",
+                HENN_PERIOD_OPTIONS
+            )
+        );
+
         this.querySelector("#bucket-field2").appendChild(
             hennCreateLineSelector(
                 this,
@@ -721,6 +731,7 @@ class HennWindRoseCardEditor extends HTMLElement {
                 HENN_BUCKET_OPTIONS
             )
         );
+
 
 
         customElements.whenDefined("ha-selector").then(() => {
@@ -2566,3 +2577,222 @@ function hennCreateLineSelector(editor, key, label, value, options) {
     return wrapper;
 }
 
+function hennListSelectorNormalizeOptions(options) {
+    return (options ?? []).map(o => {
+        if (Array.isArray(o)) {
+            return {
+                value: o[0],
+                label: o[1] ?? o[0]
+            };
+        }
+
+        return {
+            value: o.value,
+            label: o.label ?? o.value
+        };
+    });
+}
+
+function hennCreateListSelector(editor, key, label, value, options) {
+    const items = hennListSelectorNormalizeOptions(options);
+
+    const root = document.createElement("div");
+    root.className = "henn-select-root";
+
+    const header = document.createElement("div");
+    header.className = "henn-select-header";
+    header.textContent = label ?? "";
+
+    const preview = document.createElement("div");
+    preview.className = "henn-select-preview";
+    preview.tabIndex = 0;
+
+    const text = document.createElement("span");
+    text.textContent = getLabel(value);
+
+    const arrow = document.createElement("span");
+    arrow.className = "henn-select-arrow";
+    arrow.textContent = "▾";
+
+    preview.append(text, arrow);
+    root.append(header, preview);
+
+    let popup = null;
+    let currentValue = value;
+    let activeIndex = getIndex(currentValue);
+
+    if (activeIndex < 0) {
+        activeIndex = 0;
+    }
+
+    function getIndex(v) {
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].value === v) return i;
+        }
+
+        return -1;
+    }
+
+    function getLabel(v) {
+        for (const item of items) {
+            if (item.value === v) return item.label;
+        }
+
+        return v ?? "";
+    }
+
+    function fireChanged(v) {
+        editor._config[key] = v;
+
+        if (typeof editor._fireConfigChanged === "function") {
+            editor._fireConfigChanged();
+        }
+    }
+
+    function closePopup() {
+        if (popup) {
+            popup.remove();
+            popup = null;
+        }
+    }
+
+    function markActive() {
+        if (!popup) return;
+
+        const rows = popup.querySelectorAll(".henn-select-row");
+
+        rows.forEach((row, i) => {
+            row.classList.toggle("active", i === activeIndex);
+        });
+
+        const activeRow = rows[activeIndex];
+
+        if (activeRow) {
+            activeRow.scrollIntoView({ block: "nearest" });
+        }
+    }
+
+    function commitIndex(index) {
+        if (index < 0 || index >= items.length) return;
+
+        const item = items[index];
+
+        currentValue = item.value;
+        activeIndex = index;
+        text.textContent = item.label;
+
+        fireChanged(currentValue);
+        closePopup();
+    }
+
+    function openPopup() {
+        if (popup) return;
+
+        activeIndex = getIndex(currentValue);
+
+        if (activeIndex < 0) {
+            activeIndex = 0;
+        }
+
+        popup = document.createElement("div");
+        popup.className = "henn-select-popup";
+
+        const list = document.createElement("div");
+        list.className = "henn-select-list";
+
+        items.forEach((item, i) => {
+            const row = document.createElement("div");
+            row.className = "henn-select-row";
+            row.textContent = item.label;
+
+            row.addEventListener("click", e => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                commitIndex(i);
+            });
+
+            row.addEventListener("dblclick", e => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                commitIndex(i);
+            });
+
+            list.appendChild(row);
+        });
+
+        popup.appendChild(list);
+        root.appendChild(popup);
+
+        requestAnimationFrame(markActive);
+    }
+
+    function togglePopup() {
+        if (popup) {
+            closePopup();
+        } else {
+            openPopup();
+        }
+    }
+
+    function moveActive(delta) {
+        if (!popup) {
+            openPopup();
+            return;
+        }
+
+        activeIndex += delta;
+
+        if (activeIndex < 0) {
+            activeIndex = 0;
+        }
+
+        if (activeIndex >= items.length) {
+            activeIndex = items.length - 1;
+        }
+
+        markActive();
+    }
+
+    preview.addEventListener("click", e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        preview.focus();
+        togglePopup();
+    });
+
+    preview.addEventListener("keydown", e => {
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            moveActive(1);
+            return;
+        }
+
+        if (e.key === "ArrowUp") {
+            e.preventDefault();
+            moveActive(-1);
+            return;
+        }
+
+        if (e.key === "Enter") {
+            e.preventDefault();
+
+            if (popup) {
+                commitIndex(activeIndex);
+            } else {
+                openPopup();
+            }
+
+            return;
+        }
+
+        if (e.key === "Escape") {
+            e.preventDefault();
+            closePopup();
+        }
+    });
+
+    return root;
+}
