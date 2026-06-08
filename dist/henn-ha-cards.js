@@ -377,6 +377,7 @@ const HENN_SLIDER_STYLE = `
             align-items: center;
             cursor: pointer;
             color: var(--primary-text-color);
+            justify-content: space-between;
         }
 
         .henn-select-row-label {
