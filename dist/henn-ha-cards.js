@@ -2607,8 +2607,16 @@ function hennCreateSelectField(cfg) {
     function commit(index) {
         const opt = cfg.options[index];
         if (!opt) return;
-        valueText.textContent = opt.label ?? opt.value;
-        cfg.onChange?.(opt.value);
+
+        const newValue = opt.value;
+        const newLabel = opt.label ?? opt.value;
+
+        valueText.textContent = newLabel;
+
+        if (cfg.onChange) {
+            cfg.onChange(newValue, opt);
+        }
+
         close();
     }
 
@@ -2683,8 +2691,12 @@ function hennCreateSelectField(cfg) {
         }
     });
 
-    document.addEventListener("click", e => {
-        if (!root.contains(e.target)) close();
+    preview.addEventListener("pointerdown", e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        preview.focus();
+        open();
     });
 
     return root;
