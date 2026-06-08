@@ -355,7 +355,8 @@ const HENN_SLIDER_STYLE = `
         }
 
         .henn-select-popup {
-            position: fixed;
+            position: absolute;
+            margin-top: 0;
             z-index: 1000;
             padding: 6px;
             border-radius: 12px;
