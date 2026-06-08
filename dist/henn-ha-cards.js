@@ -2995,11 +2995,12 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
 
         let top = preview.offsetTop + preview.offsetHeight + gap;
 
-        if (previewRect.bottom + gap + popupMaxHeight > window.innerHeight) {
-            top = preview.offsetTop - gap - popupMaxHeight;
-        }
+        // if (previewRect.bottom + gap + popupMaxHeight > window.innerHeight) {
+        //     top = preview.offsetTop - gap - popupMaxHeight;
+        // }
 
-        popup.style.top = `${Math.max(-rootRect.top + gap, top)}px`;
+        //        popup.style.top = `${Math.max(-rootRect.top + gap, top)}px`;
+        popup.style.top = `${preview.offsetTop + preview.offsetHeight + 6}px`;
 
         requestAnimationFrame(markActive);
     }
