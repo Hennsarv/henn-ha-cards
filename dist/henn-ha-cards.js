@@ -464,7 +464,7 @@ const HENN_PERIOD_OPTIONS = [
     ["14d", "14 days"],
     ["2w", "2 weeks"],
     ["30d", "30 days"],
-    ["1M", "1 month"], 
+    ["1M", "1 month"],
     ["90d", "90 days"],
     ["3M", "3 months"]
 ];
