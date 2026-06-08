@@ -775,12 +775,13 @@ class HennWindRoseCardEditor extends HTMLElement {
         );
 
         this.querySelector("#period-field2").appendChild(
-            hennCreateLineSelector(
+            hennCreateListSelectorV0(
                 this,
                 "period",
                 "Period",
                 this._config.period || "30d",
-                HENN_PERIOD_OPTIONS
+                HENN_PERIOD_OPTIONS, 
+                "combo"
             )
         );
 
@@ -791,7 +792,7 @@ class HennWindRoseCardEditor extends HTMLElement {
                 "Period",
                 this._config.period || "30d",
                 HENN_PERIOD_OPTIONS,
-                "combo"
+                "search"
             )
         );
 
@@ -2666,7 +2667,7 @@ function hennListSelectorNormalizeOptions(options) {
     });
 }
 
-function hennCreateListSelector(editor, key, label, value, options, mode = "list") {
+function hennCreateListSelectorV0(editor, key, label, value, options, mode = "list") {
     const items = hennListSelectorNormalizeOptions(options);
 
     const root = document.createElement("div");
@@ -3050,6 +3051,540 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
             if (popup) {
                 if (mode === "combo") commitCombo();
                 else commitIndex(activeIndex);
+            } else {
+                openPopup();
+            }
+
+            return;
+        }
+
+        if (e.key === "Escape") {
+            e.preventDefault();
+            closePopup();
+        }
+    });
+
+    return root;
+}
+
+
+function hennCreateListSelector(editor, key, label, value, options, mode = "list") {
+    const items = hennListSelectorNormalizeOptions(options);
+
+    const root = document.createElement("div");
+    root.className = "henn-select-root";
+
+    const header = document.createElement("div");
+    header.className = "henn-select-header";
+    header.textContent = label ?? "";
+
+    const preview = document.createElement("div");
+    preview.className = "henn-select-preview";
+    preview.tabIndex = 0;
+
+    const text = document.createElement("span");
+    text.textContent = getLabel(value);
+
+    const arrow = document.createElement("span");
+    arrow.className = "henn-select-arrow";
+    arrow.textContent = "▾";
+
+    preview.append(text, arrow);
+    root.append(header, preview);
+
+    let popup = null;
+    let currentValue = value;
+    let activeIndex = getIndex(currentValue);
+
+    let input = null;
+    let inputHint = null;
+    let firstComboBackspace = true;
+
+    if (activeIndex < 0) activeIndex = 0;
+
+    function isCombo() {
+        return mode === "combo";
+    }
+
+    function isSearch() {
+        return mode === "search";
+    }
+
+    function hasInput() {
+        return isCombo() || isSearch();
+    }
+
+    function getIndex(v) {
+        for (let i = 0; i < items.length; i++) {
+            if (String(items[i].value) === String(v)) return i;
+        }
+        return -1;
+    }
+
+    function getLabel(v) {
+        for (const item of items) {
+            if (String(item.value) === String(v)) return item.label;
+        }
+        return v ?? "";
+    }
+
+    function getItem(v) {
+        for (const item of items) {
+            if (String(item.value) === String(v)) return item;
+        }
+        return null;
+    }
+
+    function fireChanged(v) {
+        editor._config = {
+            ...editor._config,
+            [key]: v
+        };
+
+        editor.dispatchEvent(new CustomEvent("config-changed", {
+            detail: { config: editor._config },
+            bubbles: true,
+            composed: true
+        }));
+    }
+
+    function closePopup() {
+        if (popup) {
+            popup.remove();
+            popup = null;
+        }
+
+        input = null;
+        inputHint = null;
+    }
+
+    function getRows() {
+        if (!popup) return [];
+        return Array.from(popup.querySelectorAll(".henn-select-row"));
+    }
+
+    function isRowVisible(row) {
+        return row && row.style.display !== "none";
+    }
+
+    function markActive() {
+        if (!popup) return;
+
+        const rows = getRows();
+
+        rows.forEach((row, i) => {
+            row.classList.toggle("active", i === activeIndex);
+        });
+
+        const activeRow = rows[activeIndex];
+
+        if (activeRow && isRowVisible(activeRow)) {
+            activeRow.scrollIntoView({ block: "nearest" });
+        }
+    }
+
+    function firstVisibleIndex() {
+        const rows = getRows();
+
+        for (let i = 0; i < rows.length; i++) {
+            if (isRowVisible(rows[i])) return i;
+        }
+
+        return -1;
+    }
+
+    function moveActiveVisible(delta) {
+        const rows = getRows();
+
+        if (!rows.length) return;
+
+        let i = activeIndex;
+
+        if (i < 0 || !isRowVisible(rows[i])) {
+            activeIndex = firstVisibleIndex();
+            markActive();
+            return;
+        }
+
+        while (true) {
+            i += delta;
+
+            if (i < 0 || i >= rows.length) return;
+
+            if (isRowVisible(rows[i])) {
+                activeIndex = i;
+                markActive();
+                return;
+            }
+        }
+    }
+
+    function updateInputHint() {
+        if (!inputHint || !input) return;
+
+        if (isCombo()) {
+            const item = getItem(input.value);
+            inputHint.textContent = item ? item.label : "";
+        }
+
+        if (isSearch()) {
+            inputHint.textContent = "";
+        }
+    }
+
+    function updateActiveFromComboValue() {
+        if (!input) return;
+
+        const ix = getIndex(input.value);
+
+        if (ix >= 0) {
+            activeIndex = ix;
+            markActive();
+        }
+
+        updateInputHint();
+    }
+
+    function filterRows() {
+        if (!popup || !input) return;
+
+        const q = String(input.value ?? "").toLowerCase();
+        const rows = getRows();
+
+        rows.forEach((row, i) => {
+            const item = items[i];
+
+            const hit =
+                String(item.label ?? "").toLowerCase().includes(q) ||
+                String(item.value ?? "").toLowerCase().includes(q);
+
+            row.style.display = hit ? "" : "none";
+        });
+
+        activeIndex = firstVisibleIndex();
+        markActive();
+    }
+
+    function commitValue(v) {
+        currentValue = v;
+
+        const item = getItem(v);
+        text.textContent = item ? item.label : v;
+
+        fireChanged(currentValue);
+        closePopup();
+    }
+
+    function commitIndex(index) {
+        if (index < 0 || index >= items.length) return;
+
+        const item = items[index];
+
+        if (isCombo()) {
+            activeIndex = index;
+            input.value = item.value;
+            updateInputHint();
+            markActive();
+            input.focus();
+            return;
+        }
+
+        if (isSearch()) {
+            activeIndex = index;
+            markActive();
+            input.focus();
+            return;
+        }
+
+        currentValue = item.value;
+        activeIndex = index;
+        text.textContent = item.label;
+
+        fireChanged(currentValue);
+        closePopup();
+    }
+
+    function commitCurrent() {
+        if (isCombo()) {
+            commitValue(input ? input.value : currentValue);
+            return;
+        }
+
+        if (isSearch()) {
+            if (activeIndex >= 0) {
+                const item = items[activeIndex];
+                if (item) commitValue(item.value);
+            }
+            return;
+        }
+
+        commitIndex(activeIndex);
+    }
+
+    function moveActive(delta) {
+        if (!popup) {
+            openPopup();
+            return;
+        }
+
+        if (isSearch()) {
+            moveActiveVisible(delta);
+            return;
+        }
+
+        activeIndex += delta;
+
+        if (activeIndex < 0) activeIndex = 0;
+        if (activeIndex >= items.length) activeIndex = items.length - 1;
+
+        if (isCombo() && input && items[activeIndex]) {
+            input.value = items[activeIndex].value;
+            updateInputHint();
+            input.focus();
+        }
+
+        markActive();
+    }
+
+    function createInput() {
+        const wrap = document.createElement("div");
+        wrap.className = "henn-select-combo-wrap";
+
+        input = document.createElement("input");
+        input.className = "henn-select-combo-input";
+
+        if (isCombo()) {
+            input.value = currentValue ?? "";
+        }
+
+        if (isSearch()) {
+            input.value = "";
+            input.placeholder = "Search...";
+        }
+
+        inputHint = document.createElement("div");
+        inputHint.className = "henn-select-combo-hint";
+
+        wrap.append(input, inputHint);
+
+        input.addEventListener("input", () => {
+            if (isCombo()) {
+                firstComboBackspace = false;
+                updateActiveFromComboValue();
+            }
+
+            if (isSearch()) {
+                filterRows();
+            }
+        });
+
+        input.addEventListener("keydown", e => {
+            if (isCombo() && e.key === "Backspace" && firstComboBackspace) {
+                e.preventDefault();
+                input.value = "";
+                firstComboBackspace = false;
+                updateActiveFromComboValue();
+                return;
+            }
+
+            firstComboBackspace = false;
+
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                moveActive(1);
+                return;
+            }
+
+            if (e.key === "ArrowUp") {
+                e.preventDefault();
+                moveActive(-1);
+                return;
+            }
+
+            if (e.key === "Enter") {
+                e.preventDefault();
+                commitCurrent();
+                return;
+            }
+
+            if (e.key === "Escape") {
+                e.preventDefault();
+                closePopup();
+                return;
+            }
+        });
+
+        requestAnimationFrame(() => {
+            input.focus();
+
+            if (isCombo()) {
+                input.select();
+                updateActiveFromComboValue();
+            }
+
+            if (isSearch()) {
+                filterRows();
+            }
+        });
+
+        return wrap;
+    }
+
+    function createButtons() {
+        const buttons = document.createElement("div");
+        buttons.className = "henn-select-buttons";
+
+        const ok = document.createElement("button");
+        ok.type = "button";
+        ok.className = "henn-select-button";
+        ok.textContent = "OK";
+
+        const cancel = document.createElement("button");
+        cancel.type = "button";
+        cancel.className = "henn-select-button";
+        cancel.textContent = "Cancel";
+
+        ok.addEventListener("click", e => {
+            e.preventDefault();
+            e.stopPropagation();
+            commitCurrent();
+        });
+
+        cancel.addEventListener("click", e => {
+            e.preventDefault();
+            e.stopPropagation();
+            closePopup();
+        });
+
+        buttons.append(ok, cancel);
+        return buttons;
+    }
+
+    function positionPopup() {
+        popup.style.left = "0";
+        popup.style.right = "0";
+        popup.style.top = "0px";
+        popup.style.visibility = "hidden";
+
+        const gap = 6;
+
+        const previewRect = preview.getBoundingClientRect();
+        const popupRect = popup.getBoundingClientRect();
+
+        const topBelow = preview.offsetTop + preview.offsetHeight + gap;
+        const topAbove = preview.offsetTop - popupRect.height - gap;
+
+        let top = topBelow;
+
+        if (previewRect.bottom + gap + popupRect.height > window.innerHeight) {
+            top = topAbove;
+        }
+
+        if (top < -root.getBoundingClientRect().top + gap) {
+            top = topBelow;
+        }
+
+        popup.style.top = `${top}px`;
+        popup.style.visibility = "";
+    }
+
+    function openPopup() {
+        if (popup) return;
+
+        activeIndex = getIndex(currentValue);
+        if (activeIndex < 0) activeIndex = 0;
+
+        firstComboBackspace = true;
+
+        popup = document.createElement("div");
+        popup.className = "henn-select-popup";
+
+        if (hasInput()) {
+            popup.appendChild(createInput());
+        }
+
+        const list = document.createElement("div");
+        list.className = "henn-select-list";
+
+        items.forEach((item, i) => {
+            const row = document.createElement("div");
+            row.className = "henn-select-row";
+
+            row.innerHTML = `
+                <span class="henn-select-row-label">${item.label}</span>
+                <span class="henn-select-row-value">${item.value}</span>
+            `;
+
+            row.addEventListener("click", e => {
+                e.preventDefault();
+                e.stopPropagation();
+                commitIndex(i);
+            });
+
+            row.addEventListener("dblclick", e => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (isCombo()) {
+                    commitValue(items[i].value);
+                    return;
+                }
+
+                if (isSearch()) {
+                    commitValue(items[i].value);
+                    return;
+                }
+
+                commitIndex(i);
+            });
+
+            list.appendChild(row);
+        });
+
+        popup.appendChild(list);
+
+        if (hasInput()) {
+            popup.appendChild(createButtons());
+        }
+
+        root.appendChild(popup);
+
+        positionPopup();
+
+        requestAnimationFrame(markActive);
+    }
+
+    function togglePopup() {
+        if (popup) closePopup();
+        else openPopup();
+    }
+
+    preview.addEventListener("click", e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        preview.focus();
+        togglePopup();
+    });
+
+    preview.addEventListener("keydown", e => {
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            moveActive(1);
+            return;
+        }
+
+        if (e.key === "ArrowUp") {
+            e.preventDefault();
+            moveActive(-1);
+            return;
+        }
+
+        if (e.key === "Enter") {
+            e.preventDefault();
+
+            if (popup) {
+                commitCurrent();
             } else {
                 openPopup();
             }
