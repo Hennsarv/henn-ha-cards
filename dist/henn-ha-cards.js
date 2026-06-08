@@ -2983,6 +2983,23 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
 
         root.appendChild(popup);
 
+        popup.style.left = "0";
+        popup.style.right = "0";
+
+        const gap = 6;
+        const popupMaxHeight = mode === "combo" ? 320 : 220;
+
+        const previewRect = preview.getBoundingClientRect();
+        const rootRect = root.getBoundingClientRect();
+
+        let top = preview.offsetTop + preview.offsetHeight + gap;
+
+        if (previewRect.bottom + gap + popupMaxHeight > window.innerHeight) {
+            top = preview.offsetTop - gap - popupMaxHeight;
+        }
+
+        popup.style.top = `${Math.max(-rootRect.top + gap, top)}px`;
+
         requestAnimationFrame(markActive);
     }
 
