@@ -397,6 +397,61 @@ const HENN_SLIDER_STYLE = `
         .henn-select-row.active {
             background: rgba(127,127,127,.24);
         }
+
+        .henn-select-combo-wrap {
+            position: relative;
+            height: 40px;
+            margin-bottom: 6px;
+        }
+
+        .henn-select-combo-input {
+            width: 100%;
+            height: 40px;
+            box-sizing: border-box;
+            padding: 0 12px;
+            padding-right: 90px;
+            border: none;
+            border-radius: 8px;
+            outline: none;
+            background: rgba(127,127,127,.12);
+            color: var(--primary-text-color);
+            font: inherit;
+        }
+
+        .henn-select-combo-hint {
+            position: absolute;
+            right: 12px;
+            top: 0;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            color: var(--secondary-text-color);
+            opacity: .7;
+            font-size: 12px;
+            pointer-events: none;
+        }
+
+        .henn-select-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .henn-select-button {
+            height: 32px;
+            padding: 0 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(127,127,127,.16);
+            color: var(--primary-text-color);
+            cursor: pointer;
+        }
+
+        .henn-select-button:hover {
+            background: rgba(127,127,127,.26);
+        }
+
     </style>
 `;
 
@@ -729,7 +784,8 @@ class HennWindRoseCardEditor extends HTMLElement {
                 "period",
                 "Period",
                 this._config.period || "30d",
-                HENN_PERIOD_OPTIONS
+                HENN_PERIOD_OPTIONS,
+                "combo"
             )
         );
 
@@ -2604,7 +2660,7 @@ function hennListSelectorNormalizeOptions(options) {
     });
 }
 
-function hennCreateListSelector(editor, key, label, value, options) {
+function hennCreateListSelector(editor, key, label, value, options, mode = "list") {
     const items = hennListSelectorNormalizeOptions(options);
 
     const root = document.createElement("div");
@@ -2631,25 +2687,31 @@ function hennCreateListSelector(editor, key, label, value, options) {
     let popup = null;
     let currentValue = value;
     let activeIndex = getIndex(currentValue);
+    let firstComboBackspace = true;
+    let comboInput = null;
+    let comboHint = null;
 
-    if (activeIndex < 0) {
-        activeIndex = 0;
-    }
+    if (activeIndex < 0) activeIndex = 0;
 
     function getIndex(v) {
         for (let i = 0; i < items.length; i++) {
-            if (items[i].value === v) return i;
+            if (String(items[i].value) === String(v)) return i;
         }
-
         return -1;
     }
 
     function getLabel(v) {
         for (const item of items) {
-            if (item.value === v) return item.label;
+            if (String(item.value) === String(v)) return item.label;
         }
-
         return v ?? "";
+    }
+
+    function getItem(v) {
+        for (const item of items) {
+            if (String(item.value) === String(v)) return item;
+        }
+        return null;
     }
 
     function fireChanged(v) {
@@ -2688,31 +2750,197 @@ function hennCreateListSelector(editor, key, label, value, options) {
         }
     }
 
+    function updateComboHint() {
+        if (!comboInput || !comboHint) return;
+
+        const item = getItem(comboInput.value);
+        comboHint.textContent = item ? item.label : "";
+    }
+
+    function updateActiveFromComboValue() {
+        if (!comboInput) return;
+
+        const ix = getIndex(comboInput.value);
+
+        if (ix >= 0) {
+            activeIndex = ix;
+            markActive();
+        }
+
+        updateComboHint();
+    }
+
+    function commitValue(v) {
+        currentValue = v;
+
+        const item = getItem(v);
+        text.textContent = item ? item.label : v;
+
+        fireChanged(currentValue);
+        closePopup();
+    }
+
     function commitIndex(index) {
         if (index < 0 || index >= items.length) return;
 
         const item = items[index];
 
+        if (mode === "combo") {
+            activeIndex = index;
+            comboInput.value = item.value;
+            updateComboHint();
+            markActive();
+            comboInput.focus();
+            return;
+        }
+
         currentValue = item.value;
         activeIndex = index;
-
         text.textContent = item.label;
-        closePopup();
 
         fireChanged(currentValue);
+        closePopup();
+    }
+
+    function commitCombo() {
+        if (!comboInput) return;
+        commitValue(comboInput.value);
+    }
+
+    function moveActive(delta) {
+        if (!popup) {
+            openPopup();
+            return;
+        }
+
+        if (activeIndex < 0) {
+            activeIndex = delta > 0 ? 0 : items.length - 1;
+        } else {
+            activeIndex += delta;
+        }
+
+        if (activeIndex < 0) activeIndex = 0;
+        if (activeIndex >= items.length) activeIndex = items.length - 1;
+
+        if (mode === "combo" && comboInput && items[activeIndex]) {
+            comboInput.value = items[activeIndex].value;
+            updateComboHint();
+            comboInput.focus();
+        }
+
+        markActive();
+    }
+
+    function createComboInput() {
+        const wrap = document.createElement("div");
+        wrap.className = "henn-select-combo-wrap";
+
+        comboInput = document.createElement("input");
+        comboInput.className = "henn-select-combo-input";
+        comboInput.value = currentValue ?? "";
+
+        comboHint = document.createElement("div");
+        comboHint.className = "henn-select-combo-hint";
+
+        wrap.append(comboInput, comboHint);
+
+        comboInput.addEventListener("input", () => {
+            firstComboBackspace = false;
+            updateActiveFromComboValue();
+        });
+
+        comboInput.addEventListener("keydown", e => {
+            if (e.key === "Backspace" && firstComboBackspace) {
+                e.preventDefault();
+                comboInput.value = "";
+                firstComboBackspace = false;
+                updateActiveFromComboValue();
+                return;
+            }
+
+            firstComboBackspace = false;
+
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                moveActive(1);
+                return;
+            }
+
+            if (e.key === "ArrowUp") {
+                e.preventDefault();
+                moveActive(-1);
+                return;
+            }
+
+            if (e.key === "Enter") {
+                e.preventDefault();
+                commitCombo();
+                return;
+            }
+
+            if (e.key === "Escape") {
+                e.preventDefault();
+                closePopup();
+                return;
+            }
+        });
+
+        requestAnimationFrame(() => {
+            comboInput.focus();
+            comboInput.select();
+            updateActiveFromComboValue();
+        });
+
+        return wrap;
+    }
+
+    function createButtons() {
+        const buttons = document.createElement("div");
+        buttons.className = "henn-select-buttons";
+
+        const ok = document.createElement("button");
+        ok.type = "button";
+        ok.className = "henn-select-button";
+        ok.textContent = "OK";
+
+        const cancel = document.createElement("button");
+        cancel.type = "button";
+        cancel.className = "henn-select-button";
+        cancel.textContent = "Cancel";
+
+        ok.addEventListener("click", e => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (mode === "combo") {
+                commitCombo();
+            }
+        });
+
+        cancel.addEventListener("click", e => {
+            e.preventDefault();
+            e.stopPropagation();
+            closePopup();
+        });
+
+        buttons.append(ok, cancel);
+        return buttons;
     }
 
     function openPopup() {
         if (popup) return;
 
         activeIndex = getIndex(currentValue);
+        if (activeIndex < 0) activeIndex = 0;
 
-        if (activeIndex < 0) {
-            activeIndex = 0;
-        }
+        firstComboBackspace = true;
 
         popup = document.createElement("div");
         popup.className = "henn-select-popup";
+
+        if (mode === "combo") {
+            popup.appendChild(createComboInput());
+        }
 
         const list = document.createElement("div");
         list.className = "henn-select-list";
@@ -2720,11 +2948,12 @@ function hennCreateListSelector(editor, key, label, value, options) {
         items.forEach((item, i) => {
             const row = document.createElement("div");
             row.className = "henn-select-row";
-        //    row.textContent = item.label;
+
             row.innerHTML = `
-    <span class="henn-select-row-label">${item.label}</span>
-    <span class="henn-select-row-value">${item.value}</span>
-`;
+                <span class="henn-select-row-label">${item.label}</span>
+                <span class="henn-select-row-value">${item.value}</span>
+            `;
+
             row.addEventListener("click", e => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -2736,58 +2965,30 @@ function hennCreateListSelector(editor, key, label, value, options) {
                 e.preventDefault();
                 e.stopPropagation();
 
-                commitIndex(i);
+                if (mode === "combo") {
+                    commitValue(items[i].value);
+                } else {
+                    commitIndex(i);
+                }
             });
 
             list.appendChild(row);
         });
 
         popup.appendChild(list);
-        root.appendChild(popup);
 
-        const r = preview.getBoundingClientRect();
-
-        const popupMaxHeight = 220;
-        const gap = 6;
-
-        let top = r.bottom + gap;
-
-        if (top + popupMaxHeight > window.innerHeight) {
-            top = r.top - gap - popupMaxHeight;
+        if (mode === "combo") {
+            popup.appendChild(createButtons());
         }
 
-        popup.style.left = `${r.left}px`;
-        popup.style.top = `${Math.max(6, top)}px`;
-        popup.style.width = `${r.width}px`;
+        root.appendChild(popup);
 
         requestAnimationFrame(markActive);
     }
 
     function togglePopup() {
-        if (popup) {
-            closePopup();
-        } else {
-            openPopup();
-        }
-    }
-
-    function moveActive(delta) {
-        if (!popup) {
-            openPopup();
-            return;
-        }
-
-        activeIndex += delta;
-
-        if (activeIndex < 0) {
-            activeIndex = 0;
-        }
-
-        if (activeIndex >= items.length) {
-            activeIndex = items.length - 1;
-        }
-
-        markActive();
+        if (popup) closePopup();
+        else openPopup();
     }
 
     preview.addEventListener("click", e => {
@@ -2815,7 +3016,8 @@ function hennCreateListSelector(editor, key, label, value, options) {
             e.preventDefault();
 
             if (popup) {
-                commitIndex(activeIndex);
+                if (mode === "combo") commitCombo();
+                else commitIndex(activeIndex);
             } else {
                 openPopup();
             }
