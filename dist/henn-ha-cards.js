@@ -2644,6 +2644,10 @@ function hennCreateListSelector(editor, key, label, value, options) {
     function fireChanged(v) {
         editor._config[key] = v;
 
+        if (typeof editor._updateUi === "function") {
+            editor._updateUi();
+        }
+
         if (typeof editor._fireConfigChanged === "function") {
             editor._fireConfigChanged();
         }
@@ -2679,10 +2683,11 @@ function hennCreateListSelector(editor, key, label, value, options) {
 
         currentValue = item.value;
         activeIndex = index;
+
         text.textContent = item.label;
+        closePopup();
 
         fireChanged(currentValue);
-        closePopup();
     }
 
     function openPopup() {
