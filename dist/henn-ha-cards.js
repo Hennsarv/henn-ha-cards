@@ -322,6 +322,66 @@ const HENN_SLIDER_STYLE = `
             color: var(--primary-text-color);
             font-weight: 700;
         }
+        .henn-select-root {
+            position: relative;
+        }
+
+        .henn-select-preview {
+            height: 40px;
+            box-sizing: border-box;
+            padding: 0 12px;
+            border-radius: 8px;
+            background: rgba(127,127,127,.12);
+            color: var(--primary-text-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+            outline: none;
+        }
+
+        .henn-select-preview:focus {
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+
+        .henn-select-arrow {
+            opacity: .7;
+            font-size: 14px;
+        }
+
+        .henn-select-popup {
+            position: absolute;
+            z-index: 1000;
+            left: 0;
+            right: 0;
+            margin-top: 6px;
+            padding: 6px;
+            border-radius: 12px;
+            background: var(--card-background-color);
+            box-shadow: 0 8px 24px rgba(0,0,0,.28);
+        }
+
+        .henn-select-list {
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .henn-select-row {
+            height: 40px;
+            box-sizing: border-box;
+            padding: 0 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: var(--primary-text-color);
+        }
+
+        .henn-select-row:hover,
+        .henn-select-row.active {
+            background: rgba(127,127,127,.24);
+        }
     </style>
 `;
 
@@ -339,7 +399,8 @@ const HENN_BUCKET_OPTIONS = [
     [10, "10"],
     [12, "12"],
     [15, "15"],
-    [20, "20"]
+    [20, "20"],
+    [30, "30"]
 ];
 
 class HennWindRoseCard extends HTMLElement {
@@ -563,6 +624,7 @@ class HennWindRoseCardEditor extends HTMLElement {
             ["90d", "90 days"]
         ])}
                 <div id="period-field2"></div>
+                <div id="period-field3"></div>"
                 <div id="bucket-field"></div>
                 <div id="bucket-field2"></div>
                 <div id="color-field"></div>
@@ -651,6 +713,24 @@ class HennWindRoseCardEditor extends HTMLElement {
                 this._config.bucket_size ?? 5,
                 HENN_BUCKET_OPTIONS
             )
+        );
+
+        const periodSelect = hennCreateSelectField({
+            value: this._config.period,
+            options: [
+                { value: "hour", label: "Hour" },
+                { value: "day", label: "Day" },
+                { value: "week", label: "Week" },
+                { value: "month", label: "Month" },
+                { value: "year", label: "Year" }
+            ],
+            onChange: value => {
+                this._config.period = value;
+                this._fireConfigChanged();
+            }
+        });
+        this.querySelector('#period-field3').appendChild(
+            periodSelect
         );
 
         customElements.whenDefined("ha-selector").then(() => {
@@ -2492,4 +2572,116 @@ function hennCreateLineSelector(editor, key, label, value, options) {
     });
 
     return wrapper;
+}
+
+function hennCreateSelectField(cfg) {
+    const root = document.createElement("div");
+    root.className = "henn-select-root";
+
+    const preview = document.createElement("div");
+    preview.className = "henn-select-preview";
+    preview.tabIndex = 0;
+
+    const valueText = document.createElement("span");
+    valueText.textContent = cfg.value ?? "";
+
+    const arrow = document.createElement("span");
+    arrow.className = "henn-select-arrow";
+    arrow.textContent = "▾";
+
+    preview.append(valueText, arrow);
+    root.appendChild(preview);
+
+    let popup = null;
+    let activeIndex = Math.max(0, cfg.options.findIndex(o => o.value === cfg.value));
+
+    function close() {
+        popup?.remove();
+        popup = null;
+    }
+
+    function commit(index) {
+        const opt = cfg.options[index];
+        if (!opt) return;
+        valueText.textContent = opt.label ?? opt.value;
+        cfg.onChange?.(opt.value);
+        close();
+    }
+
+    function open() {
+        if (popup) return close();
+
+        popup = document.createElement("div");
+        popup.className = "henn-select-popup";
+
+        const list = document.createElement("div");
+        list.className = "henn-select-list";
+
+        cfg.options.forEach((opt, i) => {
+            const row = document.createElement("div");
+            row.className = "henn-select-row";
+            row.textContent = opt.label ?? opt.value;
+            row.dataset.index = i;
+
+            if (i === activeIndex) row.classList.add("active");
+
+            row.addEventListener("click", () => commit(i));
+            row.addEventListener("dblclick", () => commit(i));
+
+            list.appendChild(row);
+        });
+
+        popup.appendChild(list);
+        root.appendChild(popup);
+
+        requestAnimationFrame(() => {
+            const active = popup.querySelector(".henn-select-row.active");
+            active?.scrollIntoView({ block: "nearest" });
+        });
+    }
+
+    function setActive(delta) {
+        if (!popup) open();
+
+        activeIndex += delta;
+        activeIndex = Math.max(0, Math.min(cfg.options.length - 1, activeIndex));
+
+        popup.querySelectorAll(".henn-select-row").forEach((r, i) => {
+            r.classList.toggle("active", i === activeIndex);
+        });
+
+        popup.querySelector(".henn-select-row.active")
+            ?.scrollIntoView({ block: "nearest" });
+    }
+
+    preview.addEventListener("click", open);
+
+    preview.addEventListener("keydown", e => {
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            setActive(1);
+        }
+
+        if (e.key === "ArrowUp") {
+            e.preventDefault();
+            setActive(-1);
+        }
+
+        if (e.key === "Enter") {
+            e.preventDefault();
+            if (popup) commit(activeIndex);
+            else open();
+        }
+
+        if (e.key === "Escape") {
+            e.preventDefault();
+            close();
+        }
+    });
+
+    document.addEventListener("click", e => {
+        if (!root.contains(e.target)) close();
+    });
+
+    return root;
 }
