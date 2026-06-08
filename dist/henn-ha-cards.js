@@ -628,13 +628,8 @@ class HennWindRoseCardEditor extends HTMLElement {
                 <div id="direction_entity"></div>
                 <div id="speed_entity"></div>
 
-                ${this._selectField("period", "Period", this._config.period || "30d", [
-            ["1d", "1 day"],
-            ["7d", "7 days"],
-            ["14d", "14 days"],
-            ["30d", "30 days"],
-            ["90d", "90 days"]
-        ])}
+                ${this._selectField("period", "Period", this._config.period || "30d",
+                    HENN_PERIOD_OPTIONS)}
                 <div id="period-field2"></div>
                 <div id="period-field3"></div>"
                 <div id="bucket-field"></div>
@@ -733,7 +728,7 @@ class HennWindRoseCardEditor extends HTMLElement {
                 "period",
                 "Period",
                 this._config.period || "30d",
-                HENN_PERIOD_OPTIONS
+                HENN_PERIOD_OPTIONS2
             )
         );
 
@@ -2581,7 +2576,6 @@ function hennCreateLineSelector(editor, key, label, value, options) {
 }
 
 function hennCreateSelectField(label, value, options, onChange) {
-    options = hennNormalizeOptions(options);
 
     let currentValue = value ?? "";
     let popup = null;
