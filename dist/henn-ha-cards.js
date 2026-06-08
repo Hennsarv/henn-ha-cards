@@ -2986,21 +2986,29 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
 
         popup.style.left = "0";
         popup.style.right = "0";
+        popup.style.top = "0px";
+        popup.style.visibility = "hidden";
 
         const gap = 6;
-        const popupMaxHeight = mode === "combo" ? 320 : 220;
 
         const previewRect = preview.getBoundingClientRect();
-        const rootRect = root.getBoundingClientRect();
+        const popupRect = popup.getBoundingClientRect();
 
-        let top = preview.offsetTop + preview.offsetHeight + gap;
+        const topBelow = preview.offsetTop + preview.offsetHeight + gap;
+        const topAbove = preview.offsetTop - popupRect.height - gap;
 
-        // if (previewRect.bottom + gap + popupMaxHeight > window.innerHeight) {
-        //     top = preview.offsetTop - gap - popupMaxHeight;
-        // }
+        let top = topBelow;
 
-        //        popup.style.top = `${Math.max(-rootRect.top + gap, top)}px`;
-        popup.style.top = `${preview.offsetTop + preview.offsetHeight + 6}px`;
+        if (previewRect.bottom + gap + popupRect.height > window.innerHeight) {
+            top = topAbove;
+        }
+
+        if (top < -root.getBoundingClientRect().top + gap) {
+            top = topBelow;
+        }
+
+        popup.style.top = `${top}px`;
+        popup.style.visibility = "";
 
         requestAnimationFrame(markActive);
     }
