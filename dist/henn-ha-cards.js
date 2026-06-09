@@ -3413,6 +3413,9 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
 
     function filterRows() {
         if (!popup || !input) return;
+        // kui input algab # siis return
+        if (input.value.startsWith("#")) return;
+
 
         const q = String(input.value ?? "").toLowerCase();
         const rows = getRows();
@@ -3519,11 +3522,11 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
         input = document.createElement("input");
         input.className = "henn-select-combo-input";
 
-        if (isCombo()) {
+        if (isCombo() || isColor) {
             input.value = currentValue ?? "";
-        }
+        }        
 
-        if (isSearch()) {
+        else if (isSearch()) {
             input.value = "";
             input.placeholder = "Search...";
         }
