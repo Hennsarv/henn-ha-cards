@@ -3858,7 +3858,7 @@ function hennCreateColorPicker(editor, key, label, value) {
 
     input.value = hennColorToHex(value ?? editor._config[key] ?? "#000000");
 
-    input.addEventListener("input", () => {
+    input.addEventListener("change", () => {
         const hex = input.value;
         const name = hennHexToColorName(hex);
 
