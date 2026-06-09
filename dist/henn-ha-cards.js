@@ -912,7 +912,6 @@ class HennWindRoseCardEditor extends HTMLElement {
                 0.05
             )
         );
-        // ${this._rangeField("bucket_size", "Bucket size", this._config.bucket_size ?? 5, 5, 30, 5)}
 
         this.querySelector("#bucket-field").appendChild(
             hennCreateSingleSlider(
@@ -3479,7 +3478,16 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
             return;
         }
 
-        if (isSearch()) {
+        else if (isColor) {
+            if (activeIndex >= 0) {
+                const item = items[activeIndex];
+                if (item) commitValue(item.label);
+            } else if (input) {
+                commitValue(input.value);
+            }
+        }
+
+        else if (isSearch()) {
             if (activeIndex >= 0) {
                 const item = items[activeIndex];
                 if (item) commitValue(item.value);
