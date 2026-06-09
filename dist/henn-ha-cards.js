@@ -3165,6 +3165,8 @@ function hennCreateListSelectorV0(editor, key, label, value, options, mode = "li
 
                 if (mode === "combo") {
                     commitValue(items[i].value);
+                } else if (isColor) {
+                    commitValue(items[i].label);
                 } else {
                     commitIndex(i);
                 }
