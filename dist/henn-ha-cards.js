@@ -894,14 +894,8 @@ class HennWindRoseCardEditor extends HTMLElement {
             <div style="display:grid; gap:14px;">
                 <div id="direction_entity"></div>
                 <div id="speed_entity"></div>
-
-                ${this._selectField("period", "Period", this._config.period || "30d",
-                    HENN_PERIOD_OPTIONS)}
                 <div id="period-field2"></div>
-                <div id="period-field3"></div>"
-                <div id="bucket-field"></div>
                 <div id="bucket-field2"></div>
-                <div id="color-field"></div>
                 <div id="color-row" style="display:grid; grid-template-columns: 1fr 44px; gap:8px; align-items:end;">
                     <div id="color-field2"></div>
                     <div id="color-picker"></div>
@@ -911,14 +905,14 @@ class HennWindRoseCardEditor extends HTMLElement {
                 <div id="opacity-fields"></div>
             </div>
         `;
-        this.querySelector("#color-field").appendChild(
-            hennCreateColorField(
-                this,
-                "color",
-                "Color",
-                this._config.color || "blue"  // võtsin deepskyeblue maha, et näha
-            )
-        );
+        // this.querySelector("#color-field").appendChild(
+        //     hennCreateColorField(
+        //         this,
+        //         "color",
+        //         "Color",
+        //         this._config.color || "blue"  // võtsin deepskyeblue maha, et näha
+        //     )
+        // );
 
         this.querySelector("#slider-field").appendChild(
             hennCreateSingleSlider(
@@ -960,17 +954,17 @@ class HennWindRoseCardEditor extends HTMLElement {
             )
         );
 
-        this.querySelector("#bucket-field").appendChild(
-            hennCreateSingleSlider(
-                this,
-                "bucket_size",
-                "Bucket size",
-                this._config.bucket_size ?? 5,
-                5,
-                30,
-                1
-            )
-        );
+        // this.querySelector("#bucket-field").appendChild(
+        //     hennCreateSingleSlider(
+        //         this,
+        //         "bucket_size",
+        //         "Bucket size",
+        //         this._config.bucket_size ?? 5,
+        //         5,
+        //         30,
+        //         1
+        //     )
+        // );
 
         this.querySelector("#period-field2").appendChild(
             hennCreateListSelector(
@@ -983,16 +977,16 @@ class HennWindRoseCardEditor extends HTMLElement {
             )
         );
 
-        this.querySelector("#period-field3").appendChild(
-            hennCreateListSelector(
-                this,
-                "period",
-                "Period",
-                this._config.period || "30d",
-                HENN_PERIOD_OPTIONS,
-                "search"
-            )
-        );
+        // this.querySelector("#period-field3").appendChild(
+        //     hennCreateListSelector(
+        //         this,
+        //         "period",
+        //         "Period",
+        //         this._config.period || "30d",
+        //         HENN_PERIOD_OPTIONS,
+        //         "search"
+        //     )
+        // );
 
         this.querySelector("#bucket-field2").appendChild(
             hennCreateLineSelector(
