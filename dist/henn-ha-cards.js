@@ -3742,15 +3742,11 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
 
                 if (isCombo()) {
                     commitValue(items[i].value);
-                    return;
-                }
-
-                if (isSearch()) {
+                } else if (isColor) {
+                    commitValue(items[i].label);
+                } else if (isSearch()) {
                     commitValue(items[i].value);
-                    return;
-                }
-
-                commitIndex(i);
+                } else { commitIndex(i); }
             });
 
             list.appendChild(row);
