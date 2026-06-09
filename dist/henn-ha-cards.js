@@ -3229,7 +3229,6 @@ function hennCreateListSelectorV0(editor, key, label, value, options, mode = "li
     return root;
 }
 
-
 function hennCreateListSelector(editor, key, label, value, options, mode = "list") {
     const items = hennListSelectorNormalizeOptions(options);
     const isColor = mode === "color";
@@ -3556,7 +3555,7 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
         });
 
         input.addEventListener("keydown", e => {
-            if (isCombo() && e.key === "Backspace" && firstComboBackspace) {
+            if ((isCombo() || isColor) && e.key === "Backspace" && firstComboBackspace) {
                 e.preventDefault();
                 input.value = "";
                 firstComboBackspace = false;
