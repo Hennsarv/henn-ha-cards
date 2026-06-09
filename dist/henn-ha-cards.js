@@ -619,6 +619,35 @@ const HENN_SLIDER_STYLE = `
             box-sizing: border-box;
         }
 
+        .henn-color-picker-root {
+            display: grid;
+            padding: 8px 10px;
+        }
+
+        .henn-color-picker-input {
+            width: 40px;
+            height: 40px;
+            box-sizing: border-box;
+            padding: 0;
+            border: none;
+            border-radius: 8px;
+            background: rgba(127,127,127,.12);
+            cursor: pointer;
+        }
+
+        .henn-color-picker-input::-webkit-color-swatch-wrapper {
+            padding: 4px;
+        }
+
+        .henn-color-picker-input::-webkit-color-swatch {
+            border: none;
+            border-radius: 6px;
+        }
+
+        .henn-color-picker-input::-moz-color-swatch {
+            border: none;
+            border-radius: 6px;
+        }
     </style>
 `;
 
@@ -873,7 +902,10 @@ class HennWindRoseCardEditor extends HTMLElement {
                 <div id="bucket-field"></div>
                 <div id="bucket-field2"></div>
                 <div id="color-field"></div>
-                <div id="color-field2"></div>
+                <div id="color-row" style="display:grid; grid-template-columns: 1fr 44px; gap:8px; align-items:end;">
+                    <div id="color-field2"></div>
+                    <div id="color-picker"></div>
+                </div>
                 <div id="slider-field"></div>
                 <div id="radius-fields"></div>
                 <div id="opacity-fields"></div>
@@ -981,6 +1013,10 @@ class HennWindRoseCardEditor extends HTMLElement {
                 HENN_CSS_COLORS2, 
                 "color"
             )
+        );
+
+        this.querySelector("#color-picker").appendChild(
+            hennCreateColorPicker(this, "color", "Color", this._config.color || "blue")
         );
 
 
@@ -3810,4 +3846,33 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
     });
 
     return root;
+}
+
+function hennCreateColorPicker(editor, key, label, value) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "henn-color-picker-root";
+
+    const input = document.createElement("input");
+    input.type = "color";
+    input.className = "henn-color-picker-input";
+
+    input.value = hennColorToHex(editor._config[key] ?? "green");
+
+    input.addEventListener("input", () => {
+        const colorName = hennHexToColorName(input.value);
+
+        editor._config = {
+            ...editor._config,
+            [key]: colorName ?? input.value
+        };
+
+        editor.dispatchEvent(new CustomEvent("config-changed", {
+            detail: { config: editor._config },
+            bubbles: true,
+            composed: true
+        }));
+    });
+
+    wrapper.appendChild(input);
+    return wrapper;
 }
