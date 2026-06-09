@@ -3849,21 +3849,22 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
 }
 
 function hennCreateColorPicker(editor, key, label, value) {
-    const wrapper = document.createElement("div");
-    wrapper.className = "henn-color-picker-root";
+    const root = document.createElement("div");
+    root.className = "henn-color-picker-root";
 
     const input = document.createElement("input");
     input.type = "color";
     input.className = "henn-color-picker-input";
 
-    input.value = hennColorToHex(editor._config[key] ?? "green");
+    input.value = hennColorToHex(value ?? editor._config[key] ?? "#000000");
 
     input.addEventListener("input", () => {
-        const colorName = hennHexToColorName(input.value);
+        const hex = input.value;
+        const name = hennHexToColorName(hex);
 
         editor._config = {
             ...editor._config,
-            [key]: colorName ?? input.value
+            [key]: name || hex
         };
 
         editor.dispatchEvent(new CustomEvent("config-changed", {
@@ -3873,6 +3874,6 @@ function hennCreateColorPicker(editor, key, label, value) {
         }));
     });
 
-    wrapper.appendChild(input);
-    return wrapper;
+    root.appendChild(input);
+    return root;
 }
