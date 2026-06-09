@@ -604,6 +604,21 @@ const HENN_SLIDER_STYLE = `
             background: rgba(127,127,127,.26);
         }
 
+        .henn-select-row-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 0 0 auto;
+        }
+
+        .henn-select-row-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            border: 1px solid rgba(0,0,0,.2);
+            box-sizing: border-box;
+        }
+
     </style>
 `;
 
@@ -3692,8 +3707,11 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
             row.className = "henn-select-row";
 
             row.innerHTML = `
-                <span class="henn-select-row-label">${item.label}</span>
+            <span class="henn-select-row-label">${item.label}</span>
+            <span class="henn-select-row-right">
                 <span class="henn-select-row-value">${item.value}</span>
+                ${isColor ? `<span class="henn-select-row-color" style="background:${item.value};"></span>` : ""}
+            </span>
             `;
 
             row.addEventListener("click", e => {
