@@ -3122,6 +3122,20 @@ function hennCreateListSelectorV0(editor, key, label, value, options, mode = "li
         popup = document.createElement("div");
         popup.className = "henn-select-popup";
 
+        popup.addEventListener("mousedown", e => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
+        popup.addEventListener("pointerdown", e => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
+        popup.addEventListener("click", e => {
+            e.stopPropagation();
+        });
+
         if (mode === "combo") {
             popup.appendChild(createComboInput());
         }
