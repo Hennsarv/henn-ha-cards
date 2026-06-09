@@ -2089,7 +2089,7 @@ function hennCreateColorField(editor, key, label, value) {
     let currentIndex = -1;
     let currentMatches = [];
 
-    const currentValue = value || "deepskyblue";
+    const currentValue = value ||  "deepskyblue";
     const currentHex = hennColorToHex(currentValue);
 
     wrapper.innerHTML = `
