@@ -3403,9 +3403,11 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
 
         if (ix >= 0) {
             activeIndex = ix;
-            markActive();
+        } else if (isColor && input.value.startsWith("#")) {
+            activeIndex = -1;
         }
 
+        markActive();
         updateInputHint();
     }
 
