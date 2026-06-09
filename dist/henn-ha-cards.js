@@ -3414,7 +3414,10 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
     function filterRows() {
         if (!popup || !input) return;
         // kui input algab # siis return
-        if (input.value.startsWith("#")) return;
+        if (input.value.startsWith("#")) {
+            activeIndex = -1;
+            return;
+        }
 
 
         const q = String(input.value ?? "").toLowerCase();
