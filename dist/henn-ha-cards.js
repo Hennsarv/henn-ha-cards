@@ -964,7 +964,7 @@ class HennWindRoseCardEditor extends HTMLElement {
                 "color",
                 "Color",
                 this._config.color || "blue",
-                HENN_CSS_COLORS2,
+                HENN_CSS_COLORS2, 
                 "color"
             )
         );
