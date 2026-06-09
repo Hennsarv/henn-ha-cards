@@ -707,6 +707,7 @@ class HennWindRoseCardEditor extends HTMLElement {
                 <div id="bucket-field"></div>
                 <div id="bucket-field2"></div>
                 <div id="color-field"></div>
+                <div id="color-field2"></div>
                 <div id="slider-field"></div>
                 <div id="radius-fields"></div>
                 <div id="opacity-fields"></div>
@@ -803,6 +804,17 @@ class HennWindRoseCardEditor extends HTMLElement {
                 "Bucket size",
                 this._config.bucket_size ?? 5,
                 HENN_BUCKET_OPTIONS
+            )
+        );
+
+        this.querySelector("#color-field2").appendChild(
+            hennCreateLineSelector(
+                this,
+                "color",
+                "Color",
+                this._config.color || "blue",
+                HENN_CSS_COLORS,
+                "color"
             )
         );
 
@@ -3070,6 +3082,9 @@ function hennCreateListSelectorV0(editor, key, label, value, options, mode = "li
 
 function hennCreateListSelector(editor, key, label, value, options, mode = "list") {
     const items = hennListSelectorNormalizeOptions(options);
+    const isColor = mode === "color";
+    if (isColor) { mode = "search"; } // Värvivalik on sisuliselt otsinguga list, kus on erikoht värvidele."
+
 
     const root = document.createElement("div");
     root.className = "henn-select-root";
