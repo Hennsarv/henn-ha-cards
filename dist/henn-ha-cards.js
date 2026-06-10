@@ -1111,7 +1111,6 @@ class HennWindRoseCardEditor extends HTMLElement {
 
 }
 
-
 customElements.define("henn-windrose-card-editor", HennWindRoseCardEditor);
 
 class HennStonehengeCard extends HTMLElement {
