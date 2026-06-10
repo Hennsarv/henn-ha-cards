@@ -1215,8 +1215,8 @@ class HennStonehengeCard extends HTMLElement {
         return 3;
     }
 
-    async loadHistory(c) {
-        //const c = this.config;
+    async loadHistory() {
+        const c = this.config;
         const end = new Date();
         const start = this.periodStart(end, c.history_period);
 
@@ -1229,7 +1229,7 @@ class HennStonehengeCard extends HTMLElement {
         const rows = data.find(x => x[0]?.entity_id === c.value_entity) || [];
 
         this._buckets = this.calculateBuckets(c, rows);
-        this.render(c);
+        this.render();
     }
 
     barAngles(c, bucketStart, step) {
