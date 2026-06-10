@@ -1208,6 +1208,7 @@ class HennStonehengeCard extends HTMLElement {
         if (!this._loaded) {
             this._loaded = true;
             this.loadHistory(this.config);  
+            this.render();
         }
     }
 
