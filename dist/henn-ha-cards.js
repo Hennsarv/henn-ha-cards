@@ -729,7 +729,7 @@ class HennWindRoseCard extends HTMLElement {
         const dirRows = data.find(x => x[0]?.entity_id === c.direction_entity) || [];
         const speedRows = data.find(x => x[0]?.entity_id === c.speed_entity) || [];
 
-        this._buckets = this.calculateBuckets(dirRows, speedRows);
+        this._buckets = this.calculateBuckets(c, dirRows, speedRows);
         this.render();
     }
 
@@ -750,8 +750,8 @@ class HennWindRoseCard extends HTMLElement {
         return parseFloat(String(v).replace(",", "."));
     }
 
-    calculateBuckets(dirRows, speedRows) {
-        const bucketSize = Number(this.config.bucket_size);
+    calculateBuckets(c, dirRows, speedRows) {
+        const bucketSize = Number(c.bucket_size);
         const bucketCount = Math.ceil(360 / bucketSize);
         const buckets = Array(bucketCount).fill(0);
 
@@ -777,7 +777,7 @@ class HennWindRoseCard extends HTMLElement {
             let dir = dirs[di]?.v;
             if (isNaN(dir)) continue;
 
-            dir = dir + Number(this.config.rotation);
+            dir = dir + Number(c.rotation);
             dir = ((dir % 360) + 360) % 360;
 
             const bucket = Math.floor(dir / bucketSize);
@@ -1111,6 +1111,7 @@ class HennWindRoseCardEditor extends HTMLElement {
 
 }
 
+
 customElements.define("henn-windrose-card-editor", HennWindRoseCardEditor);
 
 class HennStonehengeCard extends HTMLElement {
@@ -1206,7 +1207,7 @@ class HennStonehengeCard extends HTMLElement {
         this._hass = hass;
         if (!this._loaded) {
             this._loaded = true;
-            this.loadHistory();
+            this.loadHistory(this.config);  
         }
     }
 
@@ -1214,8 +1215,8 @@ class HennStonehengeCard extends HTMLElement {
         return 3;
     }
 
-    async loadHistory() {
-        const c = this.config;
+    async loadHistory(c) {
+        //const c = this.config;
         const end = new Date();
         const start = this.periodStart(end, c.history_period);
 
@@ -1227,12 +1228,12 @@ class HennStonehengeCard extends HTMLElement {
         const data = await this._hass.callApi("GET", url);
         const rows = data.find(x => x[0]?.entity_id === c.value_entity) || [];
 
-        this._buckets = this.calculateBuckets(rows);
-        this.render();
+        this._buckets = this.calculateBuckets(c, rows);
+        this.render(c);
     }
 
-    barAngles(bucketStart, step) {
-        const bar = this.config.bar || {};
+    barAngles(c, bucketStart, step) {
+        const bar = c.bar || {};
 
         const count = Math.max(1, Number(bar.series_count || 1));
         const index = Math.max(0, Math.min(count - 1, Number(bar.series_index || 0)));
@@ -1278,17 +1279,18 @@ class HennStonehengeCard extends HTMLElement {
         return parseFloat(String(v).replace(",", "."));
     }
 
-    bucketSizeMinutes() {
-        const s = String(this.config.bucket_size || "1h");
+    bucketSizeMinutes(c) {
+        const s = String(c.bucket_size || "1h");
         if (s.endsWith("m")) return parseInt(s);
         if (s.endsWith("h")) return parseInt(s) * 60;
         if (s.endsWith("d")) return parseInt(s) * 24 * 60;
         return Number(s) || 60;
     }
 
-    bucketCount() {
-        const b = this.config.bucketing;
-        const size = this.bucketSizeMinutes();
+    bucketCount(c) {
+        
+        const b = c.bucketing;
+        const size = this.bucketSizeMinutes(c);
 
         if (b === "day") return Math.ceil(24 * 60 / size);
         if (b === "month") return Math.ceil(31 * 24 * 60 / size);
@@ -1297,9 +1299,9 @@ class HennStonehengeCard extends HTMLElement {
         return Math.ceil(24 * 60 / size);
     }
 
-    bucketIndex(date) {
-        const b = this.config.bucketing;
-        const size = this.bucketSizeMinutes();
+    bucketIndex(c, date) {
+        const b = c.bucketing;
+        const size = this.bucketSizeMinutes(c);
 
         if (b === "day") {
             const m = date.getHours() * 60 + date.getMinutes();
@@ -1324,7 +1326,7 @@ class HennStonehengeCard extends HTMLElement {
         return 0;
     }
 
-    calculateBuckets(rows) {
+    calculateBuckets(c, rows) {
         const count = this.bucketCount();
         const sums = Array(count).fill(0);
         const nums = Array(count).fill(0);
@@ -1334,7 +1336,7 @@ class HennStonehengeCard extends HTMLElement {
             if (isNaN(v)) continue;
 
             const d = new Date(r.last_changed);
-            const i = this.bucketIndex(d);
+            const i = this.bucketIndex(c, d);
 
             if (i >= 0 && i < count) {
                 sums[i] += v;
@@ -1367,9 +1369,9 @@ class HennStonehengeCard extends HTMLElement {
         }
 
         const body =
-            c.diagram_type === "bar" ? this.renderBars(buckets, min, span, lower, upper) :
-                c.diagram_type === "line" ? this.renderLine(buckets, min, span, lower, upper) :
-                    this.renderColor(buckets, min, span, lower, upper);
+            c.diagram_type === "bar" ? this.renderBars(c, buckets, min, span, lower, upper) :
+                c.diagram_type === "line" ? this.renderLine(c, buckets, min, span, lower, upper) :
+                    this.renderColor(c,buckets, min, span, lower, upper);
 
         const rails = this.renderRails(lower, upper);
         const ticks = this.renderTicks();
@@ -1397,8 +1399,8 @@ class HennStonehengeCard extends HTMLElement {
         return lower + p * (upper - lower);
     }
 
-    renderColor(buckets, min, span, lower, upper) {
-        const c = this.config;
+    renderColor(c, buckets, min, span, lower, upper) {
+        // const c = this.config;
         const count = buckets.length || 1;
         const step = 360 / count;
 
@@ -1416,8 +1418,8 @@ class HennStonehengeCard extends HTMLElement {
         }).join("");
     }
 
-    renderBars(buckets, min, span, lower, upper) {
-        const c = this.config;
+    renderBars(c, buckets, min, span, lower, upper) {
+        //const c = this.config;
         const count = buckets.length || 1;
         const step = 360 / count;
 
@@ -1430,7 +1432,7 @@ class HennStonehengeCard extends HTMLElement {
             const r1 = Math.min(lower, r);
             const r2 = Math.max(lower, r);
 
-            const [a1, a2] = this.barAngles(i * step, step);
+            const [a1, a2] = this.barAngles(c, i * step, step);
 
             const fill = c.fill || {};
             const line = c.line || {};
@@ -1450,14 +1452,11 @@ class HennStonehengeCard extends HTMLElement {
               stroke="${lineShow ? strokeColor : "none"}"
               stroke-width="${lineShow ? strokeWidth : 0}"></path>`;
 
-            // return `<path d="${this.ringSectorPath(50, 50, r1, r2, i * step, (i + 1) * step)}"
-            //         fill="${c.color}"
-            //         fill-opacity="${c.max_opacity}"></path>`;
         }).join("");
     }
 
-    renderLine(buckets, min, span, lower, upper) {
-        const c = this.config;
+    renderLine(c, buckets, min, span, lower, upper) {
+        //const c = this.config;
         const line = c.line || {};
         const fill = c.fill || {};
 
@@ -1552,33 +1551,33 @@ class HennStonehengeCard extends HTMLElement {
         return d + (close ? " Z" : "");
     }
 
-    renderLineOld(buckets, min, span, lower, upper) {
-        const c = this.config;
-        const count = buckets.length || 1;
-        const step = 360 / count;
+    // renderLineOld(c, buckets, min, span, lower, upper) {
+    //     // const c = this.config;
+    //     const count = buckets.length || 1;
+    //     const step = 360 / count;
 
-        const points = buckets
-            .map((b, i) => {
-                if (b.value === null) return null;
-                const p = this.norm(b.value, min, span);
-                const r = this.valueRadius(p, lower, upper);
-                return this.polar(50, 50, r, i * step);
-            })
-            .filter(Boolean);
+    //     const points = buckets
+    //         .map((b, i) => {
+    //             if (b.value === null) return null;
+    //             const p = this.norm(b.value, min, span);
+    //             const r = this.valueRadius(p, lower, upper);
+    //             return this.polar(50, 50, r, i * step);
+    //         })
+    //         .filter(Boolean);
 
-        if (!points.length) return "";
+    //     if (!points.length) return "";
 
-        const d = points
-            .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
-            .join(" ") + " Z";
+    //     const d = points
+    //         .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
+    //         .join(" ") + " Z";
 
-        return `<path d="${d}"
-                  fill="none"
-                  stroke="${c.color}"
-                  stroke-width="${c.line_width}"
-                  stroke-linejoin="round"
-                  stroke-linecap="round"></path>`;
-    }
+    //     return `<path d="${d}"
+    //               fill="none"
+    //               stroke="${c.color}"
+    //               stroke-width="${c.line_width}"
+    //               stroke-linejoin="round"
+    //               stroke-linecap="round"></path>`;
+    // }
 
     renderRails(lower, upper) {
         const c = this.config;
