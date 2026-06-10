@@ -1327,7 +1327,7 @@ class HennStonehengeCard extends HTMLElement {
     }
 
     calculateBuckets(c, rows) {
-        const count = this.bucketCount();
+        const count = this.bucketCount(c);
         const sums = Array(count).fill(0);
         const nums = Array(count).fill(0);
 
