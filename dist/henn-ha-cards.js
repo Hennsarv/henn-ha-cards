@@ -1208,7 +1208,7 @@ class HennStonehengeCard extends HTMLElement {
         if (!this._loaded) {
             this._loaded = true;
             this.loadHistory(this.config);  
-            this.render();
+            //this.render();
         }
     }
 
@@ -1230,7 +1230,7 @@ class HennStonehengeCard extends HTMLElement {
         const rows = data.find(x => x[0]?.entity_id === c.value_entity) || [];
 
         this._buckets = this.calculateBuckets(c, rows);
-        //this.render();
+        this.render();
     }
 
     barAngles(c, bucketStart, step) {
