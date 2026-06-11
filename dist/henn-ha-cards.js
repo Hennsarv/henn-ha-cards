@@ -1192,10 +1192,10 @@ class HennStonehengeCard extends HTMLElement {
                 color: "white",
                 margin: 12
             },
-            ...config,
+            ...config
 
-            lower: { stroke: 1, color: "white", radius: 30, ...config.lower },
-            upper: { stroke: 1, color: "white", radius: 90, ...config.upper }
+            //lower: { stroke: 1, color: "white", radius: 30, ...config.lower },
+            //upper: { stroke: 1, color: "white", radius: 90, ...config.upper }
 
         };
     }
