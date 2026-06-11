@@ -1566,7 +1566,7 @@ class HennStonehengeCard extends HTMLElement {
 
         let s = "";
 
-        const lowerRadius = lowerCfg.radius + (lowerCfg.gap || 0);
+        const lowerRadius = lowerCfg.radius - (lowerCfg.gap || 0);
         const upperRadius = upperCfg.radius + (upperCfg.gap || 0);
 
         if (Number(lowerCfg.stroke) > 0) {
