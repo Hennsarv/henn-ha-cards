@@ -1364,9 +1364,9 @@ class HennStonehengeCard extends HTMLElement {
 
         // Color-diagrammil on need füüsilised rööpad.
         // Bar/line puhul on need väärtusskaala otsad ja järjekorda EI muuda.
-        if (c.diagram_type === "color" && lower > upper) {
-            [lower, upper] = [upper, lower];
-        }
+        // if (c.diagram_type === "color" && lower > upper) {
+        //     [lower, upper] = [upper, lower];
+        // }
 
         const body =
             c.diagram_type === "bar" ? this.renderBars(c, buckets, min, span, lower, upper) :
@@ -1550,34 +1550,6 @@ class HennStonehengeCard extends HTMLElement {
 
         return d + (close ? " Z" : "");
     }
-
-    // renderLineOld(c, buckets, min, span, lower, upper) {
-    //     // const c = this.config;
-    //     const count = buckets.length || 1;
-    //     const step = 360 / count;
-
-    //     const points = buckets
-    //         .map((b, i) => {
-    //             if (b.value === null) return null;
-    //             const p = this.norm(b.value, min, span);
-    //             const r = this.valueRadius(p, lower, upper);
-    //             return this.polar(50, 50, r, i * step);
-    //         })
-    //         .filter(Boolean);
-
-    //     if (!points.length) return "";
-
-    //     const d = points
-    //         .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
-    //         .join(" ") + " Z";
-
-    //     return `<path d="${d}"
-    //               fill="none"
-    //               stroke="${c.color}"
-    //               stroke-width="${c.line_width}"
-    //               stroke-linejoin="round"
-    //               stroke-linecap="round"></path>`;
-    // }
 
     renderRails(c, lower, upper) {
         //const c = this.config;
