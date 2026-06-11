@@ -1116,7 +1116,18 @@ customElements.define("henn-windrose-card-editor", HennWindRoseCardEditor);
 
 class HennStonehengeCard extends HTMLElement {
     setConfig(config) {
-        if (!config.value_entity) throw new Error("value_entity is required");
+        if (!config.value_entity && !config.series?.some(s => s.value_entity)) {
+            throw new Error("value_entity or series with value_entity is required");
+        }
+
+        this.series = [
+            ...(config.value_entity
+                ? [{ value_entity: config.value_entity }]
+                : []),
+
+            ...(config.series || [])
+        ];
+
 
         this.config = {
             value_entity: null,
@@ -1125,34 +1136,51 @@ class HennStonehengeCard extends HTMLElement {
             bucket_size: "1h",       // 5m, 1h, 1d
             history_period: "1d",
 
-            diagram_type: "color",   // color | bar | line
-            anchor: "lower",
+            diagram_type: "gradient",   // gradient | bar | line
+            anchor: "lower",        // lower | upper
 
-            color: "orange",
-            min_opacity: 0.15,
-            max_opacity: 0.9,
-            line_width: 2,
+            // color: "orange",     // huvitav, mille värv see on
+            // min_opacity: 0.15,
+            // max_opacity: 0.9,
+            // line_width: 2,
+            ...config,          // siiani ühetasased asjad
+
+            // asjad, mis excludime
+            series,
+            // values_entity,  // läheb maha - iga seeria peab ise määrama
+
+            gradient: {
+                color: "orange",
+                max_opacity: config.max_opacity ?? 0.9,
+                min_opacity: config.min_opacity ?? 0.15,
+                max_color: null, // kui tahad eraldi värvi maksimumile
+                min_color: null,  // kui tahad eraldi värvi miinimumile
+                ...config.gradient
+            },
 
             bar: {
-                series_count: 1,
-                series_index: 0,
-                gap: 0,
+                series_count: 1, // läheb maha - automaatselt KÕIK bar seeriad
+                series_index: 0, // läheb ka maha - leiab ise automaatselt
+                gap: 0, // läheb käiku kui on vaja seeriate vahele tühikud
 
-                margin_left: 0,
-                margin_right: 0
+                margin_left: 0,  // kui vaja käsitsi
+                margin_right: 0,  // kui vaja käsitsi
+                ...config.bar
             },
 
             line: {
-                show: true,
+                show: true,   // diagram_type peab olema line või bar
                 color: null,
                 stroke: 2,
-                smooth: false
+                smooth: false,
+                ...config.line
             },
 
             fill: {
-                show: true,
+                show: true,    // diagram_type peab olema line või bar
                 color: null,
-                opacity: null
+                opacity: null,
+                ...config.fill
             },
 
             ticks: {
@@ -1162,43 +1190,78 @@ class HennStonehengeCard extends HTMLElement {
                 radius: 98,
                 font_size: 5,
                 color: "white",
-
+                ...config.ticks,
                 inner_line: {
                     stroke: 0,
                     color: "white",
-                    radius: 93
+                    radius: 93,
+                    ...config.ticks?.inner_line
                 },
 
                 outer_line: {
                     stroke: 0,
                     color: "white",
-                    radius: 103
+                    radius: 103,
+                    ...config.ticks?.outer_line
                 },
 
                 minor: {
                     stroke: 0.5,
                     color: "white",
                     radius: 96,
-                    length: 2
+                    length: 2,
+                    ...config.ticks?.minor
                 }
             },
 
             label: {
                 show: false,
                 position: "center",    // center | top | bottom
-                text: "",
+                text: config.label_text ?? "",
                 font_size: 7,
                 color: "white",
-                margin: 12
+                margin: 12,
+                ...config.label
             },
-            ...config,
 
-            lower: { stroke: 1, color: "white", radius: 30, gap: 0, ...config.lower },
-            upper: { stroke: 1, color: "white", radius: 90, gap: 0, ...config.upper },
+            lower: { stroke: 1, color: "white", radius: 30, gap: 0, ...config.lower || {} },
+            upper: { stroke: 1, color: "white", radius: 90, gap: 0, ...config.upper || {} },
 
             reconf: true
         };
-    }
+
+
+        this.rootConfig = {
+            labeL: this.config.label,
+            ticks: this.config.ticks,
+            lower: this.config.lower,
+            upper: this.config.upper,
+            bucketing: this.config.bucketing
+        };
+
+
+        this.defConfig = {
+            // siia tuleks panna asjad, mis võib puudumisel laiendada kõigile seeriatele
+            // siia ma rõngaid kaasa ei pane, neid peab iga diagrammi tüüp ise kasutama, kui vaja joonistada
+            ...this.config,
+            value_entity,
+            label,
+            ticks,
+            lower,
+            upper,
+            bucketing,
+        };
+
+    };
+    // siia tuleks teha config series merge
+    // kui series puudub, siis tehakse confist
+    // kui on entity siis [serie selle entityga] + [kõik ülejäänud confi entitydega]
+    //
+    // seejärel kõigile seeriatele tehakse confist puuduolevad omadused juurde
+    // kas teha see optin (loeme vaid valitud) või optout (kirjutame üle kõik, mis ei ole rootonly)
+    
+
+
 
     set hass(hass) {
         this._hass = hass;
