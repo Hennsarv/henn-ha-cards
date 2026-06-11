@@ -1126,13 +1126,12 @@ class HennStonehengeCard extends HTMLElement {
             history_period: "1d",
 
             diagram_type: "color",   // color | bar | line
+            anchor: "lower",
 
             color: "orange",
             min_opacity: 0.15,
             max_opacity: 0.9,
             line_width: 2,
-
-
 
             bar: {
                 series_count: 1,
@@ -1192,13 +1191,12 @@ class HennStonehengeCard extends HTMLElement {
                 color: "white",
                 margin: 12
             },
-            // lower: { stroke: 1, color: "white", radius: 30 },
-            // upper: { stroke: 1, color: "white", radius: 90 },
             ...config,
 
             lower: { stroke: 1, color: "white", radius: 30, gap: 0, ...config.lower },
-            upper: { stroke: 1, color: "white", radius: 90, gap: 0, ...config.upper }
+            upper: { stroke: 1, color: "white", radius: 90, gap: 0, ...config.upper },
 
+            reconf: true
         };
     }
 
@@ -1367,6 +1365,8 @@ class HennStonehengeCard extends HTMLElement {
         // if (c.diagram_type === "color" && lower > upper) {
         //     [lower, upper] = [upper, lower];
         // }
+        // tegelikult ei ole vaja rööpaid vahetada, sest valueRadius ja ringSectorPath on tehtud nii, et töötab mõlemas suunas
+
 
         const body =
             c.diagram_type === "bar" ? this.renderBars(c, buckets, min, span, lower, upper) :
@@ -1423,6 +1423,10 @@ class HennStonehengeCard extends HTMLElement {
         const count = buckets.length || 1;
         const step = 360 / count;
 
+        if (c.anchor === "upper") {
+            [lower, upper] = [upper, lower];
+        }
+
         return buckets.map((b, i) => {
             if (b.value === null) return "";
 
@@ -1459,6 +1463,10 @@ class HennStonehengeCard extends HTMLElement {
         //const c = this.config;
         const line = c.line || {};
         const fill = c.fill || {};
+
+        if (c.anchor === "upper") {
+            [lower, upper] = [upper, lower];
+        }
 
         const count = buckets.length || 1;
         const step = 360 / count;
