@@ -1127,16 +1127,13 @@ class HennStonehengeCard extends HTMLElement {
 
             diagram_type: "color",   // color | bar | line
 
-            lower_radius: 30,
-            upper_radius: 90,
-
             color: "orange",
             min_opacity: 0.15,
             max_opacity: 0.9,
             line_width: 2,
 
-            lower: { stroke: 1, color: "white", radius: 30 },
-            upper: { stroke: 1, color: "white", radius: 90 },
+            lower: { stroke: 1, color: "white", radius: 30,  ...config.lower },
+            upper: { stroke: 1, color: "white", radius: 90,  ...config.upper },
 
             bar: {
                 series_count: 1,
@@ -1360,8 +1357,8 @@ class HennStonehengeCard extends HTMLElement {
         const max = values.length ? Math.max(...values) : 1;
         const span = max - min || 1;
 
-        let lower = Number(c.lower_radius);
-        let upper = Number(c.upper_radius);
+        let lower = Number(c.lower.radius);
+        let upper = Number(c.upper.radius);
 
         // Color-diagrammil on need füüsilised rööpad.
         // Bar/line puhul on need väärtusskaala otsad ja järjekorda EI muuda.
