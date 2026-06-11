@@ -1135,8 +1135,8 @@ class HennStonehengeCard extends HTMLElement {
             max_opacity: 0.9,
             line_width: 2,
 
-            lower: { stroke: 1, color: "white", radius: null },
-            upper: { stroke: 1, color: "white", radius: null },
+            lower: { stroke: 1, color: "white", radius: 30 },
+            upper: { stroke: 1, color: "white", radius: 90 },
 
             bar: {
                 series_count: 1,
