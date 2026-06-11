@@ -1495,7 +1495,7 @@ class HennStonehengeCard extends HTMLElement {
         let result = "";
 
         if (fillShow) {
-//            const baseRadius = c.baseRadius === "upper" ? lower : upper;
+            const baseRadius = lower;
             const fillPoints = [];
 
             for (let i = 0; i < buckets.length; i++) {
