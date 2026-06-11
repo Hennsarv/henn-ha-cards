@@ -1196,8 +1196,8 @@ class HennStonehengeCard extends HTMLElement {
             // upper: { stroke: 1, color: "white", radius: 90 },
             ...config,
 
-            lower: { stroke: 1, color: "white", radius: 30, ...config.lower },
-            upper: { stroke: 1, color: "white", radius: 90, ...config.upper }
+            lower: { stroke: 1, color: "white", radius: 30, gap: 0, ...config.lower },
+            upper: { stroke: 1, color: "white", radius: 90, gap: 0, ...config.upper }
 
         };
     }
@@ -1373,7 +1373,7 @@ class HennStonehengeCard extends HTMLElement {
                 c.diagram_type === "line" ? this.renderLine(c, buckets, min, span, lower, upper) :
                     this.renderColor(c,buckets, min, span, lower, upper);
 
-        const rails = this.renderRails(lower, upper);
+        const rails = this.renderRails(c, lower, upper);
         const ticks = this.renderTicks();
         const label = this.renderLabel();
 
@@ -1579,15 +1579,15 @@ class HennStonehengeCard extends HTMLElement {
     //               stroke-linecap="round"></path>`;
     // }
 
-    renderRails(lower, upper) {
-        const c = this.config;
+    renderRails(c, lower, upper) {
+        //const c = this.config;
         const lowerCfg = c.lower || {};
         const upperCfg = c.upper || {};
 
         let s = "";
 
-        const lowerRadius = lowerCfg.radius ?? lower;
-        const upperRadius = upperCfg.radius ?? upper;
+        const lowerRadius = lowerCfg.radius + (lowerCfg.gap || 0);
+        const upperRadius = upperCfg.radius + (upperCfg.gap || 0);
 
         if (Number(lowerCfg.stroke) > 0) {
             s += this.circleLine(lowerRadius, lowerCfg.color || "white", lowerCfg.stroke);
