@@ -1229,6 +1229,7 @@ class HennStonehengeCard extends HTMLElement {
         var radius = this.config.ticks.radius;
         if (width === 0) width = fontSize * 2;
         this.config.ticks.width = width;
+        console.info("width ja fontsize", width, fontSize);
         this.config.ticks.inner.radius ??= (radius - width / 2);
         this.config.ticks.outer.radius ??= (radius + width / 2);
         this.config.ticks.minor.radius ??= radius;
