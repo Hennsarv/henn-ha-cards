@@ -1173,6 +1173,7 @@ class HennStonehengeCard extends HTMLElement {
                 show: true,
                 tight: false,
                 radius: 95,
+                direction: "screen",
                 font_size: null,
                     
                 width: null,          // vaikimisi font_size * 2
@@ -1854,13 +1855,18 @@ class HennStonehengeCard extends HTMLElement {
 
     textAt(text, angle, radius, size, color) {
         const p = this.polar(50, 50, Number(radius), angle);
+        const direction = this.rootConfig?.ticks?.direction ?? "screen";
+
+        const transform = direction === "radial"
+            ? ` transform="rotate(${angle} ${p.x} ${p.y})"`
+            : "";
+
         return `<text x="${p.x}" y="${p.y}"
                   text-anchor="middle"
                   dominant-baseline="middle"
                   font-size="${size}"
-                  fill="${color}">${text}</text>`;
+                  fill="${color}"${transform}>${text}</text>`;
     }
-
     tickLine(angle, r1, r2, color, width) {
         const p1 = this.polar(50, 50, r1, angle);
         const p2 = this.polar(50, 50, r2, angle);
