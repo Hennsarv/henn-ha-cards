@@ -1259,7 +1259,7 @@ class HennStonehengeCard extends HTMLElement {
             bucketing: this.config.bucketing
         };
 
-        const { value_entity, label, ticks, lower, upper, bucketing, ...defConfig } = this.config;
+        const { value_entity, label, ticks: _ticks, lower, upper, bucketing, ...defConfig } = this.config;
         this.defConfig = defConfig;
     }
 
