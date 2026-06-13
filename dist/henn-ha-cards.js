@@ -1175,24 +1175,27 @@ class HennStonehengeCard extends HTMLElement {
                 radius: 95,
                 font_size: 5,
                 width: null,          // vaikimisi font_size * 2
-                color: "white",
+                color: null,
                 ...config.ticks,
                 inner: {
+                    show: true,
                     stroke: 0,
-                    color: "white",
+                    color: null,
                     radius: null,       // vaikimisi ticks:radius - width/2
                     ...config.ticks?.inner
                 },
                 outer: {
+                    show: true,
                     stroke: 0,
-                    color: "white",
+                    color: null,
                     radius: null,       // vaikimisi ticks:radius + width/2
                     ...config.ticks?.outer
                 },
                 minor: {
+                    show: true,
                     stroke: 0.5,
-                    color: "white",
-                    radius: 96,
+                    color: null,
+                    radius: null,
                     length: 2,
                     ...config.ticks?.minor
                 }
@@ -1218,8 +1221,9 @@ class HennStonehengeCard extends HTMLElement {
         var width = this.config.ticks.with && 0;
         var radius = this.config.ticks.radius;
         if (width === 0) width = this.config.ticks.with = fontSize * 2;
-        this.config.ticks.inner.radius ??= radius - width / 2;
-        this.config.ticks.outer.radius ??= radius + width / 2;
+        this.config.ticks.inner.radius ??= (radius - width / 2);
+        this.config.ticks.outer.radius ??= (radius + width / 2);
+        this.config.ticks.minor.radius ??= radius;
         const ticksColor = this.config.ticks.color ?? "black";
         this.config.ticks.inner.color ??= ticksColor;
         this.config.ticks.outer.color ??= ticksColor;
