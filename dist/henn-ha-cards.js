@@ -1224,19 +1224,29 @@ class HennStonehengeCard extends HTMLElement {
             reconf: true
         };
 
-        var fontSize = this.config.ticks.font_size ?? this.config.ticks.font?.size ?? 5;
-        var width = this.config.ticks.width ?? (fontSize * 2);
-        var radius = this.config.ticks.radius;
-        this.config.ticks.width = width;
-        console.info("width ja fontsize", width, fontSize);
-        this.config.ticks.inner.radius ??= (radius - width / 2);
-        this.config.ticks.outer.radius ??= (radius + width / 2);
-        this.config.ticks.minor.radius ??= radius;
-        const ticksColor = this.config.ticks.color ?? "black";
-        this.config.ticks.inner.color ??= ticksColor;
-        this.config.ticks.outer.color ??= ticksColor;
-        this.config.ticks.minor.color ??= ticksColor;
-        this.config.ticks.font.color ??= ticksColor;
+        const ticks = this.config.ticks;
+
+        const fontSize = ticks.font_size ?? ticks.font?.size ?? 5;
+        const width = ticks.width ?? fontSize * 2;
+        const radius = ticks.radius ?? 95;
+
+        ticks.width ??= width;
+
+        ticks.inner ??= {};
+        ticks.outer ??= {};
+        ticks.minor ??= {};
+        ticks.font ??= {};
+
+        ticks.inner.radius ??= radius - width / 2;
+        ticks.outer.radius ??= radius + width / 2;
+        ticks.minor.radius ??= radius;
+
+        const ticksColor = ticks.color ?? "black";
+
+        ticks.inner.color ??= ticksColor;
+        ticks.outer.color ??= ticksColor;
+        ticks.minor.color ??= ticksColor;
+        ticks.font.color ??= ticksColor;
 
         delete this.config.value_entity;
         delete this.config.series;
