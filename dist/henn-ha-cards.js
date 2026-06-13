@@ -1173,10 +1173,17 @@ class HennStonehengeCard extends HTMLElement {
                 show: true,
                 tight: false,
                 radius: 95,
-                font_size: 5,
+                font_size: null,
+                    
                 width: null,          // vaikimisi font_size * 2
                 color: null,
                 ...config.ticks,
+                font: {
+                    size: null,
+                    color: null,
+                    ...config.ticks?.font,
+                },
+
                 inner: {
                     show: true,
                     stroke: 0,
@@ -1217,7 +1224,7 @@ class HennStonehengeCard extends HTMLElement {
             reconf: true
         };
 
-        // var fontSize = this.config.ticks.font_size && this.config.ticks.font?.size && 5;
+        var fontSize = this.config.ticks.font_size && this.config.ticks.font?.size && 5;
         var width = this.config.ticks.width && 0;
         var radius = this.config.ticks.radius;
         if (width === 0) width = this.config.ticks.with = fontSize * 2;
@@ -1228,6 +1235,7 @@ class HennStonehengeCard extends HTMLElement {
         this.config.ticks.inner.color ??= ticksColor;
         this.config.ticks.outer.color ??= ticksColor;
         this.config.ticks.minor.color ??= ticksColor;
+        this.config.ticks.font.color ??= ticksColor;
 
         delete this.config.value_entity;
         delete this.config.series;
