@@ -1171,7 +1171,7 @@ class HennStonehengeCard extends HTMLElement {
 
             ticks: {
                 show: true,
-                tight: false,
+                tight: true,
                 radius: 95,
                 direction: "screen",
                 font_size: null,
@@ -1183,6 +1183,12 @@ class HennStonehengeCard extends HTMLElement {
                     size: null,
                     color: null,
                     ...config.ticks?.font,
+                },
+
+                fill: {
+                    show: false,
+                    color: null,
+                    ...config.ticks?.fill
                 },
 
                 inner: {
@@ -1730,20 +1736,32 @@ class HennStonehengeCard extends HTMLElement {
 
         let s = "";
 
-        if (t.inner && Number(t.inner.stroke) > 0) {
+        const inner = t.inner || t.inner_line || {};
+        const outer = t.outer || t.outer_line || {};
+        const fill = t.fill || {};
+
+        if (inner.show !== false && Number(inner.stroke) > 0) {
             s += this.circleLine(
-                t.inner.radius,
-                t.inner.color || t.color || "white",
-                t.inner.stroke
+                inner.radius,
+                inner.color || t.color || "white",
+                inner.stroke
             );
         }
 
-        if (t.outer && Number(t.outer.stroke) > 0) {
+        if (outer.show !== false && Number(outer.stroke) > 0) {
             s += this.circleLine(
-                t.outer.radius,
-                t.outer.color || t.color || "white",
-                t.outer.stroke
+                outer.radius,
+                outer.color || t.color || "white",
+                outer.stroke
             );
+        }
+
+        if (fill.show === true && fill.color != null) {
+            s += this.ringSectorPath
+                ? `<path d="${this.ringSectorPath(50, 50, inner.radius, outer.radius, 0, 359.999)}"
+                     fill="${fill.color}"
+                     stroke="none"></path>`
+                : "";
         }
 
         const b = this.rootConfig.bucketing;
@@ -1763,7 +1781,7 @@ class HennStonehengeCard extends HTMLElement {
             s += this.textAt(String(h).padStart(2, "0"), h * 15, t.radius, t.font_size, t.color);
         }
 
-        if (t.tight) {
+        if (t.minor?.show !== false) {
             for (let h = 0; h < 24; h++) {
                 if (labelHours.includes(h)) continue;
                 s += this.minorTick(h * 15, t);
@@ -1781,7 +1799,7 @@ class HennStonehengeCard extends HTMLElement {
             s += this.textAt(String(d), (d - 1) * 360 / 31, t.radius, t.font_size, t.color);
         }
 
-        if (t.tight) {
+        if (t.minor?.show !== false) {
             for (let d = 1; d <= 31; d++) {
                 if (labelDays.includes(d)) continue;
                 s += this.minorTick((d - 1) * 360 / 31, t);
@@ -1799,7 +1817,7 @@ class HennStonehengeCard extends HTMLElement {
             s += this.textAt(names[i], i * 30, t.radius, t.font_size, t.color);
         }
 
-        if (t.tight) {
+        if (t.minor?.show !== false) {
             for (let i = 0; i < 12; i++) {
                 s += this.minorTick(i * 30 + 10, t);
                 s += this.minorTick(i * 30 + 20, t);
@@ -1808,7 +1826,6 @@ class HennStonehengeCard extends HTMLElement {
 
         return s;
     }
-
     minorTick(angle, t) {
         const m = t.minor || {};
         const radius = Number(m.radius ?? t.radius);
