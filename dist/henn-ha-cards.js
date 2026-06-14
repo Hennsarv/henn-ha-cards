@@ -676,11 +676,10 @@ const HENN_STONE_STYLE = `
 
     .henn-editor-row {
         display: grid;
-        grid-template-columns: 120px 1fr;
+        grid-template-columns: 105px 1fr;
         gap: 8px;
         align-items: center;
     }
-
     .henn-editor-grid4 {
         display: grid;
         grid-template-columns: 1fr 56px 70px 70px 34px;
@@ -2554,8 +2553,9 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         const grid = document.createElement("div");
         grid.style.display = "grid";
-        grid.style.gridTemplateColumns = "1fr 56px";
+        grid.style.gridTemplateColumns = "150px 44px";
         grid.style.gap = "6px";
+        grid.style.alignItems = "center";
 
         grid.appendChild(this._colorInputFor(owner, path, value, defaultValue));
         grid.appendChild(this._colorPickerFor(owner, path, value, defaultValue));
@@ -2639,6 +2639,8 @@ class HennStonehengeCardEditor extends HTMLElement {
         const picker = document.createElement("input");
         picker.type = "color";
         picker.className = "henn-editor-input";
+        picker.style.width = "44px";
+        picker.style.height = "34px";
         picker.style.padding = "2px";
         picker.value = hennColorToHex(value ?? defaultValue ?? "#000000");
 
