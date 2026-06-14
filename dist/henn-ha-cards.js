@@ -680,9 +680,10 @@ const HENN_STONE_STYLE = `
         gap: 8px;
         align-items: center;
     }
+
     .henn-editor-grid4 {
         display: grid;
-        grid-template-columns: 150px 44px 60px 60px 34px;
+        grid-template-columns: minmax(0, 220px) 60px 60px 34px;
         gap: 6px;
         align-items: center;
     }
@@ -2414,8 +2415,9 @@ class HennStonehengeCardEditor extends HTMLElement {
         const row = document.createElement("div");
         row.className = "henn-editor-grid4";
 
-        row.appendChild(this._colorInput(`${path}.color`, value.color, this._effectiveTicks().color));
-        row.appendChild(this._colorPicker(`${path}.color`, value.color, this._effectiveTicks().color));
+        // row.appendChild(this._colorInput(`${path}.color`, value.color, this._effectiveTicks().color));
+        // row.appendChild(this._colorPicker(`${path}.color`, value.color, this._effectiveTicks().color));
+        row.appendChild(this._colorCell(`${path}.color`, value.color, this._effectiveTicks().color));
         row.appendChild(this._numberInput(`${path}.stroke`, value.stroke, value.stroke));
         row.appendChild(hasLength
             ? this._numberInput(`${path}.length`, value.length, value.length)
@@ -2560,16 +2562,28 @@ class HennStonehengeCardEditor extends HTMLElement {
     _colorRowFor(owner, path, label, value, defaultValue = null) {
         const row = this._row(label);
 
-        const grid = document.createElement("div");
-        grid.style.display = "grid";
-        grid.style.gridTemplateColumns = "150px 44px";
-        grid.style.gap = "6px";
-        grid.style.alignItems = "center";
+        const box = document.createElement("div");
+        box.style.display = "grid";
+        box.style.gridTemplateColumns = "1fr 44px";
+        box.style.gap = "6px";
+        box.style.alignItems = "end";
 
-        grid.appendChild(this._colorInputFor(owner, path, value, defaultValue));
-        grid.appendChild(this._colorPickerFor(owner, path, value, defaultValue));
+        box.appendChild(
+            hennCreateListSelector(
+                owner,
+                path,
+                "",
+                value ?? defaultValue ?? "",
+                HENN_CSS_COLORS2,
+                "color"
+            )
+        );
 
-        row.appendChild(grid);
+        box.appendChild(
+            this._colorPickerFor(owner, path, value, defaultValue)
+        );
+
+        row.appendChild(box);
         return row;
     }
 
@@ -2779,6 +2793,31 @@ class HennStonehengeCardEditor extends HTMLElement {
         };
 
         hennFireConfigChanged(this);
+    }
+
+    _colorCell(path, value, defaultValue = null) {
+        const box = document.createElement("div");
+        box.style.display = "grid";
+        box.style.gridTemplateColumns = "1fr 44px";
+        box.style.gap = "6px";
+        box.style.alignItems = "center";
+
+        box.appendChild(
+            hennCreateListSelector(
+                this,
+                path,
+                "",
+                value ?? defaultValue ?? "",
+                HENN_CSS_COLORS2,
+                "color"
+            )
+        );
+
+        box.appendChild(
+            this._colorPicker(path, value, defaultValue)
+        );
+
+        return box;
     }
 }
 
@@ -3946,6 +3985,11 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
     }
 
     function fireChanged(v) {
+        if (typeof editor._valueChanged === "function") {
+            editor._valueChanged(key, v);
+            return;
+        }
+
         editor._config = {
             ...editor._config,
             [key]: v
