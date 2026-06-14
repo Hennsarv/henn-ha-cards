@@ -651,6 +651,101 @@ const HENN_SLIDER_STYLE = `
     </style>
 `;
 
+const HENN_STONE_STYLE = `
+<style>
+    .henn-editor-root {
+        display: grid;
+        gap: 14px;
+    }
+
+    .henn-editor-section {
+        border: 1px solid var(--divider-color, #ddd);
+        border-radius: 8px;
+        padding: 10px;
+        display: grid;
+        gap: 10px;
+    }
+
+    .henn-editor-title {
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .henn-editor-row {
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .henn-editor-grid4 {
+        display: grid;
+        grid-template-columns: 1fr 56px 70px 70px 34px;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .henn-editor-small {
+        font-size: 12px;
+        color: var(--secondary-text-color);
+    }
+
+    .henn-editor-input,
+    .henn-editor-select {
+        width: 100%;
+        height: 34px;
+        box-sizing: border-box;
+        border: 1px solid var(--divider-color, #ccc);
+        border-radius: 4px;
+        background: var(--card-background-color, white);
+        color: var(--primary-text-color, black);
+        padding: 0 8px;
+        font: inherit;
+    }
+
+    .henn-editor-inherited {
+        background: var(--secondary-background-color, #f3f3f3);
+        opacity: .85;
+    }
+
+    .henn-editor-muted {
+        opacity: .45;
+    }
+
+    .henn-series-header {
+        display: grid;
+        grid-template-columns: 32px 1fr 80px 34px 34px;
+        gap: 6px;
+        align-items: center;
+        border: 1px solid var(--divider-color, #ddd);
+        border-radius: 6px;
+        padding: 6px;
+        background: var(--secondary-background-color, #f5f5f5);
+    }
+
+    .henn-series-body {
+        border: 1px solid var(--divider-color, #ddd);
+        border-top: none;
+        border-radius: 0 0 6px 6px;
+        padding: 10px;
+        display: grid;
+        gap: 10px;
+    }
+
+    .henn-editor-button {
+        height: 32px;
+        border: 1px solid var(--divider-color, #ccc);
+        border-radius: 4px;
+        background: var(--card-background-color, white);
+        color: var(--primary-text-color, black);
+        cursor: pointer;
+    }
+</style>
+`;
+
 const HENN_PERIOD_OPTIONS = [
     ["1d", "1 day"],
     ["5d", "5 days"],
@@ -1966,6 +2061,700 @@ window.customCards.push({
     name: "Henn Stonehenge Card",
     description: "Circular normalized time-bucket chart: color, bar or line"
 });
+
+
+class HennStonehengeCardEditor extends HTMLElement {
+    set hass(hass) {
+        this._hass = hass;
+        this.render();
+    }
+
+    setConfig(config) {
+        this._config = {
+            ...(config || {})
+        };
+
+        if (!this._config.series) {
+            this._config.series = [];
+        }
+
+        this.render();
+    }
+
+    render() {
+        if (!this._config) return;
+
+        this.innerHTML = `
+            <!-- Stonehenge editor ${HENN_CARDS_VERSION} -->
+            ${HENN_SLIDER_STYLE}
+            ${HENN_STONE_STYLE}
+            <div class="henn-editor-root">
+                <div id="root-section"></div>
+                <div id="ticks-section"></div>
+                <div id="defaults-section"></div>
+                <div id="series-section"></div>
+            </div>
+        `;
+
+        this._renderRootSection();
+        this._renderTicksSection();
+        this._renderDefaultsSection();
+        this._renderSeriesSection();
+    }
+
+    _renderRootSection() {
+        const host = this.querySelector("#root-section");
+        host.className = "henn-editor-section";
+
+        host.appendChild(this._title("Stonehenge"));
+
+        host.appendChild(this._selectRow("bucketing", "Bucketing", this._config.bucketing ?? "day", [
+            ["day", "Day"],
+            ["month", "Month"],
+            ["year", "Year"]
+        ], "day"));
+    }
+
+    _renderTicksSection() {
+        const host = this.querySelector("#ticks-section");
+        host.className = "henn-editor-section";
+
+        const ticks = this._effectiveTicks();
+        const enabled = ticks.show !== false;
+
+        host.appendChild(this._title("Numbrilaud", this._checkbox("ticks.show", enabled, true)));
+
+        const body = document.createElement("div");
+        body.className = enabled ? "" : "henn-editor-muted";
+        body.style.display = "grid";
+        body.style.gap = "10px";
+
+        body.appendChild(this._colorRow("ticks.color", "Color", ticks.color, "black"));
+        body.appendChild(this._numberRow("ticks.radius", "Radius", ticks.radius, 95));
+        body.appendChild(this._numberRow("ticks.font.size", "Font size", ticks.font.size, 5));
+        body.appendChild(this._numberRow("ticks.width", "Width", ticks.width, ticks.font.size * 2));
+
+        body.appendChild(this._selectRow("ticks.position", "Position", ticks.position, [
+            ["up", "Up"],
+            ["out", "Out"]
+        ], "up"));
+
+        body.appendChild(this._subTitle("Inner / outer / minor / fill"));
+
+        body.appendChild(this._tickPartRow("ticks.inner", "Sisemine", ticks.inner));
+        body.appendChild(this._tickPartRow("ticks.outer", "Välimine", ticks.outer));
+        body.appendChild(this._tickPartRow("ticks.minor", "Vahejooned", ticks.minor, true));
+        body.appendChild(this._tickFillRow("ticks.fill", "Täidis", ticks.fill));
+
+        host.appendChild(body);
+    }
+
+    _renderDefaultsSection() {
+        const host = this.querySelector("#defaults-section");
+        host.className = "henn-editor-section";
+
+        host.appendChild(this._title("Seeriate vaikimisi väärtused"));
+
+        host.appendChild(this._textRow("history_period", "History", this._config.history_period ?? "1d", "1d"));
+        host.appendChild(this._textRow("bucket_size", "Bucket size", this._config.bucket_size ?? "1h", "1h"));
+
+        host.appendChild(this._selectRow("aggregate", "Aggregate", this._config.aggregate ?? "avg", [
+            ["avg", "Average"],
+            ["sum", "Sum"],
+            ["count", "Count"],
+            ["max", "Max"],
+            ["min", "Min"],
+            ["distinct", "Distinct"]
+        ], "avg"));
+
+        host.appendChild(this._selectRow("diagram_type", "Type", this._config.diagram_type ?? "gradient", [
+            ["gradient", "Gradient"],
+            ["bar", "Bar"],
+            ["line", "Line"]
+        ], "gradient"));
+
+        host.appendChild(this._selectRow("anchor", "Anchor", this._config.anchor ?? "lower", [
+            ["lower", "Lower"],
+            ["upper", "Upper"]
+        ], "lower"));
+
+        host.appendChild(this._subTitle("Line"));
+        host.appendChild(this._colorRow("line.color", "Color", hennGetPath(this._config, "line.color"), null));
+        host.appendChild(this._numberRow("line.stroke", "Stroke", hennGetPath(this._config, "line.stroke") ?? 2, 2));
+        host.appendChild(this._checkboxRow("line.smooth", "Smooth", hennGetPath(this._config, "line.smooth") === true, false));
+
+        host.appendChild(this._subTitle("Fill"));
+        host.appendChild(this._checkboxRow("fill.show", "Enabled", hennGetPath(this._config, "fill.show") !== false, true));
+        host.appendChild(this._colorRow("fill.color", "Color", hennGetPath(this._config, "fill.color"), null));
+
+        host.appendChild(this._subTitle("Gradient"));
+        host.appendChild(this._colorRow("gradient.color", "Color", hennGetPath(this._config, "gradient.color") ?? "orange", "orange"));
+        host.appendChild(this._numberRow("gradient.min_opacity", "Min opacity", hennGetPath(this._config, "gradient.min_opacity") ?? 0.15, 0.15, 0.05));
+        host.appendChild(this._numberRow("gradient.max_opacity", "Max opacity", hennGetPath(this._config, "gradient.max_opacity") ?? 0.9, 0.9, 0.05));
+        host.appendChild(this._colorRow("gradient.min_color", "Min color", hennGetPath(this._config, "gradient.min_color"), null));
+        host.appendChild(this._colorRow("gradient.max_color", "Max color", hennGetPath(this._config, "gradient.max_color"), null));
+    }
+
+    _renderSeriesSection() {
+        const host = this.querySelector("#series-section");
+        host.className = "henn-editor-section";
+
+        const addButton = document.createElement("button");
+        addButton.className = "henn-editor-button";
+        addButton.textContent = "+";
+        addButton.title = "Add series";
+        addButton.addEventListener("click", () => this._addSeries());
+
+        host.appendChild(this._title("Seeriad", addButton));
+
+        const series = this._config.series || [];
+
+        if (!series.length) {
+            const empty = document.createElement("div");
+            empty.className = "henn-editor-small";
+            empty.textContent = "No series yet.";
+            host.appendChild(empty);
+            return;
+        }
+
+        series.forEach((s, index) => {
+            host.appendChild(this._renderSeries(index, s));
+        });
+    }
+
+    _renderSeries(index, s) {
+        const wrap = document.createElement("div");
+        wrap.style.display = "grid";
+
+        const open = s._editor_open !== false;
+        const enabled = s.enabled !== false;
+
+        const title =
+            s.name ||
+            s.caption ||
+            s.value_entity ||
+            `Series ${index + 1}`;
+
+        const header = document.createElement("div");
+        header.className = "henn-series-header";
+        header.innerHTML = `
+            <button class="henn-editor-button" data-action="up">↕</button>
+            <div>
+                <div>${title}</div>
+                <div class="henn-editor-small">${s.diagram_type || this._config.diagram_type || "gradient"}</div>
+            </div>
+            <button class="henn-editor-button" data-action="open">${open ? "Close" : "Open"}</button>
+            <input type="checkbox" data-action="enabled" ${enabled ? "checked" : ""}>
+            <button class="henn-editor-button" data-action="delete">×</button>
+        `;
+
+        header.querySelector('[data-action="open"]').addEventListener("click", () => {
+            this._seriesValueChanged(index, "_editor_open", !open);
+        });
+
+        header.querySelector('[data-action="enabled"]').addEventListener("change", ev => {
+            this._seriesValueChanged(index, "enabled", ev.target.checked, true);
+        });
+
+        header.querySelector('[data-action="delete"]').addEventListener("click", () => {
+            this._deleteSeries(index);
+        });
+
+        wrap.appendChild(header);
+
+        if (!open) return wrap;
+
+        const body = document.createElement("div");
+        body.className = enabled ? "henn-series-body" : "henn-series-body henn-editor-muted";
+
+        const owner = this._seriesOwner(index);
+
+        const entityHost = document.createElement("div");
+        entityHost.className = "henn-editor-row";
+        entityHost.innerHTML = `<div>Entity</div><div id="series-entity-${index}"></div>`;
+        body.appendChild(entityHost);
+
+        body.appendChild(this._textRowFor(owner, "name", "Name", s.name ?? "", ""));
+        body.appendChild(this._selectRowFor(owner, "diagram_type", "Type", s.diagram_type ?? this._config.diagram_type ?? "gradient", [
+            ["gradient", "Gradient"],
+            ["bar", "Bar"],
+            ["line", "Line"]
+        ], this._config.diagram_type ?? "gradient"));
+
+        body.appendChild(this._textRowFor(owner, "history_period", "History", s.history_period ?? this._config.history_period ?? "1d", this._config.history_period ?? "1d"));
+        body.appendChild(this._textRowFor(owner, "bucket_size", "Bucket size", s.bucket_size ?? this._config.bucket_size ?? "1h", this._config.bucket_size ?? "1h"));
+
+        body.appendChild(this._selectRowFor(owner, "aggregate", "Aggregate", s.aggregate ?? this._config.aggregate ?? "avg", [
+            ["avg", "Average"],
+            ["sum", "Sum"],
+            ["count", "Count"],
+            ["max", "Max"],
+            ["min", "Min"],
+            ["distinct", "Distinct"]
+        ], this._config.aggregate ?? "avg"));
+
+        body.appendChild(this._selectRowFor(owner, "anchor", "Anchor", s.anchor ?? this._config.anchor ?? "lower", [
+            ["lower", "Lower"],
+            ["upper", "Upper"]
+        ], this._config.anchor ?? "lower"));
+
+        body.appendChild(this._subTitle("Raadiused"));
+        body.appendChild(this._numberRowFor(owner, "lower.radius", "Lower radius", hennGetPath(s, "lower.radius") ?? hennGetPath(this._config, "lower.radius") ?? 30, hennGetPath(this._config, "lower.radius") ?? 30));
+        body.appendChild(this._numberRowFor(owner, "upper.radius", "Upper radius", hennGetPath(s, "upper.radius") ?? hennGetPath(this._config, "upper.radius") ?? 90, hennGetPath(this._config, "upper.radius") ?? 90));
+
+        const type = s.diagram_type || this._config.diagram_type || "gradient";
+
+        if (type === "line") {
+            body.appendChild(this._subTitle("Line"));
+            body.appendChild(this._colorRowFor(owner, "line.color", "Color", hennGetPath(s, "line.color") ?? hennGetPath(this._config, "line.color"), hennGetPath(this._config, "line.color") ?? null));
+            body.appendChild(this._numberRowFor(owner, "line.stroke", "Stroke", hennGetPath(s, "line.stroke") ?? hennGetPath(this._config, "line.stroke") ?? 2, hennGetPath(this._config, "line.stroke") ?? 2));
+            body.appendChild(this._checkboxRowFor(owner, "line.smooth", "Smooth", hennGetPath(s, "line.smooth") === true, hennGetPath(this._config, "line.smooth") === true));
+        }
+
+        if (type === "bar") {
+            body.appendChild(this._subTitle("Bar"));
+            body.appendChild(this._colorRowFor(owner, "fill.color", "Color", hennGetPath(s, "fill.color") ?? hennGetPath(this._config, "fill.color"), hennGetPath(this._config, "fill.color") ?? null));
+            body.appendChild(this._textRowFor(owner, "bar.cap", "Cap", hennGetPath(s, "bar.cap") ?? "", ""));
+        }
+
+        if (type === "gradient") {
+            body.appendChild(this._subTitle("Gradient"));
+            body.appendChild(this._colorRowFor(owner, "gradient.color", "Color", hennGetPath(s, "gradient.color") ?? hennGetPath(this._config, "gradient.color") ?? "orange", hennGetPath(this._config, "gradient.color") ?? "orange"));
+            body.appendChild(this._numberRowFor(owner, "gradient.min_opacity", "Min opacity", hennGetPath(s, "gradient.min_opacity") ?? hennGetPath(this._config, "gradient.min_opacity") ?? 0.15, hennGetPath(this._config, "gradient.min_opacity") ?? 0.15, 0.05));
+            body.appendChild(this._numberRowFor(owner, "gradient.max_opacity", "Max opacity", hennGetPath(s, "gradient.max_opacity") ?? hennGetPath(this._config, "gradient.max_opacity") ?? 0.9, hennGetPath(this._config, "gradient.max_opacity") ?? 0.9, 0.05));
+        }
+
+        body.appendChild(this._subTitle("Seeria rööpad"));
+        body.appendChild(this._railRowFor(owner, "lower", "Lower", s.lower || {}, this._config.lower || {}));
+        body.appendChild(this._railRowFor(owner, "upper", "Upper", s.upper || {}, this._config.upper || {}));
+
+        wrap.appendChild(body);
+
+        customElements.whenDefined("ha-selector").then(() => {
+            this._addEntityPickerTo(`#series-entity-${index}`, s.value_entity || "", value => {
+                this._seriesValueChanged(index, "value_entity", value);
+            });
+        });
+
+        return wrap;
+    }
+
+    _effectiveTicks() {
+        const t = this._config.ticks || {};
+
+        const color = t.color ?? "black";
+        const fontSize = t.font?.size ?? t.font_size ?? 5;
+        const width = t.width ?? fontSize * 2;
+        const radius = t.radius ?? 95;
+
+        return {
+            show: t.show !== false,
+            color,
+            radius,
+            width,
+            position: t.position ?? "up",
+            font: {
+                ...(t.font || {}),
+                size: fontSize,
+                color: t.font?.color ?? color
+            },
+            inner: {
+                show: t.inner?.show !== false,
+                color: t.inner?.color ?? color,
+                stroke: t.inner?.stroke ?? 1,
+                radius: t.inner?.radius ?? radius - width / 2
+            },
+            outer: {
+                show: t.outer?.show !== false,
+                color: t.outer?.color ?? color,
+                stroke: t.outer?.stroke ?? 1,
+                radius: t.outer?.radius ?? radius + width / 2
+            },
+            minor: {
+                show: t.minor?.show !== false,
+                color: t.minor?.color ?? color,
+                stroke: t.minor?.stroke ?? 0.5,
+                radius: t.minor?.radius ?? radius,
+                length: t.minor?.length ?? fontSize / 2
+            },
+            fill: {
+                show: t.fill?.show === true,
+                color: t.fill?.color ?? null
+            }
+        };
+    }
+
+    _tickPartRow(path, label, value, hasLength = false) {
+        const row = document.createElement("div");
+        row.className = "henn-editor-grid4";
+
+        row.appendChild(this._colorInput(`${path}.color`, value.color, this._effectiveTicks().color));
+        row.appendChild(this._colorPicker(`${path}.color`, value.color, this._effectiveTicks().color));
+        row.appendChild(this._numberInput(`${path}.stroke`, value.stroke, value.stroke));
+        row.appendChild(hasLength
+            ? this._numberInput(`${path}.length`, value.length, value.length)
+            : this._emptyCell());
+        row.appendChild(this._checkbox(`${path}.show`, value.show !== false, true));
+
+        const wrap = document.createElement("div");
+        wrap.className = value.show === false ? "henn-editor-muted" : "";
+        wrap.innerHTML = `<div class="henn-editor-small">${label}</div>`;
+        wrap.appendChild(row);
+        return wrap;
+    }
+
+    _tickFillRow(path, label, value) {
+        const row = document.createElement("div");
+        row.className = "henn-editor-grid4";
+
+        row.appendChild(this._colorInput(`${path}.color`, value.color, null));
+        row.appendChild(this._colorPicker(`${path}.color`, value.color, null));
+        row.appendChild(this._emptyCell());
+        row.appendChild(this._emptyCell());
+        row.appendChild(this._checkbox(`${path}.show`, value.show === true, false));
+
+        const wrap = document.createElement("div");
+        wrap.className = value.show === false ? "henn-editor-muted" : "";
+        wrap.innerHTML = `<div class="henn-editor-small">${label}</div>`;
+        wrap.appendChild(row);
+        return wrap;
+    }
+
+    _railRowFor(owner, path, label, value, defaults) {
+        const effective = {
+            show: value.show === true,
+            color: value.color ?? defaults.color ?? "white",
+            stroke: value.stroke ?? defaults.stroke ?? 1,
+            radius: value.radius ?? defaults.radius ?? 50,
+            gap: value.gap ?? defaults.gap ?? 0
+        };
+
+        const row = document.createElement("div");
+        row.className = "henn-editor-grid4";
+
+        row.appendChild(this._colorInputFor(owner, `${path}.color`, effective.color, defaults.color ?? "white"));
+        row.appendChild(this._colorPickerFor(owner, `${path}.color`, effective.color, defaults.color ?? "white"));
+        row.appendChild(this._numberInputFor(owner, `${path}.stroke`, effective.stroke, defaults.stroke ?? 1));
+        row.appendChild(this._numberInputFor(owner, `${path}.gap`, effective.gap, defaults.gap ?? 0));
+        row.appendChild(this._checkboxFor(owner, `${path}.show`, effective.show, false));
+
+        const wrap = document.createElement("div");
+        wrap.className = effective.show ? "" : "henn-editor-muted";
+        wrap.innerHTML = `<div class="henn-editor-small">${label}</div>`;
+        wrap.appendChild(row);
+        return wrap;
+    }
+
+    _title(text, rightEl = null) {
+        const div = document.createElement("div");
+        div.className = "henn-editor-title";
+
+        const left = document.createElement("div");
+        left.textContent = text;
+        div.appendChild(left);
+
+        if (rightEl) div.appendChild(rightEl);
+        return div;
+    }
+
+    _subTitle(text) {
+        const div = document.createElement("div");
+        div.className = "henn-editor-small";
+        div.style.fontWeight = "600";
+        div.textContent = text;
+        return div;
+    }
+
+    _emptyCell() {
+        const div = document.createElement("div");
+        return div;
+    }
+
+    _textRow(path, label, value, defaultValue = "") {
+        return this._textRowFor(this, path, label, value, defaultValue);
+    }
+
+    _textRowFor(owner, path, label, value, defaultValue = "") {
+        const row = this._row(label);
+        row.appendChild(this._textInputFor(owner, path, value, defaultValue));
+        return row;
+    }
+
+    _numberRow(path, label, value, defaultValue = 0, step = 1) {
+        return this._numberRowFor(this, path, label, value, defaultValue, step);
+    }
+
+    _numberRowFor(owner, path, label, value, defaultValue = 0, step = 1) {
+        const row = this._row(label);
+        row.appendChild(this._numberInputFor(owner, path, value, defaultValue, step));
+        return row;
+    }
+
+    _checkboxRow(path, label, value, defaultValue = false) {
+        return this._checkboxRowFor(this, path, label, value, defaultValue);
+    }
+
+    _checkboxRowFor(owner, path, label, value, defaultValue = false) {
+        const row = this._row(label);
+        row.appendChild(this._checkboxFor(owner, path, value, defaultValue));
+        return row;
+    }
+
+    _selectRow(path, label, value, options, defaultValue = null) {
+        return this._selectRowFor(this, path, label, value, options, defaultValue);
+    }
+
+    _selectRowFor(owner, path, label, value, options, defaultValue = null) {
+        const row = this._row(label);
+
+        const select = document.createElement("select");
+        select.className = "henn-editor-select";
+        select.classList.toggle("henn-editor-inherited", hennGetPath(owner._config, path) === undefined);
+
+        options.forEach(([v, t]) => {
+            const opt = document.createElement("option");
+            opt.value = v;
+            opt.textContent = t;
+            opt.selected = String(v) === String(value);
+            select.appendChild(opt);
+        });
+
+        select.addEventListener("change", () => {
+            owner._valueChangedOrDefault(path, select.value, defaultValue);
+        });
+
+        row.appendChild(select);
+        return row;
+    }
+
+    _colorRow(path, label, value, defaultValue = null) {
+        return this._colorRowFor(this, path, label, value, defaultValue);
+    }
+
+    _colorRowFor(owner, path, label, value, defaultValue = null) {
+        const row = this._row(label);
+
+        const grid = document.createElement("div");
+        grid.style.display = "grid";
+        grid.style.gridTemplateColumns = "1fr 56px";
+        grid.style.gap = "6px";
+
+        grid.appendChild(this._colorInputFor(owner, path, value, defaultValue));
+        grid.appendChild(this._colorPickerFor(owner, path, value, defaultValue));
+
+        row.appendChild(grid);
+        return row;
+    }
+
+    _row(label) {
+        const row = document.createElement("div");
+        row.className = "henn-editor-row";
+
+        const lab = document.createElement("div");
+        lab.textContent = label;
+
+        row.appendChild(lab);
+        return row;
+    }
+
+    _textInput(path, value, defaultValue = "") {
+        return this._textInputFor(this, path, value, defaultValue);
+    }
+
+    _textInputFor(owner, path, value, defaultValue = "") {
+        const input = document.createElement("input");
+        input.className = "henn-editor-input";
+        input.value = value ?? "";
+        input.classList.toggle("henn-editor-inherited", hennGetPath(owner._config, path) === undefined);
+
+        input.addEventListener("change", () => {
+            owner._valueChangedOrDefault(path, input.value, defaultValue);
+        });
+
+        return input;
+    }
+
+    _numberInput(path, value, defaultValue = 0, step = 1) {
+        return this._numberInputFor(this, path, value, defaultValue, step);
+    }
+
+    _numberInputFor(owner, path, value, defaultValue = 0, step = 1) {
+        const input = document.createElement("input");
+        input.type = "number";
+        input.step = step;
+        input.className = "henn-editor-input";
+        input.value = value ?? "";
+        input.classList.toggle("henn-editor-inherited", hennGetPath(owner._config, path) === undefined);
+
+        input.addEventListener("change", () => {
+            const v = input.value === "" ? null : Number(input.value);
+            owner._valueChangedOrDefault(path, v, defaultValue);
+        });
+
+        return input;
+    }
+
+    _colorInput(path, value, defaultValue = null) {
+        return this._colorInputFor(this, path, value, defaultValue);
+    }
+
+    _colorInputFor(owner, path, value, defaultValue = null) {
+        const input = document.createElement("input");
+        input.className = "henn-editor-input";
+        input.value = value ?? "";
+        input.placeholder = defaultValue ?? "inherit";
+        input.classList.toggle("henn-editor-inherited", hennGetPath(owner._config, path) === undefined);
+
+        input.addEventListener("change", () => {
+            const v = input.value.trim() || null;
+            owner._valueChangedOrDefault(path, v, defaultValue);
+        });
+
+        return input;
+    }
+
+    _colorPicker(path, value, defaultValue = null) {
+        return this._colorPickerFor(this, path, value, defaultValue);
+    }
+
+    _colorPickerFor(owner, path, value, defaultValue = null) {
+        const picker = document.createElement("input");
+        picker.type = "color";
+        picker.className = "henn-editor-input";
+        picker.style.padding = "2px";
+        picker.value = hennColorToHex(value ?? defaultValue ?? "#000000");
+
+        picker.addEventListener("change", () => {
+            const hex = picker.value.toLowerCase();
+            const name = hennHexToColorName(hex);
+            owner._valueChangedOrDefault(path, name || hex, defaultValue);
+        });
+
+        return picker;
+    }
+
+    _checkbox(path, value, defaultValue = false) {
+        return this._checkboxFor(this, path, value, defaultValue);
+    }
+
+    _checkboxFor(owner, path, value, defaultValue = false) {
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.checked = !!value;
+
+        input.addEventListener("change", () => {
+            owner._valueChangedOrDefault(path, input.checked, defaultValue);
+        });
+
+        return input;
+    }
+
+    _addEntityPickerTo(selector, value, onChange) {
+        const host = this.querySelector(selector);
+        if (!host || !this._hass) return;
+
+        host.innerHTML = "";
+
+        const picker = document.createElement("ha-selector");
+        picker.hass = this._hass;
+        picker.value = value || "";
+        picker.selector = {
+            entity: {
+                domain: "sensor"
+            }
+        };
+
+        picker.addEventListener("value-changed", ev => {
+            onChange(ev.detail.value);
+        });
+
+        host.appendChild(picker);
+    }
+
+    _addSeries() {
+        const series = [...(this._config.series || [])];
+
+        series.push({
+            enabled: true,
+            _editor_open: true,
+            diagram_type: this._config.diagram_type || "gradient"
+        });
+
+        this._config = {
+            ...this._config,
+            series
+        };
+
+        hennFireConfigChanged(this);
+    }
+
+    _deleteSeries(index) {
+        const series = [...(this._config.series || [])];
+        series.splice(index, 1);
+
+        this._config = {
+            ...this._config,
+            series
+        };
+
+        hennFireConfigChanged(this);
+    }
+
+    _seriesOwner(index) {
+        const editor = this;
+
+        return {
+            get _config() {
+                return editor._config.series?.[index] || {};
+            },
+
+            _valueChanged(path, value) {
+                editor._seriesValueChanged(index, path, value);
+            },
+
+            _valueChangedOrDefault(path, value, defaultValue) {
+                editor._seriesValueChangedOrDefault(index, path, value, defaultValue);
+            }
+        };
+    }
+
+    _valueChanged(path, value) {
+        this._config = hennSetPath(this._config, path, value);
+        hennFireConfigChanged(this);
+    }
+
+    _valueChangedOrDefault(path, value, defaultValue) {
+        this._config = hennSetOrDeleteDefault(this._config, path, value, defaultValue);
+        hennFireConfigChanged(this);
+    }
+
+    _seriesValueChanged(index, path, value) {
+        const series = [...(this._config.series || [])];
+        series[index] = hennSetPath(series[index] || {}, path, value);
+
+        this._config = {
+            ...this._config,
+            series
+        };
+
+        hennFireConfigChanged(this);
+    }
+
+    _seriesValueChangedOrDefault(index, path, value, defaultValue) {
+        const series = [...(this._config.series || [])];
+        series[index] = hennSetOrDeleteDefault(series[index] || {}, path, value, defaultValue);
+
+        this._config = {
+            ...this._config,
+            series
+        };
+
+        hennFireConfigChanged(this);
+    }
+}
+
+customElements.define("henn-stonehenge-card-editor", HennStonehengeCardEditor);
+
 
 class HennLayeredCard extends HTMLElement {
 
@@ -3637,4 +4426,81 @@ function hennCreateColorPicker(editor, key, label, value) {
 
     root.appendChild(input);
     return root;
+}
+
+function hennGetPath(obj, path) {
+    if (!obj || !path) return undefined;
+
+    return String(path)
+        .split(".")
+        .reduce((cur, part) => cur?.[part], obj);
+}
+
+function hennSetPath(obj, path, value) {
+    const parts = String(path).split(".");
+    const root = { ...(obj || {}) };
+
+    let cur = root;
+
+    for (let i = 0; i < parts.length - 1; i++) {
+        const p = parts[i];
+
+        cur[p] = {
+            ...(cur[p] || {})
+        };
+
+        cur = cur[p];
+    }
+
+    cur[parts[parts.length - 1]] = value;
+
+    return root;
+}
+
+function hennDeletePath(obj, path) {
+    const parts = String(path).split(".");
+    const root = { ...(obj || {}) };
+
+    let cur = root;
+
+    for (let i = 0; i < parts.length - 1; i++) {
+        const p = parts[i];
+
+        if (!cur[p]) return root;
+
+        cur[p] = { ...cur[p] };
+        cur = cur[p];
+    }
+
+    delete cur[parts[parts.length - 1]];
+
+    return root;
+}
+
+function hennDeepEqual(a, b) {
+    return JSON.stringify(a) === JSON.stringify(b);
+}
+
+function hennValueOrDefault(value, defaultValue) {
+    return value === undefined || value === null ? defaultValue : value;
+}
+
+function hennIsInherited(config, path) {
+    return hennGetPath(config, path) === undefined;
+}
+
+function hennSetOrDeleteDefault(obj, path, value, defaultValue) {
+    if (hennDeepEqual(value, defaultValue)) {
+        return hennDeletePath(obj, path);
+    }
+
+    return hennSetPath(obj, path, value);
+}
+
+function hennFireConfigChanged(editor) {
+    editor.dispatchEvent(new CustomEvent("config-changed", {
+        detail: { config: editor._config },
+        bubbles: true,
+        composed: true
+    }));
 }
