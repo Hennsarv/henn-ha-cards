@@ -2435,8 +2435,9 @@ class HennStonehengeCardEditor extends HTMLElement {
         const row = document.createElement("div");
         row.className = "henn-editor-grid4";
 
-        row.appendChild(this._colorInput(`${path}.color`, value.color, null));
-        row.appendChild(this._colorPicker(`${path}.color`, value.color, null));
+        // row.appendChild(this._colorInput(`${path}.color`, value.color, null));
+        // row.appendChild(this._colorPicker(`${path}.color`, value.color, null));
+        row.appendChild(this._colorCell(`${path}.color`, value.color, null));
         row.appendChild(this._emptyCell());
         row.appendChild(this._emptyCell());
         row.appendChild(this._checkbox(`${path}.show`, value.show === true, false));
