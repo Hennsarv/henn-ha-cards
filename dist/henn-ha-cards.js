@@ -752,6 +752,36 @@ const HENN_STONE_STYLE = `
         color: var(--primary-text-color, black);
         cursor: pointer;
     }
+
+    .henn-color-cell {
+        display: grid;
+        grid-template-columns: minmax(0, 140px) 44px;
+        gap: 6px;
+        align-items: center;
+        min-width: 0;
+    }
+
+    .henn-color-cell-selector {
+        min-width: 0;
+        padding: 0 !important;
+    }
+
+    .henn-color-cell-selector .henn-select-header {
+        display: none;
+    }
+
+    .henn-color-cell-selector .henn-select-preview {
+        height: 34px;
+        border-radius: 4px;
+    }
+
+    .henn-color-cell .henn-editor-input[type="color"] {
+        width: 44px;
+        min-width: 44px;
+        height: 34px;
+        padding: 2px;
+    }
+
 </style>
 `;
 
@@ -2798,28 +2828,25 @@ class HennStonehengeCardEditor extends HTMLElement {
 
     _colorCell(path, value, defaultValue = null) {
         const box = document.createElement("div");
-        box.style.display = "grid";
-        box.style.gridTemplateColumns = "1fr 44px";
-        box.style.gap = "6px";
-        box.style.alignItems = "center";
+        box.className = "henn-color-cell";
 
-        box.appendChild(
-            hennCreateListSelector(
-                this,
-                path,
-                "",
-                value ?? defaultValue ?? "",
-                HENN_CSS_COLORS2,
-                "color"
-            )
+        const selector = hennCreateListSelector(
+            this,
+            path,
+            "",
+            value ?? defaultValue ?? "",
+            HENN_CSS_COLORS2,
+            "color"
         );
 
-        box.appendChild(
-            this._colorPicker(path, value, defaultValue)
-        );
+        selector.classList.add("henn-color-cell-selector");
+
+        box.appendChild(selector);
+        box.appendChild(this._colorPicker(path, value, defaultValue));
 
         return box;
     }
+
 }
 
 customElements.define("henn-stonehenge-card-editor", HennStonehengeCardEditor);
