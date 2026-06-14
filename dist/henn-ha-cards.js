@@ -1134,6 +1134,7 @@ class HennStonehengeCard extends HTMLElement {
 
             diagram_type: "gradient",
             anchor: "lower",
+            aggregate: "avg",
 
             ...config,
 
@@ -1478,8 +1479,12 @@ class HennStonehengeCard extends HTMLElement {
 
     calculateBuckets(c, rows) {
         const count = this.bucketCount(c);
+
         const sums = Array(count).fill(0);
         const nums = Array(count).fill(0);
+        const mins = Array(count).fill(null);
+        const maxs = Array(count).fill(null);
+        const distinct = Array.from({ length: count }, () => new Set());
 
         for (const r of rows) {
             const v = this.number(r.state);
@@ -1491,15 +1496,47 @@ class HennStonehengeCard extends HTMLElement {
             if (i >= 0 && i < count) {
                 sums[i] += v;
                 nums[i]++;
+
+                mins[i] = mins[i] === null ? v : Math.min(mins[i], v);
+                maxs[i] = maxs[i] === null ? v : Math.max(maxs[i], v);
+
+                distinct[i].add(v);
             }
         }
 
-        return sums.map((sum, i) => ({
-            index: i,
-            value: nums[i] ? sum / nums[i] : null
-        }));
-    }
+        const aggregate = String(c.aggregate || "avg").toLowerCase();
 
+        return sums.map((sum, i) => {
+            let value;
+
+            if (nums[i] === 0) {
+                value = null;
+            }
+            else if (aggregate === "sum") {
+                value = sum;
+            }
+            else if (aggregate === "count") {
+                value = nums[i];
+            }
+            else if (aggregate === "max") {
+                value = maxs[i];
+            }
+            else if (aggregate === "min") {
+                value = mins[i];
+            }
+            else if (aggregate === "distinct" || aggregate === "countunique" || aggregate === "count_unique") {
+                value = distinct[i].size;
+            }
+            else {
+                value = sum / nums[i]; // avg default
+            }
+
+            return {
+                index: i,
+                value
+            };
+        });
+    }
     renderSeries(c, buckets) {
         buckets = buckets || [];
         const values = buckets.map(b => b.value).filter(v => v !== null && !isNaN(v));
@@ -1826,6 +1863,7 @@ class HennStonehengeCard extends HTMLElement {
 
         return s;
     }
+
     minorTick(angle, t) {
         const m = t.minor || {};
         const radius = Number(m.radius ?? t.radius);
