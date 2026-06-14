@@ -682,9 +682,18 @@ const HENN_STONE_STYLE = `
     }
     .henn-editor-grid4 {
         display: grid;
-        grid-template-columns: 1fr 56px 70px 70px 34px;
+        grid-template-columns: 150px 44px 60px 60px 34px;
         gap: 6px;
         align-items: center;
+    }
+
+    .henn-editor-grid4 > * {
+    min-width: 0;
+    }
+
+    .henn-editor-grid4 .henn-editor-input {
+        width: 100%;
+        min-width: 0;
     }
 
     .henn-editor-small {
