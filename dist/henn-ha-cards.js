@@ -676,7 +676,7 @@ const HENN_STONE_STYLE = `
 
     .henn-editor-row {
         display: grid;
-        grid-template-columns: 105px 1fr;
+        grid-template-columns: 135px minmax(0, 260px);
         gap: 8px;
         align-items: center;
     }
@@ -689,11 +689,6 @@ const HENN_STONE_STYLE = `
     }
 
     .henn-editor-grid4 > * {
-    min-width: 0;
-    }
-
-    .henn-editor-grid4 .henn-editor-input {
-        width: 100%;
         min-width: 0;
     }
 
@@ -705,6 +700,7 @@ const HENN_STONE_STYLE = `
     .henn-editor-input,
     .henn-editor-select {
         width: 100%;
+        max-width: 260px;
         height: 34px;
         box-sizing: border-box;
         border: 1px solid var(--divider-color, #ccc);
@@ -713,6 +709,7 @@ const HENN_STONE_STYLE = `
         color: var(--primary-text-color, black);
         padding: 0 8px;
         font: inherit;
+        min-width: 0;
     }
 
     .henn-editor-inherited {
@@ -778,10 +775,10 @@ const HENN_STONE_STYLE = `
     .henn-color-cell .henn-editor-input[type="color"] {
         width: 44px;
         min-width: 44px;
+        max-width: 44px;
         height: 34px;
         padding: 2px;
     }
-
 </style>
 `;
 
@@ -2593,29 +2590,42 @@ class HennStonehengeCardEditor extends HTMLElement {
     _colorRowFor(owner, path, label, value, defaultValue = null) {
         const row = this._row(label);
 
-        const box = document.createElement("div");
-        box.style.display = "grid";
-        box.style.gridTemplateColumns = "1fr 44px";
-        box.style.gap = "6px";
-        box.style.alignItems = "end";
+        const cell = document.createElement("div");
+        cell.style.maxWidth = "260px";
 
-        box.appendChild(
-            hennCreateListSelector(
-                owner,
-                path,
-                "",
-                value ?? defaultValue ?? "",
-                HENN_CSS_COLORS2,
-                "color"
-            )
+        cell.appendChild(
+            this._colorCellFor(owner, path, value, defaultValue)
         );
 
+        row.appendChild(cell);
+        return row;
+    }
+
+    _colorCell(path, value, defaultValue = null) {
+        return this._colorCellFor(this, path, value, defaultValue);
+    }
+
+    _colorCellFor(owner, path, value, defaultValue = null) {
+        const box = document.createElement("div");
+        box.className = "henn-color-cell";
+
+        const selector = hennCreateListSelector(
+            owner,
+            path,
+            "",
+            value ?? defaultValue ?? "",
+            HENN_CSS_COLORS2,
+            "color"
+        );
+
+        selector.classList.add("henn-color-cell-selector");
+
+        box.appendChild(selector);
         box.appendChild(
             this._colorPickerFor(owner, path, value, defaultValue)
         );
 
-        row.appendChild(box);
-        return row;
+        return box;
     }
 
     _row(label) {
