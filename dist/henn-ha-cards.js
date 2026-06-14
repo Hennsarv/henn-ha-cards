@@ -2051,6 +2051,24 @@ class HennStonehengeCard extends HTMLElement {
             "Z"
         ].join(" ");
     }
+
+    static getConfigElement() {
+        return document.createElement("henn-stonehenge-card-editor");
+    }
+
+    static getStubConfig() {
+        return {
+            type: "custom:henn-stonehenge-card",
+
+            bucketing: "day",
+
+            ticks: {
+                show: true
+            },
+
+            series: []
+        };
+    }
 }
 
 customElements.define("henn-stonehenge-card", HennStonehengeCard);
