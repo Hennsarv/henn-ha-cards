@@ -517,8 +517,6 @@ const HENN_SLIDER_STYLE = `
             box-shadow: 0 8px 24px rgba(0,0,0,.28);
 
             min-width: 240px;
-            width: max-content;
-            max-width: min(420px, 90vw);
         }
 
         .henn-select-list {
