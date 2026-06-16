@@ -987,6 +987,37 @@ const HENN_STONE_STYLE = `
         color: white;
     }
 
+    /* --- color selector sizing fixes --- */
+
+    .henn-editor-tick-table {
+        grid-template-columns: 72px minmax(180px, 1fr) 64px 64px 42px;
+    }
+
+    .henn-color-cell {
+        grid-template-columns: minmax(150px, 1fr) 44px;
+        gap: 8px;
+    }
+
+    .henn-color-cell .henn-select-root,
+    .henn-color-cell-selector {
+        width: 100%;
+        min-width: 150px;
+    }
+
+    .henn-color-cell-selector .henn-select-preview {
+        height: 34px !important;
+        min-height: 34px !important;
+        box-sizing: border-box;
+    }
+
+    .henn-color-cell-selector .henn-select-popup {
+        min-width: 220px;
+    }
+
+    .henn-editor-wide-row > .henn-color-cell {
+        max-width: none;
+    }
+
 </style>
 `;
 
