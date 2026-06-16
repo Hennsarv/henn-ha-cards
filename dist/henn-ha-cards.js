@@ -923,6 +923,70 @@ const HENN_STONE_STYLE = `
         color: var(--secondary-text-color);
         margin-top: 3px;
     }
+
+    /* --- HA style checkbox --- */
+
+    .henn-editor-check {
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        accent-color: var(--primary-color);
+    }
+
+    .henn-editor-head-icon {
+        width: 34px;
+        height: 34px;
+        border: 1px solid var(--divider-color, #ccc);
+        border-radius: 999px;
+        background: var(--card-background-color, white);
+        color: var(--primary-text-color, black);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .henn-editor-head-icon.active {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    /* --- three column row --- */
+
+    .henn-editor-top-row {
+        display: grid;
+        grid-template-columns: 64px 64px minmax(180px, 1fr);
+        gap: 12px;
+        align-items: end;
+    }
+
+    /* --- segmented toggle --- */
+
+    .henn-editor-segment {
+        display: inline-grid;
+        grid-auto-flow: column;
+        border-radius: 999px;
+        overflow: hidden;
+        border: 1px solid var(--divider-color, #ccc);
+        width: fit-content;
+    }
+
+    .henn-editor-segment-button {
+        min-width: 90px;
+        height: 34px;
+        border: none;
+        background: var(--card-background-color, white);
+        color: var(--primary-text-color);
+        cursor: pointer;
+    }
+
+    .henn-editor-segment-button.selected {
+        background: var(--primary-color);
+        color: white;
+    }
+
 </style>
 `;
 
@@ -2322,24 +2386,26 @@ class HennStonehengeCardEditor extends HTMLElement {
         const enabled = ticks.show !== false;
         const open = this._config._editor_ticks_open !== false;
 
-        const collapseButton = document.createElement("button");
-        collapseButton.className = "henn-editor-button henn-editor-collapse-button";
-        collapseButton.textContent = open ? "⌃" : "⌄";
-        collapseButton.title = open ? "Collapse" : "Expand";
-        collapseButton.addEventListener("click", () => {
-            this._valueChanged("_editor_ticks_open", !open);
-        });
-
-        const showSwitch = this._checkbox("ticks.show", enabled, true);
-        showSwitch.classList.add("henn-editor-pill-check");
-        showSwitch.title = "Show ticks";
-
         const right = document.createElement("div");
         right.style.display = "flex";
         right.style.gap = "6px";
         right.style.alignItems = "center";
-        right.appendChild(showSwitch);
-        right.appendChild(collapseButton);
+
+        right.appendChild(
+            this._iconButton(
+                "✓",
+                enabled,
+                () => this._valueChanged("ticks.show", !enabled)
+            )
+        );
+
+        right.appendChild(
+            this._iconButton(
+                open ? "▾" : "▸",
+                false,
+                () => this._valueChanged("_editor_ticks_open", !open)
+            )
+        );
 
         const title = this._title("Numbrilaud", right);
         title.classList.add("henn-editor-section-title");
@@ -2364,16 +2430,43 @@ class HennStonehengeCardEditor extends HTMLElement {
             95
         ));
 
-        const fontWidthRow = document.createElement("div");
-        fontWidthRow.className = "henn-editor-inline-row";
-        fontWidthRow.appendChild(this._compactNumberBox("ticks.font.size", "Font size", ticks.font.size, 5, 1));
-        fontWidthRow.appendChild(this._compactNumberBox("ticks.width", "Width", ticks.width, ticks.font.size * 2, 1));
-        body.appendChild(fontWidthRow);
+        const topRow = document.createElement("div");
+        topRow.className = "henn-editor-top-row";
 
-        body.appendChild(this._lineSelectorRow("ticks.direction", "Direction", ticks.direction ?? "vertical", [
-            ["vertical", "Vertical"],
-            ["radial", "Radial"]
-        ], "vertical"));
+        topRow.appendChild(
+            this._compactNumberBox(
+                "ticks.font.size",
+                "Font",
+                ticks.font.size,
+                5,
+                1
+            )
+        );
+
+        topRow.appendChild(
+            this._compactNumberBox(
+                "ticks.width",
+                "Width",
+                ticks.width,
+                ticks.font.size * 2,
+                1
+            )
+        );
+
+        topRow.appendChild(
+            this._segmentRow(
+                "ticks.direction",
+                "Direction",
+                ticks.direction ?? "vertical",
+                [
+                    ["vertical", "Vertical"],
+                    ["radial", "Radial"]
+                ],
+                "vertical"
+            )
+        );
+
+        body.appendChild(topRow);
 
         const table = document.createElement("div");
         table.style.display = "grid";
@@ -3199,6 +3292,55 @@ class HennStonehengeCardEditor extends HTMLElement {
         row.appendChild(show);
 
         return row;
+    }
+
+    _iconButton(icon, active = false, onClick = null) {
+        const btn = document.createElement("button");
+
+        btn.className =
+            "henn-editor-head-icon" +
+            (active ? " active" : "");
+
+        btn.textContent = icon;
+
+        if (onClick) {
+            btn.addEventListener("click", onClick);
+        }
+
+        return btn;
+    }
+
+    _segmentRow(path, label, value, options, defaultValue = null) {
+        const wrap = document.createElement("div");
+        wrap.className = "henn-editor-wide-row";
+
+        const lab = document.createElement("div");
+        lab.className = "henn-editor-wide-label";
+        lab.textContent = label;
+
+        const seg = document.createElement("div");
+        seg.className = "henn-editor-segment";
+
+        options.forEach(([v, text]) => {
+            const btn = document.createElement("button");
+
+            btn.className =
+                "henn-editor-segment-button" +
+                (String(v) === String(value) ? " selected" : "");
+
+            btn.textContent = text;
+
+            btn.addEventListener("click", () => {
+                this._valueChangedOrDefault(path, v, defaultValue);
+            });
+
+            seg.appendChild(btn);
+        });
+
+        wrap.appendChild(lab);
+        wrap.appendChild(seg);
+
+        return wrap;
     }
 
 }
@@ -4295,7 +4437,6 @@ function hennListSelectorNormalizeOptions(options) {
     });
 }
 
-
 function hennCreateListSelector(editor, key, label, value, options, mode = "list") {
     const items = hennListSelectorNormalizeOptions(options);
     const isColor = mode === "color";
@@ -4937,7 +5078,6 @@ function hennCreatePathLineSelector(editor, key, label, value, options, defaultV
 
     return wrapper;
 }
-
 
 function hennGetPath(obj, path) {
     if (!obj || !path) return undefined;
