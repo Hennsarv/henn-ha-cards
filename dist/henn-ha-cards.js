@@ -779,6 +779,150 @@ const HENN_STONE_STYLE = `
         height: 34px;
         padding: 2px;
     }
+
+    /* --- Stonehenge editor v2 layout additions --- */
+
+    .henn-editor-section {
+        padding: 0;
+        overflow: hidden;
+    }
+
+    .henn-editor-section-body {
+        display: grid;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .henn-editor-section-title {
+        min-height: 38px;
+        padding: 0 10px;
+        border-bottom: 1px solid var(--divider-color, #ddd);
+        background: var(--secondary-background-color, #f5f5f5);
+    }
+
+    .henn-editor-collapse-button {
+        width: 34px;
+        height: 28px;
+        border-radius: 999px;
+    }
+
+    .henn-editor-wide-row {
+        display: grid;
+        gap: 5px;
+    }
+
+    .henn-editor-wide-label {
+        font-size: 12px;
+        color: var(--secondary-text-color);
+        font-weight: 600;
+    }
+
+    .henn-editor-inline-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+        gap: 8px;
+        align-items: end;
+    }
+
+    .henn-editor-slider-number-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 64px;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .henn-editor-compact-number {
+        width: 64px !important;
+        min-width: 64px !important;
+        max-width: 64px !important;
+        text-align: right;
+    }
+
+    .henn-editor-mini-number {
+        width: 52px !important;
+        min-width: 52px !important;
+        max-width: 52px !important;
+        text-align: right;
+    }
+
+    .henn-editor-pill-check {
+        width: 34px;
+        height: 28px;
+        accent-color: var(--primary-color);
+        cursor: pointer;
+    }
+
+    .henn-editor-tick-table {
+        display: grid;
+        grid-template-columns: 72px minmax(0, 1fr) 58px 58px 42px;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .henn-editor-tick-table-head {
+        font-size: 11px;
+        color: var(--secondary-text-color);
+        font-weight: 600;
+    }
+
+    .henn-editor-tick-row-label {
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .henn-editor-line-control {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 58px 58px;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .henn-editor-fill-control {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 42px;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .henn-editor-gradient-colors {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 8px;
+    }
+
+    .henn-color-cell {
+        grid-template-columns: minmax(0, 1fr) 44px;
+        max-width: none;
+    }
+
+    .henn-color-cell-selector .henn-select-header {
+        display: flex;
+    }
+
+    .henn-color-cell-selector .henn-select-preview {
+        height: auto;
+    }
+
+    .henn-series-header-v2 {
+        display: grid;
+        grid-template-columns: 34px minmax(0, 1fr) 34px 34px 34px;
+        gap: 6px;
+        align-items: center;
+        border: 1px solid var(--divider-color, #ddd);
+        border-radius: 8px;
+        padding: 6px;
+        background: var(--secondary-background-color, #f5f5f5);
+    }
+
+    .henn-series-entity-host {
+        min-width: 0;
+    }
+
+    .henn-series-type-label {
+        font-size: 12px;
+        color: var(--secondary-text-color);
+        margin-top: 3px;
+    }
 </style>
 `;
 
@@ -2172,33 +2316,86 @@ class HennStonehengeCardEditor extends HTMLElement {
     _renderTicksSection() {
         const host = this.querySelector("#ticks-section");
         host.className = "henn-editor-section";
+        host.innerHTML = "";
 
         const ticks = this._effectiveTicks();
         const enabled = ticks.show !== false;
+        const open = this._config._editor_ticks_open !== false;
 
-        host.appendChild(this._title("Numbrilaud", this._checkbox("ticks.show", enabled, true)));
+        const collapseButton = document.createElement("button");
+        collapseButton.className = "henn-editor-button henn-editor-collapse-button";
+        collapseButton.textContent = open ? "⌃" : "⌄";
+        collapseButton.title = open ? "Collapse" : "Expand";
+        collapseButton.addEventListener("click", () => {
+            this._valueChanged("_editor_ticks_open", !open);
+        });
+
+        const showSwitch = this._checkbox("ticks.show", enabled, true);
+        showSwitch.classList.add("henn-editor-pill-check");
+        showSwitch.title = "Show ticks";
+
+        const right = document.createElement("div");
+        right.style.display = "flex";
+        right.style.gap = "6px";
+        right.style.alignItems = "center";
+        right.appendChild(showSwitch);
+        right.appendChild(collapseButton);
+
+        const title = this._title("Numbrilaud", right);
+        title.classList.add("henn-editor-section-title");
+        host.appendChild(title);
+
+        if (!open) return;
 
         const body = document.createElement("div");
-        body.className = enabled ? "" : "henn-editor-muted";
-        body.style.display = "grid";
-        body.style.gap = "10px";
+        body.className = enabled
+            ? "henn-editor-section-body"
+            : "henn-editor-section-body henn-editor-muted";
 
-        body.appendChild(this._colorRow("ticks.color", "Color", ticks.color, "black"));
-        body.appendChild(this._numberRow("ticks.radius", "Radius", ticks.radius, 95));
-        body.appendChild(this._numberRow("ticks.font.size", "Font size", ticks.font.size, 5));
-        body.appendChild(this._numberRow("ticks.width", "Width", ticks.width, ticks.font.size * 2));
+        body.appendChild(this._wideColorRow("ticks.color", "Color", ticks.color, "black"));
 
-        body.appendChild(this._selectRow("ticks.direction", "Direction", ticks.direction, [
+        body.appendChild(this._sliderNumberRow(
+            "ticks.radius",
+            "Radius",
+            ticks.radius,
+            40,
+            130,
+            1,
+            95
+        ));
+
+        const fontWidthRow = document.createElement("div");
+        fontWidthRow.className = "henn-editor-inline-row";
+        fontWidthRow.appendChild(this._compactNumberBox("ticks.font.size", "Font size", ticks.font.size, 5, 1));
+        fontWidthRow.appendChild(this._compactNumberBox("ticks.width", "Width", ticks.width, ticks.font.size * 2, 1));
+        body.appendChild(fontWidthRow);
+
+        body.appendChild(this._lineSelectorRow("ticks.direction", "Direction", ticks.direction ?? "vertical", [
             ["vertical", "Vertical"],
             ["radial", "Radial"]
         ], "vertical"));
 
-        body.appendChild(this._subTitle("Inner / outer / minor / fill"));
+        const table = document.createElement("div");
+        table.style.display = "grid";
+        table.style.gap = "6px";
 
-        body.appendChild(this._tickPartRow("ticks.inner", "Sisemine", ticks.inner));
-        body.appendChild(this._tickPartRow("ticks.outer", "Välimine", ticks.outer));
-        body.appendChild(this._tickPartRow("ticks.minor", "Vahejooned", ticks.minor, true));
-        body.appendChild(this._tickFillRow("ticks.fill", "Täidis", ticks.fill));
+        const head = document.createElement("div");
+        head.className = "henn-editor-tick-table henn-editor-tick-table-head";
+        head.innerHTML = `
+        <div></div>
+        <div>Color</div>
+        <div>Stroke</div>
+        <div>Length</div>
+        <div>Show</div>
+    `;
+        table.appendChild(head);
+
+        table.appendChild(this._tickTableRow("ticks.inner", "Inner", ticks.inner, false));
+        table.appendChild(this._tickTableRow("ticks.outer", "Outer", ticks.outer, false));
+        table.appendChild(this._tickTableRow("ticks.minor", "Minor", ticks.minor, true));
+        table.appendChild(this._tickFillTableRow("ticks.fill", "Fill", ticks.fill));
+
+        body.appendChild(table);
 
         host.appendChild(body);
     }
@@ -2855,6 +3052,153 @@ class HennStonehengeCardEditor extends HTMLElement {
         box.appendChild(this._colorPicker(path, value, defaultValue));
 
         return box;
+    }
+
+    _wideColorRow(path, label, value, defaultValue = null) {
+        const wrap = document.createElement("div");
+        wrap.className = "henn-editor-wide-row";
+
+        const lab = document.createElement("div");
+        lab.className = "henn-editor-wide-label";
+        lab.textContent = label;
+
+        wrap.appendChild(lab);
+        wrap.appendChild(this._colorCellFor(this, path, value, defaultValue));
+
+        return wrap;
+    }
+
+    _sliderNumberRow(path, label, value, min = 0, max = 100, step = 1, defaultValue = 0) {
+        const wrap = document.createElement("div");
+        wrap.className = "henn-editor-wide-row";
+
+        const lab = document.createElement("div");
+        lab.className = "henn-editor-wide-label";
+        lab.textContent = label;
+        wrap.appendChild(lab);
+
+        const row = document.createElement("div");
+        row.className = "henn-editor-slider-number-row";
+
+        const slider = document.createElement("input");
+        slider.type = "range";
+        slider.min = min;
+        slider.max = max;
+        slider.step = step;
+        slider.value = value ?? defaultValue;
+
+        const number = this._numberInput(path, value, defaultValue, step);
+        number.classList.add("henn-editor-compact-number");
+
+        slider.addEventListener("input", () => {
+            number.value = slider.value;
+        });
+
+        slider.addEventListener("change", () => {
+            this._valueChangedOrDefault(path, Number(slider.value), defaultValue);
+        });
+
+        number.addEventListener("input", () => {
+            if (number.value !== "") slider.value = number.value;
+        });
+
+        row.appendChild(slider);
+        row.appendChild(number);
+        wrap.appendChild(row);
+
+        return wrap;
+    }
+
+    _compactNumberBox(path, label, value, defaultValue = 0, step = 1) {
+        const wrap = document.createElement("div");
+        wrap.className = "henn-editor-wide-row";
+
+        const lab = document.createElement("div");
+        lab.className = "henn-editor-wide-label";
+        lab.textContent = label;
+
+        const input = this._numberInput(path, value, defaultValue, step);
+        input.classList.add("henn-editor-compact-number");
+
+        wrap.appendChild(lab);
+        wrap.appendChild(input);
+
+        return wrap;
+    }
+
+    _lineSelectorRow(path, label, value, options, defaultValue = null) {
+        const wrap = document.createElement("div");
+        wrap.className = "henn-editor-wide-row";
+
+        const lab = document.createElement("div");
+        lab.className = "henn-editor-wide-label";
+        lab.textContent = label;
+
+        const selector = hennCreatePathLineSelector(
+            this,
+            path,
+            "",
+            value ?? defaultValue,
+            options,
+            defaultValue
+        );
+
+        wrap.appendChild(lab);
+        wrap.appendChild(selector);
+
+        return wrap;
+    }
+
+    _tickTableRow(path, label, value, hasLength = false) {
+        const row = document.createElement("div");
+        row.className = "henn-editor-tick-table";
+        row.classList.toggle("henn-editor-muted", value.show === false);
+
+        const lab = document.createElement("div");
+        lab.className = "henn-editor-tick-row-label";
+        lab.textContent = label;
+        row.appendChild(lab);
+
+        row.appendChild(this._colorCellFor(this, `${path}.color`, value.color, this._effectiveTicks().color));
+
+        const stroke = this._numberInput(`${path}.stroke`, value.stroke, value.stroke);
+        stroke.classList.add("henn-editor-mini-number");
+        row.appendChild(stroke);
+
+        if (hasLength) {
+            const length = this._numberInput(`${path}.length`, value.length, value.length);
+            length.classList.add("henn-editor-mini-number");
+            row.appendChild(length);
+        } else {
+            row.appendChild(this._emptyCell());
+        }
+
+        const show = this._checkbox(`${path}.show`, value.show !== false, true);
+        show.classList.add("henn-editor-pill-check");
+        row.appendChild(show);
+
+        return row;
+    }
+
+    _tickFillTableRow(path, label, value) {
+        const row = document.createElement("div");
+        row.className = "henn-editor-tick-table";
+        row.classList.toggle("henn-editor-muted", value.show === false);
+
+        const lab = document.createElement("div");
+        lab.className = "henn-editor-tick-row-label";
+        lab.textContent = label;
+        row.appendChild(lab);
+
+        row.appendChild(this._colorCellFor(this, `${path}.color`, value.color, null));
+        row.appendChild(this._emptyCell());
+        row.appendChild(this._emptyCell());
+
+        const show = this._checkbox(`${path}.show`, value.show === true, false);
+        show.classList.add("henn-editor-pill-check");
+        row.appendChild(show);
+
+        return row;
     }
 
 }
@@ -4538,6 +4882,62 @@ function hennCreateColorPicker(editor, key, label, value) {
     root.appendChild(input);
     return root;
 }
+
+function hennCreatePathLineSelector(editor, key, label, value, options, defaultValue = null) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "henn-line-selector-root";
+
+    const currentValue = value ?? defaultValue;
+
+    wrapper.innerHTML = `
+        <div class="henn-line-selector-header">
+            ${label ? label + " " : ""}<strong>${currentValue ?? ""}</strong>
+        </div>
+
+        <div class="henn-line-selector-track-wrap">
+            <div class="henn-line-selector-track"></div>
+        </div>
+    `;
+
+    const trackWrap = wrapper.querySelector(".henn-line-selector-track-wrap");
+
+    options.forEach((opt, index) => {
+        const optValue = opt[0];
+        const optLabel = opt[1];
+
+        const edgePad = 4;
+
+        const pct = options.length === 1
+            ? 50
+            : edgePad + (index / (options.length - 1)) * (100 - edgePad * 2);
+
+        const isSelected = String(optValue) === String(currentValue);
+
+        const item = document.createElement("div");
+        item.className = "henn-line-selector-option" + (isSelected ? " selected" : "");
+        item.style.left = `${pct}%`;
+        item.innerHTML = `
+            <div class="henn-line-selector-dot"></div>
+            <div class="henn-line-selector-label">${optLabel}</div>
+        `;
+
+        item.addEventListener("click", () => {
+            if (editor._valueChangedOrDefault) {
+                editor._valueChangedOrDefault(key, optValue, defaultValue);
+            } else if (editor._valueChanged) {
+                editor._valueChanged(key, optValue);
+            } else {
+                editor._config = hennSetPath(editor._config, key, optValue);
+                hennFireConfigChanged(editor);
+            }
+        });
+
+        trackWrap.appendChild(item);
+    });
+
+    return wrapper;
+}
+
 
 function hennGetPath(obj, path) {
     if (!obj || !path) return undefined;
