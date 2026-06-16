@@ -779,9 +779,9 @@ const HENN_STONE_STYLE = `
     }
 
     .henn-editor-mini-number {
-        width: 52px !important;
-        min-width: 52px !important;
-        max-width: 52px !important;
+        width: 44px !important;
+        min-width: 44px !important;
+        max-width: 44px !important;
         text-align: right;
     }
 
@@ -845,9 +845,9 @@ const HENN_STONE_STYLE = `
         padding: 2px;
     }
 
-    .henn-editor-tick-table {
+     .henn-editor-tick-table {
         display: grid;
-        grid-template-columns: 72px minmax(240px, 1fr) 48px 48px 42px;
+        grid-template-columns: 60px minmax(0, 1fr) 44px 44px 34px;
         gap: 6px;
         align-items: center;
     }
