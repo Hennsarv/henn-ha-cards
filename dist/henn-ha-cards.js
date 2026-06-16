@@ -661,9 +661,10 @@ const HENN_STONE_STYLE = `
     .henn-editor-section {
         border: 1px solid var(--divider-color, #ddd);
         border-radius: 8px;
-        padding: 10px;
+        padding: 0;
         display: grid;
-        gap: 10px;
+        gap: 0;
+        overflow: hidden;
     }
 
     .henn-editor-title {
@@ -674,6 +675,19 @@ const HENN_STONE_STYLE = `
         gap: 8px;
     }
 
+    .henn-editor-section-title {
+        min-height: 38px;
+        padding: 0 10px;
+        border-bottom: 1px solid var(--divider-color, #ddd);
+        background: var(--secondary-background-color, #f5f5f5);
+    }
+
+    .henn-editor-section-body {
+        display: grid;
+        gap: 10px;
+        padding: 10px;
+    }
+
     .henn-editor-row {
         display: grid;
         grid-template-columns: 135px minmax(0, 260px);
@@ -681,20 +695,36 @@ const HENN_STONE_STYLE = `
         align-items: center;
     }
 
-    .henn-editor-grid4 {
+    .henn-editor-wide-row {
         display: grid;
-        grid-template-columns: minmax(0, 220px) 60px 60px 34px;
-        gap: 6px;
-        align-items: center;
+        gap: 5px;
     }
 
-    .henn-editor-grid4 > * {
-        min-width: 0;
+    .henn-editor-wide-label {
+        font-size: 12px;
+        color: var(--secondary-text-color);
+        font-weight: 600;
+    }
+
+    .henn-editor-top-row {
+        display: grid;
+        grid-template-columns: 64px 64px minmax(180px, 1fr);
+        gap: 12px;
+        align-items: end;
     }
 
     .henn-editor-small {
         font-size: 12px;
         color: var(--secondary-text-color);
+    }
+
+    .henn-editor-muted {
+        opacity: .45;
+    }
+
+    .henn-editor-inherited {
+        background: var(--secondary-background-color, #f3f3f3);
+        opacity: .85;
     }
 
     .henn-editor-input,
@@ -712,35 +742,6 @@ const HENN_STONE_STYLE = `
         min-width: 0;
     }
 
-    .henn-editor-inherited {
-        background: var(--secondary-background-color, #f3f3f3);
-        opacity: .85;
-    }
-
-    .henn-editor-muted {
-        opacity: .45;
-    }
-
-    .henn-series-header {
-        display: grid;
-        grid-template-columns: 32px 1fr 80px 34px 34px;
-        gap: 6px;
-        align-items: center;
-        border: 1px solid var(--divider-color, #ddd);
-        border-radius: 6px;
-        padding: 6px;
-        background: var(--secondary-background-color, #f5f5f5);
-    }
-
-    .henn-series-body {
-        border: 1px solid var(--divider-color, #ddd);
-        border-top: none;
-        border-radius: 0 0 6px 6px;
-        padding: 10px;
-        display: grid;
-        gap: 10px;
-    }
-
     .henn-editor-button {
         height: 32px;
         border: 1px solid var(--divider-color, #ccc);
@@ -748,189 +749,6 @@ const HENN_STONE_STYLE = `
         background: var(--card-background-color, white);
         color: var(--primary-text-color, black);
         cursor: pointer;
-    }
-
-    .henn-color-cell {
-        display: grid;
-        grid-template-columns: minmax(0, 140px) 44px;
-        gap: 6px;
-        align-items: center;
-        min-width: 0;
-    }
-
-    .henn-color-cell-selector {
-        min-width: 0;
-        padding: 0 !important;
-    }
-
-    .henn-color-cell-selector .henn-select-header {
-        display: none;
-    }
-
-    .henn-color-cell-selector .henn-select-preview {
-        height: 34px;
-        border-radius: 4px;
-    }
-
-    .henn-color-cell .henn-editor-input[type="color"] {
-        width: 44px;
-        min-width: 44px;
-        max-width: 44px;
-        height: 34px;
-        padding: 2px;
-    }
-
-    /* --- Stonehenge editor v2 layout additions --- */
-
-    .henn-editor-section {
-        padding: 0;
-        overflow: hidden;
-    }
-
-    .henn-editor-section-body {
-        display: grid;
-        gap: 10px;
-        padding: 10px;
-    }
-
-    .henn-editor-section-title {
-        min-height: 38px;
-        padding: 0 10px;
-        border-bottom: 1px solid var(--divider-color, #ddd);
-        background: var(--secondary-background-color, #f5f5f5);
-    }
-
-    .henn-editor-collapse-button {
-        width: 34px;
-        height: 28px;
-        border-radius: 999px;
-    }
-
-    .henn-editor-wide-row {
-        display: grid;
-        gap: 5px;
-    }
-
-    .henn-editor-wide-label {
-        font-size: 12px;
-        color: var(--secondary-text-color);
-        font-weight: 600;
-    }
-
-    .henn-editor-inline-row {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-        gap: 8px;
-        align-items: end;
-    }
-
-    .henn-editor-slider-number-row {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 64px;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .henn-editor-compact-number {
-        width: 64px !important;
-        min-width: 64px !important;
-        max-width: 64px !important;
-        text-align: right;
-    }
-
-    .henn-editor-mini-number {
-        width: 52px !important;
-        min-width: 52px !important;
-        max-width: 52px !important;
-        text-align: right;
-    }
-
-    .henn-editor-pill-check {
-        width: 34px;
-        height: 28px;
-        accent-color: var(--primary-color);
-        cursor: pointer;
-    }
-
-    .henn-editor-tick-table {
-        display: grid;
-        grid-template-columns: 72px minmax(0, 1fr) 58px 58px 42px;
-        gap: 6px;
-        align-items: center;
-    }
-
-    .henn-editor-tick-table-head {
-        font-size: 11px;
-        color: var(--secondary-text-color);
-        font-weight: 600;
-    }
-
-    .henn-editor-tick-row-label {
-        font-size: 12px;
-        font-weight: 600;
-    }
-
-    .henn-editor-line-control {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 58px 58px;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .henn-editor-fill-control {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 42px;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .henn-editor-gradient-colors {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 8px;
-    }
-
-    .henn-color-cell {
-        grid-template-columns: minmax(0, 1fr) 44px;
-        max-width: none;
-    }
-
-    .henn-color-cell-selector .henn-select-header {
-        display: flex;
-    }
-
-    .henn-color-cell-selector .henn-select-preview {
-        height: auto;
-    }
-
-    .henn-series-header-v2 {
-        display: grid;
-        grid-template-columns: 34px minmax(0, 1fr) 34px 34px 34px;
-        gap: 6px;
-        align-items: center;
-        border: 1px solid var(--divider-color, #ddd);
-        border-radius: 8px;
-        padding: 6px;
-        background: var(--secondary-background-color, #f5f5f5);
-    }
-
-    .henn-series-entity-host {
-        min-width: 0;
-    }
-
-    .henn-series-type-label {
-        font-size: 12px;
-        color: var(--secondary-text-color);
-        margin-top: 3px;
-    }
-
-    /* --- HA style checkbox --- */
-
-    .henn-editor-check {
-        width: 24px;
-        height: 24px;
-        cursor: pointer;
-        accent-color: var(--primary-color);
     }
 
     .henn-editor-head-icon {
@@ -953,16 +771,33 @@ const HENN_STONE_STYLE = `
         color: white;
     }
 
-    /* --- three column row --- */
-
-    .henn-editor-top-row {
-        display: grid;
-        grid-template-columns: 64px 64px minmax(180px, 1fr);
-        gap: 12px;
-        align-items: end;
+    .henn-editor-compact-number {
+        width: 64px !important;
+        min-width: 64px !important;
+        max-width: 64px !important;
+        text-align: right;
     }
 
-    /* --- segmented toggle --- */
+    .henn-editor-mini-number {
+        width: 52px !important;
+        min-width: 52px !important;
+        max-width: 52px !important;
+        text-align: right;
+    }
+
+    .henn-editor-slider-number-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 64px;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .henn-editor-check {
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        accent-color: var(--primary-color);
+    }
 
     .henn-editor-segment {
         display: inline-grid;
@@ -987,37 +822,118 @@ const HENN_STONE_STYLE = `
         color: white;
     }
 
-    /* --- color selector sizing fixes --- */
-
-    .henn-editor-tick-table {
-        grid-template-columns: 72px minmax(180px, 1fr) 64px 64px 42px;
-    }
-
     .henn-color-cell {
+        display: grid;
         grid-template-columns: minmax(150px, 1fr) 44px;
         gap: 8px;
-    }
-
-    .henn-color-cell .henn-select-root,
-    .henn-color-cell-selector {
-        width: 100%;
-        min-width: 150px;
-    }
-
-    .henn-color-cell-selector .henn-select-preview {
-        height: 34px !important;
-        min-height: 34px !important;
-        box-sizing: border-box;
-    }
-
-    .henn-color-cell-selector .henn-select-popup {
-        min-width: 220px;
-    }
-
-    .henn-editor-wide-row > .henn-color-cell {
+        align-items: center;
+        min-width: 0;
         max-width: none;
     }
 
+    .henn-color-cell-selector {
+        min-width: 150px;
+        width: 100%;
+        padding: 0 !important;
+    }
+
+    .henn-color-cell .henn-editor-input[type="color"] {
+        width: 44px;
+        min-width: 44px;
+        max-width: 44px;
+        height: 40px;
+        padding: 2px;
+    }
+
+    .henn-editor-tick-table {
+        display: grid;
+        grid-template-columns: 72px minmax(180px, 1fr) 64px 64px 42px;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .henn-editor-tick-table-head {
+        font-size: 11px;
+        color: var(--secondary-text-color);
+        font-weight: 600;
+    }
+
+    .henn-editor-tick-row-label {
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .henn-editor-grid4 {
+        display: grid;
+        grid-template-columns: minmax(0, 220px) 60px 60px 34px;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .henn-editor-grid4 > * {
+        min-width: 0;
+    }
+
+    .henn-editor-line-control {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 58px 58px;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .henn-editor-fill-control {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 42px;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .henn-editor-gradient-colors {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 8px;
+    }
+
+    .henn-series-header {
+        display: grid;
+        grid-template-columns: 32px 1fr 80px 34px 34px;
+        gap: 6px;
+        align-items: center;
+        border: 1px solid var(--divider-color, #ddd);
+        border-radius: 6px;
+        padding: 6px;
+        background: var(--secondary-background-color, #f5f5f5);
+    }
+
+    .henn-series-header-v2 {
+        display: grid;
+        grid-template-columns: 34px minmax(0, 1fr) 34px 34px 34px;
+        gap: 6px;
+        align-items: center;
+        border: 1px solid var(--divider-color, #ddd);
+        border-radius: 8px;
+        padding: 6px;
+        background: var(--secondary-background-color, #f5f5f5);
+    }
+
+    .henn-series-body {
+        border: 1px solid var(--divider-color, #ddd);
+        border-top: none;
+        border-radius: 0 0 6px 6px;
+        padding: 10px;
+        display: grid;
+        gap: 10px;
+    }
+
+    .henn-series-entity-host {
+        min-width: 0;
+    }
+
+    .henn-series-type-label {
+        font-size: 12px;
+        color: var(--secondary-text-color);
+        margin-top: 3px;
+    }
 </style>
 `;
 
