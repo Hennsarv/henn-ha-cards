@@ -494,6 +494,8 @@ const HENN_SLIDER_STYLE = `
             cursor: pointer;
             user-select: none;
             outline: none;
+            z-index: 1002;
+            position: relative;
         }
 
         .henn-select-preview:focus {
@@ -508,11 +510,15 @@ const HENN_SLIDER_STYLE = `
         .henn-select-popup {
             position: absolute;
             margin-top: 0;
-            z-index: 1000;
+            z-index: 1001;
             padding: 6px;
             border-radius: 12px;
             background: var(--card-background-color);
             box-shadow: 0 8px 24px rgba(0,0,0,.28);
+
+            min-width: 240px;
+            width: max-content;
+            max-width: min(420px, 90vw);
         }
 
         .henn-select-list {
@@ -664,7 +670,7 @@ const HENN_STONE_STYLE = `
         padding: 0;
         display: grid;
         gap: 0;
-        overflow: hidden;
+        overflow: visible;
     }
 
     .henn-editor-title {
