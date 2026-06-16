@@ -865,7 +865,7 @@ const HENN_STONE_STYLE = `
 
     .henn-editor-grid4 {
         display: grid;
-        grid-template-columns: minmax(0, 220px) 60px 60px 34px;
+        grid-template-columns: minmax(0, 220px) 50px 50px 34px;
         gap: 6px;
         align-items: center;
     }
