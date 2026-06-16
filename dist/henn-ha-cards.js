@@ -934,6 +934,33 @@ const HENN_STONE_STYLE = `
         color: var(--secondary-text-color);
         margin-top: 3px;
     }
+
+    .henn-editor-check {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 24px;
+        height: 24px;
+        border: 2px solid var(--divider-color, #aaa);
+        border-radius: 4px;
+        background: var(--card-background-color, white);
+        cursor: pointer;
+        display: grid;
+        place-content: center;
+    }
+
+    .henn-editor-check:checked {
+        border-color: var(--primary-color);
+        background: var(--primary-color);
+    }
+
+    .henn-editor-check:checked::after {
+        content: "✓";
+        color: white;
+        font-size: 22px;
+        font-weight: 800;
+        line-height: 1;
+    }
+
 </style>
 `;
 
