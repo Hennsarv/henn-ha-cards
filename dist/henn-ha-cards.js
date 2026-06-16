@@ -847,7 +847,7 @@ const HENN_STONE_STYLE = `
 
     .henn-editor-tick-table {
         display: grid;
-        grid-template-columns: 72px minmax(180px, 1fr) 50px 50px 42px;
+        grid-template-columns: 72px minmax(240px, 1fr) 48px 48px 42px;
         gap: 6px;
         align-items: center;
     }
