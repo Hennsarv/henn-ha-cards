@@ -2120,7 +2120,7 @@ window.customCards.push({
 class HennStonehengeCardEditor extends HTMLElement {
     set hass(hass) {
         this._hass = hass;
-        this.render();
+        this.render(); 
     }
 
     setConfig(config) {
