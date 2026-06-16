@@ -494,8 +494,7 @@ const HENN_SLIDER_STYLE = `
             cursor: pointer;
             user-select: none;
             outline: none;
-            z-index: 1002;
-            position: relative;
+
         }
 
         .henn-select-preview:focus {
@@ -516,7 +515,7 @@ const HENN_SLIDER_STYLE = `
             background: var(--card-background-color);
             box-shadow: 0 8px 24px rgba(0,0,0,.28);
 
-            min-width: 240px;
+
         }
 
         .henn-select-list {
