@@ -2424,9 +2424,9 @@ class HennStonehengeCardEditor extends HTMLElement {
             "ticks.radius",
             "Radius",
             ticks.radius,
-            40,
-            130,
-            1,
+            25,
+            95,
+            5,
             95
         ));
 
