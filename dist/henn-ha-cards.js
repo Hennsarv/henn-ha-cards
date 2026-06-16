@@ -3331,6 +3331,11 @@ class HennStonehengeCardEditor extends HTMLElement {
             btn.textContent = text;
 
             btn.addEventListener("click", () => {
+                [...seg.querySelectorAll(".henn-editor-segment-button")]
+                    .forEach(b => b.classList.remove("selected"));
+
+                btn.classList.add("selected");
+
                 this._valueChangedOrDefault(path, v, defaultValue);
             });
 
