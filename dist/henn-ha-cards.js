@@ -2188,10 +2188,10 @@ class HennStonehengeCardEditor extends HTMLElement {
         body.appendChild(this._numberRow("ticks.font.size", "Font size", ticks.font.size, 5));
         body.appendChild(this._numberRow("ticks.width", "Width", ticks.width, ticks.font.size * 2));
 
-        body.appendChild(this._selectRow("ticks.position", "Position", ticks.position, [
-            ["up", "Up"],
-            ["out", "Out"]
-        ], "up"));
+        body.appendChild(this._selectRow("ticks.directtion", "Direction", ticks.direction, [
+            ["vertical", "Vertical"],
+            ["radial", "Radial"]
+        ], "vertical"));
 
         body.appendChild(this._subTitle("Inner / outer / minor / fill"));
 
