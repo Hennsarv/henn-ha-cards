@@ -938,8 +938,14 @@ const HENN_STONE_STYLE = `
     .henn-editor-check {
         appearance: none;
         -webkit-appearance: none;
-        width: 24px;
-        height: 24px;
+        width: 24px !important;
+        min-width: 24px !important;
+        max-width: 24px !important;
+        height: 24px !important;
+        min-height: 24px !important;
+        max-height: 24px !important;
+        padding: 0 !important;
+        margin: 0;
         border: 2px solid var(--divider-color, #aaa);
         border-radius: 4px;
         background: var(--card-background-color, white);
@@ -959,7 +965,7 @@ const HENN_STONE_STYLE = `
         font-size: 22px;
         font-weight: 800;
         line-height: 1;
-    }
+}
 
 </style>
 `;
