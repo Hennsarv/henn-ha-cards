@@ -1527,8 +1527,6 @@ class HennStonehengeCard extends HTMLElement {
                 tight: true,
                 radius: 95,
                 direction: "vertical",
-                font_size: null,
-                    
                 width: null,          // vaikimisi font_size * 2
                 color: null,
                 ...config.ticks,
@@ -1586,7 +1584,7 @@ class HennStonehengeCard extends HTMLElement {
 
         const ticks = this.config.ticks;
 
-        const fontSize = ticks.font_size ?? ticks.font?.size ?? 5;
+        const fontSize = ticks.font?.size ?? 5;
         const width = ticks.width ?? fontSize * 2;
         const radius = ticks.radius ?? 95;
 
