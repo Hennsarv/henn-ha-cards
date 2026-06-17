@@ -2405,7 +2405,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         right.style.alignItems = "center";
 
         right.appendChild(
-            this._iconButton(
+            hennIconButton(
                 "✓",
                 enabled,
                 () => this._valueChanged("ticks.show", !enabled)
@@ -2413,7 +2413,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         );
 
         right.appendChild(
-            this._iconButton(
+            hennIconButton(
                 open ? "▾" : "▸",
                 false,
                 () => this._valueChanged("_editor_ticks_open", !open)
@@ -2467,7 +2467,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         );
 
         topRow.appendChild(
-            this._segmentRow(
+            hennSegmentRow(
                 "ticks.direction",
                 "Direction",
                 ticks.direction ?? "vertical",
@@ -3139,27 +3139,6 @@ class HennStonehengeCardEditor extends HTMLElement {
         hennFireConfigChanged(this);
     }
 
-    _colorCell(path, value, defaultValue = null) {
-        const box = document.createElement("div");
-        box.className = "henn-color-cell";
-
-        const selector = hennCreateListSelector(
-            this,
-            path,
-            "",
-            value ?? defaultValue ?? "",
-            HENN_CSS_COLORS2,
-            "color"
-        );
-
-        selector.classList.add("henn-color-cell-selector");
-
-        box.appendChild(selector);
-        box.appendChild(this._colorPicker(path, value, defaultValue));
-
-        return box;
-    }
-
     _wideColorRow(path, label, value, defaultValue = null) {
         const wrap = document.createElement("div");
         wrap.className = "henn-editor-wide-row";
@@ -3305,60 +3284,6 @@ class HennStonehengeCardEditor extends HTMLElement {
         row.appendChild(show);
 
         return row;
-    }
-
-    _iconButton(icon, active = false, onClick = null) {
-        const btn = document.createElement("button");
-
-        btn.className =
-            "henn-editor-head-icon" +
-            (active ? " active" : "");
-
-        btn.textContent = icon;
-
-        if (onClick) {
-            btn.addEventListener("click", onClick);
-        }
-
-        return btn;
-    }
-
-    _segmentRow(path, label, value, options, defaultValue = null) {
-        const wrap = document.createElement("div");
-        wrap.className = "henn-editor-wide-row";
-
-        const lab = document.createElement("div");
-        lab.className = "henn-editor-wide-label";
-        lab.textContent = label;
-
-        const seg = document.createElement("div");
-        seg.className = "henn-editor-segment";
-
-        options.forEach(([v, text]) => {
-            const btn = document.createElement("button");
-
-            btn.className =
-                "henn-editor-segment-button" +
-                (String(v) === String(value) ? " selected" : "");
-
-            btn.textContent = text;
-
-            btn.addEventListener("click", () => {
-                [...seg.querySelectorAll(".henn-editor-segment-button")]
-                    .forEach(b => b.classList.remove("selected"));
-
-                btn.classList.add("selected");
-
-                this._valueChangedOrDefault(path, v, defaultValue);
-            });
-
-            seg.appendChild(btn);
-        });
-
-        wrap.appendChild(lab);
-        wrap.appendChild(seg);
-
-        return wrap;
     }
 
 }
@@ -4899,4 +4824,58 @@ function hennFireConfigChanged(editor) {
         bubbles: true,
         composed: true
     }));
+}
+
+function hennIconButton(icon, active = false, onClick = null) {
+    const btn = document.createElement("button");
+
+    btn.className =
+        "henn-editor-head-icon" +
+        (active ? " active" : "");
+
+    btn.textContent = icon;
+
+    if (onClick) {
+        btn.addEventListener("click", onClick);
+    }
+
+    return btn;
+}
+
+function hennSegmentRow(path, label, value, options, defaultValue = null) {
+    const wrap = document.createElement("div");
+    wrap.className = "henn-editor-wide-row";
+
+    const lab = document.createElement("div");
+    lab.className = "henn-editor-wide-label";
+    lab.textContent = label;
+
+    const seg = document.createElement("div");
+    seg.className = "henn-editor-segment";
+
+    options.forEach(([v, text]) => {
+        const btn = document.createElement("button");
+
+        btn.className =
+            "henn-editor-segment-button" +
+            (String(v) === String(value) ? " selected" : "");
+
+        btn.textContent = text;
+
+        btn.addEventListener("click", () => {
+            [...seg.querySelectorAll(".henn-editor-segment-button")]
+                .forEach(b => b.classList.remove("selected"));
+
+            btn.classList.add("selected");
+
+            this._valueChangedOrDefault(path, v, defaultValue);
+        });
+
+        seg.appendChild(btn);
+    });
+
+    wrap.appendChild(lab);
+    wrap.appendChild(seg);
+
+    return wrap;
 }
