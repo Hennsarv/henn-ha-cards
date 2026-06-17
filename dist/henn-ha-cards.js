@@ -2533,7 +2533,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             )
         );
 
-        const title = this._title("Numbrilaud", right);
+        const title = this._title("Seeriate vaikimisi seaded", right);
         title.classList.add("henn-editor-section-title");
         host.appendChild(title);
 
