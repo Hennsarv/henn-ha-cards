@@ -2516,8 +2516,22 @@ class HennStonehengeCardEditor extends HTMLElement {
     _renderDefaultsSection() {
         const host = this.querySelector("#defaults-section");
         host.className = "henn-editor-section";
+        host.innerHTML = "";
 
-        host.appendChild(this._title("Seeriate vaikimisi väärtused"));
+        const open = this._config._editor_defaults_open !== false;
+
+        const right = document.createElement("div");
+        right.style.display = "flex";
+        right.style.gap = "6px";
+        right.style.alignItems = "center";
+
+        right.appendChild(
+            hennIconButton(
+                open ? "▾" : "▸",
+                false,
+                () => this._valueChanged("_editor_defaults_open", !open)
+            )
+        );
 
         host.appendChild(hennTextRow(this, "history_period", "History", this._config.history_period ?? "1d", "1d"));
         host.appendChild(hennTextRow(this, "bucket_size", "Bucket size", this._config.bucket_size ?? "1h", "1h"));
