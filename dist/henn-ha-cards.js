@@ -2165,7 +2165,7 @@ class HennStonehengeCard extends HTMLElement {
         const labelHours = [0, 3, 6, 9, 12, 15, 18, 21];
 
         for (const h of labelHours) {
-            s += this.textAt(String(h).padStart(2, "0"), h * 15, t.radius, t.font_size, t.color);
+            s += this.textAt(String(h).padStart(2, "0"), h * 15, t.radius, t.font?.size??5, t.color);
         }
 
         if (t.minor?.show !== false) {
@@ -2183,7 +2183,7 @@ class HennStonehengeCard extends HTMLElement {
         const labelDays = [5, 10, 15, 20, 25, 30];
 
         for (const d of labelDays) {
-            s += this.textAt(String(d), (d - 1) * 360 / 31, t.radius, t.font_size, t.color);
+            s += this.textAt(String(d), (d - 1) * 360 / 31, t.radius, t.font?.size??5, t.color);
         }
 
         if (t.minor?.show !== false) {
@@ -2201,7 +2201,7 @@ class HennStonehengeCard extends HTMLElement {
         let s = "";
 
         for (let i = 0; i < 12; i++) {
-            s += this.textAt(names[i], i * 30, t.radius, t.font_size, t.color);
+            s += this.textAt(names[i], i * 30, t.radius, t.font?.size??5, t.color);
         }
 
         if (t.minor?.show !== false) {
