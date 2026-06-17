@@ -1526,7 +1526,7 @@ class HennStonehengeCard extends HTMLElement {
                 show: true,
                 tight: true,
                 radius: 95,
-                direction: "screen",
+                direction: "vertical",
                 font_size: null,
                     
                 width: null,          // vaikimisi font_size * 2
