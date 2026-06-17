@@ -2383,11 +2383,13 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         host.appendChild(this._title("Stonehenge"));
 
-        host.appendChild(this._selectRow("bucketing", "Bucketing", this._config.bucketing ?? "day", [
+        host.appendChild(
+            hennSegmentRow("Bucketing", this._config.bucketing ?? "day", [
             ["day", "Day"],
             ["month", "Month"],
             ["year", "Year"]
-        ], "day"));
+        ], "day", (v, def) => this._valueChanged("bucketing", value)));
+
     }
 
     _renderTicksSection() {
