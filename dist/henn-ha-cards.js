@@ -4445,7 +4445,7 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
             }
 
             if (isSearch()) {
-                //filterRows();
+                filterRows();
             }
         });
 
