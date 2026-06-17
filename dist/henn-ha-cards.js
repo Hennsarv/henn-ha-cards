@@ -775,9 +775,9 @@ const HENN_STONE_STYLE = `
     }
 
     .henn-editor-compact-number {
-        width: 64px !important;
-        min-width: 64px !important;
-        max-width: 64px !important;
+        width: 50px !important;
+        min-width: 50px !important;
+        max-width: 50px !important;
         text-align: right;
     }
 
