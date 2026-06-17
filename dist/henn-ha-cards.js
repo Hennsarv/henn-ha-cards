@@ -4619,6 +4619,10 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
 
         root.appendChild(popup);
 
+        if (hasInput()) {
+            filterRows();
+        }
+
         positionPopup();
 
         requestAnimationFrame(markActive);
