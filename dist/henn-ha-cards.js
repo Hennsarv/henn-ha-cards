@@ -700,7 +700,7 @@ const HENN_STONE_STYLE = `
 
     .henn-editor-wide-row {
         display: grid;
-        gap: 5px;
+        gap: 1px;
     }
 
     .henn-editor-wide-label {
