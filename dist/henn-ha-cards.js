@@ -4577,6 +4577,9 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
 
         popup = document.createElement("div");
         popup.className = "henn-select-popup";
+        if (isColor) {
+            popup.style.minWidth = "320px";
+        }
 
         if (hasInput()) {
             popup.appendChild(createInput());
