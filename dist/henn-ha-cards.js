@@ -2388,7 +2388,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             ["day", "Day"],
             ["month", "Month"],
             ["year", "Year"]
-        ], "day", (v, def) => this._valueChanged("bucketing", value)));
+        ], "day", (v, def) => this._valueChanged("bucketing", v)));
 
     }
 
