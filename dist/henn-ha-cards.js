@@ -2474,6 +2474,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                     ["vertical", "Vertical"],
                     ["radial", "Radial"]
                 ],
+                "vertical",
                 (v, def) => this._valueChangedOrDefault("ticks.direction", v, def)
             )
         );
@@ -4841,7 +4842,7 @@ function hennIconButton(icon, active = false, onClick = null) {
     return btn;
 }
 
-function hennSegmentRow(label, value, options, onChange) {
+function hennSegmentRow(label, value, options, defaultValue, onChange) {
     const wrap = document.createElement("div");
     wrap.className = "henn-editor-wide-row";
 
