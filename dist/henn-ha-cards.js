@@ -2474,7 +2474,6 @@ class HennStonehengeCardEditor extends HTMLElement {
                     ["vertical", "Vertical"],
                     ["radial", "Radial"]
                 ],
-                "vertical",
                 (v, def) => this._valueChangedOrDefault("ticks.direction", v, def)
             )
         );
