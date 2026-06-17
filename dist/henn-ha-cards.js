@@ -2432,7 +2432,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         title.classList.add("henn-editor-section-title");
         host.appendChild(title);
 
-        if (!open) return;
+//        if (!open) return;
 
         const body = document.createElement("div");
         body.className = enabled
