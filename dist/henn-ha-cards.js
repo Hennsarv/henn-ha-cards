@@ -4537,6 +4537,7 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
         const gap = 6;
 
         popup.style.position = "fixed";
+        popup.style.zIndex = "99999";
         popup.style.visibility = "hidden";
         popup.style.left = "0px";
         popup.style.top = "0px";
