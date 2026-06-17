@@ -667,8 +667,7 @@ const HENN_STONE_STYLE = `
         padding: 0;
         display: grid;
         gap: 0;
-        overflow: hidden;
-        overflow-y: visible;
+        overflow: visible;
     }
 
     .henn-editor-title {
