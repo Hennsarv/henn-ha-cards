@@ -4443,6 +4443,7 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
             if (isCombo()) {
                 firstComboBackspace = false;
                 updateActiveFromComboValue();
+                filterRows();
             }
 
             if (isSearch()) {
