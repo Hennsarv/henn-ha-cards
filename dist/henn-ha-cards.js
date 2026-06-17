@@ -4624,7 +4624,14 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
             popup.appendChild(createButtons());
         }
 
-        document.body.appendChild(popup);
+        const popupHost =
+            root.closest("hui-dialog-edit-card") ||
+            root.closest("ha-dialog") ||
+            root.closest("ha-card") ||
+            root.parentElement ||
+            root;
+
+        popupHost.appendChild(popup);
 
         if (hasInput()) {
             //filterRows();
