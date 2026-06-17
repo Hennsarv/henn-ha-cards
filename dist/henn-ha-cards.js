@@ -2709,7 +2709,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             color,
             radius,
             width,
-            position: t.position ?? "up",
+            position: t.direction ?? "vertical",
             font: {
                 ...(t.font || {}),
                 size: fontSize,
