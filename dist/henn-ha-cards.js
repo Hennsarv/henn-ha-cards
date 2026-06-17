@@ -4534,29 +4534,33 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
     }
 
     function positionPopup() {
-        popup.style.left = "0";
-        popup.style.right = "0";
-        popup.style.top = "0px";
-        popup.style.visibility = "hidden";
-
         const gap = 6;
+
+        popup.style.position = "fixed";
+        popup.style.visibility = "hidden";
+        popup.style.left = "0px";
+        popup.style.top = "0px";
+        popup.style.right = "auto";
+        popup.style.width = `${preview.getBoundingClientRect().width}px`;
 
         const previewRect = preview.getBoundingClientRect();
         const popupRect = popup.getBoundingClientRect();
 
-        const topBelow = preview.offsetTop + preview.offsetHeight + gap;
-        const topAbove = preview.offsetTop - popupRect.height - gap;
+        let left = previewRect.left;
+        let top = previewRect.bottom + gap;
 
-        let top = topBelow;
-
-        if (previewRect.bottom + gap + popupRect.height > window.innerHeight) {
-            top = topAbove;
+        if (top + popupRect.height > window.innerHeight) {
+            top = previewRect.top - popupRect.height - gap;
         }
 
-        if (top < -root.getBoundingClientRect().top + gap) {
-            top = topBelow;
+        if (left + popupRect.width > window.innerWidth - gap) {
+            left = window.innerWidth - popupRect.width - gap;
         }
 
+        if (left < gap) left = gap;
+        if (top < gap) top = gap;
+
+        popup.style.left = `${left}px`;
         popup.style.top = `${top}px`;
         popup.style.visibility = "";
     }
@@ -4619,7 +4623,7 @@ function hennCreateListSelector(editor, key, label, value, options, mode = "list
             popup.appendChild(createButtons());
         }
 
-        root.appendChild(popup);
+        document.body.appendChild(popup);
 
         if (hasInput()) {
             //filterRows();
