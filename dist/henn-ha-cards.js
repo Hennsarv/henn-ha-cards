@@ -2432,7 +2432,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         title.classList.add("henn-editor-section-title");
         host.appendChild(title);
 
-//        if (!open) return;
+       if (!open) return;
 
         const body = document.createElement("div");
         body.className = enabled
@@ -2532,6 +2532,14 @@ class HennStonehengeCardEditor extends HTMLElement {
                 () => this._valueChanged("_editor_defaults_open", !open)
             )
         );
+
+        const title = this._title("Numbrilaud", right);
+        title.classList.add("henn-editor-section-title");
+        host.appendChild(title);
+
+        if (!open) return;
+
+
 
         host.appendChild(hennTextRow(this, "history_period", "History", this._config.history_period ?? "1d", "1d"));
         host.appendChild(hennTextRow(this, "bucket_size", "Bucket size", this._config.bucket_size ?? "1h", "1h"));
