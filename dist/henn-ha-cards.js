@@ -1619,7 +1619,7 @@ class HennStonehengeCard extends HTMLElement {
         };
 
         const { value_entity, label, ticks: _ticks, lower, upper, bucketing, ...defConfig } = this.config;
-        this.defConfig = defConfig;
+            this.defConfig = defConfig;
     }
 
     set hass(hass) {
@@ -2570,16 +2570,40 @@ class HennStonehengeCardEditor extends HTMLElement {
             )
         ); 
 
-        host.appendChild(hennSegmentRow( "Type", this._config.diagram_type ?? "gradient", [
-            ["gradient", "Gradient"],
-            ["bar", "Bar"],
-            ["line", "Line"]
-        ], "gradient", (v, def) => this._valueChangedOrDefault("diagram_type", v, def))); 
+        const row = document.createElement("div");
 
-        host.appendChild(hennSegmentRow( "Anchor", this._config.anchor ?? "lower", [
-            ["lower", "Lower"],
-            ["upper", "Upper"]
-        ], "lower", (v, def) => this._valueChangedOrDefault("anchor", v, def)));
+        row.style.display = "grid";
+        row.style.gridTemplateColumns = "1fr 1fr";
+        row.style.gap = "8px";
+
+        row.appendChild(
+            hennSegmentRow(
+                "Type",
+                this._config.diagram_type ?? "gradient",
+                [
+                    ["gradient", "Gradient"],
+                    ["bar", "Bar"],
+                    ["line", "Line"]
+                ],
+                "gradient",
+                (v, def) => this._valueChangedOrDefault("diagram_type", v, def)
+            )
+        );
+
+        row.appendChild(
+            hennSegmentRow(
+                "Anchor",
+                this._config.anchor ?? "lower",
+                [
+                    ["lower", "Lower"],
+                    ["upper", "Upper"]
+                ],
+                "lower",
+                (v, def) => this._valueChangedOrDefault("anchor", v, def)
+            )
+        );
+
+        host.appendChild(row);
 
         host.appendChild(this._subTitle("Line"));
         host.appendChild(hennColorRow(this, "line.color", "Color", hennGetPath(this._config, "line.color"), null));
@@ -4910,19 +4934,33 @@ function hennIconButton(icon, active = false, onClick = null) {
     return btn;
 }
 
-function hennSegmentRow(label, value, options, defaultValue, onChange) {
+function hennSegmentRow(label, value, options, defaultValue, onChange, opts = {}) {
     const wrap = document.createElement("div");
     wrap.className = "henn-editor-wide-row";
+
+    if (opts.wrapStyle) {
+        Object.assign(wrap.style, opts.wrapStyle);
+    }
 
     const lab = document.createElement("div");
     lab.className = "henn-editor-wide-label";
     lab.textContent = label;
 
+    if (opts.labelStyle) {
+        Object.assign(lab.style, opts.labelStyle);
+    }
+
     const seg = document.createElement("div");
     seg.className = "henn-editor-segment";
 
+    if (opts.segmentStyle) {
+        Object.assign(seg.style, opts.segmentStyle);
+    }
+
     options.forEach(([v, text]) => {
         const btn = document.createElement("button");
+
+        btn.type = "button";
 
         btn.className =
             "henn-editor-segment-button" +
@@ -4930,7 +4968,14 @@ function hennSegmentRow(label, value, options, defaultValue, onChange) {
 
         btn.textContent = text;
 
-        btn.addEventListener("click", () => {
+        if (opts.buttonStyle) {
+            Object.assign(btn.style, opts.buttonStyle);
+        }
+
+        btn.addEventListener("click", e => {
+            e.preventDefault();
+            e.stopPropagation();
+
             [...seg.querySelectorAll(".henn-editor-segment-button")]
                 .forEach(b => b.classList.remove("selected"));
 
