@@ -2570,13 +2570,13 @@ class HennStonehengeCardEditor extends HTMLElement {
             )
         ); 
 
-        host.appendChild(this.hennSegmentRow("diagram_type", "Type", this._config.diagram_type ?? "gradient", [
+        host.appendChild(hennSegmentRow("diagram_type", "Type", this._config.diagram_type ?? "gradient", [
             ["gradient", "Gradient"],
             ["bar", "Bar"],
             ["line", "Line"]
         ], "gradient", (v, def) => this._valueChangedOrDefault("diagram_type", v, def)));
 
-        host.appendChild(this.hennSegmentRow("anchor", "Anchor", this._config.anchor ?? "lower", [
+        host.appendChild(hennSegmentRow("anchor", "Anchor", this._config.anchor ?? "lower", [
             ["lower", "Lower"],
             ["upper", "Upper"]
         ], "lower", (v, def) => this._valueChangedOrDefault("anchor", v, def)));
