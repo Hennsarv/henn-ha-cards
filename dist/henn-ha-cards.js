@@ -813,7 +813,7 @@ const HENN_STONE_STYLE = `
     }
 
     .henn-editor-segment-button {
-        min-width: 90px;
+        min-width: 60px;
         height: 34px;
         border: none;
         background: var(--card-background-color, white);
