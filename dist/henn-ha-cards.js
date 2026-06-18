@@ -2574,7 +2574,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             ["gradient", "Gradient"],
             ["bar", "Bar"],
             ["line", "Line"]
-        ], "gradient", (v, def) => this._valueChangedOrDefault("diagram_type", v, def)));
+        ], "gradient", (v, def) => this._valueChangedOrDefault("diagram_type", v, def))); 
 
         host.appendChild(hennSegmentRow("anchor", "Anchor", this._config.anchor ?? "lower", [
             ["lower", "Lower"],
