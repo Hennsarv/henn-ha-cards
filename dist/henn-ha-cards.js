@@ -2565,7 +2565,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                 this._config.bucketing ?? "day",
                 this._config.bucket_size ?? "10m"
             )
-        );
+        ); 
 
         host.appendChild(createSeparator());
         
