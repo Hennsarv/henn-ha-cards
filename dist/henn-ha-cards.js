@@ -2570,8 +2570,6 @@ class HennStonehengeCardEditor extends HTMLElement {
             )
         );
 
-        body.appendChild(topRow);
-
         host.appendChild(this._selectRow("diagram_type", "Type", this._config.diagram_type ?? "gradient", [
             ["gradient", "Gradient"],
             ["bar", "Bar"],
