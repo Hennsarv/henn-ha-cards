@@ -2568,7 +2568,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                 "avg",
                 (v, def) => this._valueChangedOrDefault("aggregate", v, def)
             )
-        );
+        ); 
 
         host.appendChild(this._selectRow("diagram_type", "Type", this._config.diagram_type ?? "gradient", [
             ["gradient", "Gradient"],
