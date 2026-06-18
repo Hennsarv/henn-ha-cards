@@ -2393,7 +2393,24 @@ class HennStonehengeCardEditor extends HTMLElement {
                     ["year", "Year"]
                 ],
                 "day",
-                (v, def) => this._valueChangedOrDefault("bucketing", v, def)
+                (v, def) => {
+                    this._config = hennSetOrDeleteDefault(this._config, "bucketing", v, def);
+
+                    const defaults = {
+                        day: "10m",
+                        month: "6h",
+                        year: "7d"
+                    };
+
+                    this._config = hennSetOrDeleteDefault(
+                        this._config,
+                        "bucket_size",
+                        defaults[v],
+                        defaults.day
+                    );
+
+                    hennFireConfigChanged(this);
+                }
             )
         );
     }
@@ -2542,7 +2559,13 @@ class HennStonehengeCardEditor extends HTMLElement {
 
 
         host.appendChild(hennTextRow(this, "history_period", "History", this._config.history_period ?? "1d", "1d"));
-        host.appendChild(hennTextRow(this, "bucket_size", "Bucket size", this._config.bucket_size ?? "1h", "1h"));
+
+        host.appendChild(
+            this._bucketSizeRow(
+                this._config.bucketing ?? "day",
+                this._config.bucket_size ?? "10m"
+            )
+        );
 
         host.appendChild(createSeparator());
         
@@ -3354,6 +3377,16 @@ class HennStonehengeCardEditor extends HTMLElement {
         row.appendChild(show);
 
         return row;
+    }
+
+    _bucketSizeRow(bucketing, value) {
+        return hennTextRow(
+            this,
+            "bucket_size",
+            "Bucket size",
+            value,
+            "10m"
+        );
     }
 
 }
