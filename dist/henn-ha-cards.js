@@ -2553,6 +2553,25 @@ class HennStonehengeCardEditor extends HTMLElement {
             ["distinct", "Distinct"]
         ], "avg"));
 
+        host.appendChild(
+            hennSegmentRow(
+                "Aggregation",
+                this._config.aggregate ?? "avg",
+                [
+                    ["avg", "Average"],
+                    ["sum", "Sum"],
+                    ["count", "Count"],
+                    ["max", "Max"],
+                    ["min", "Min"],
+                    ["distinct", "Distinct"]
+                ],
+                "avg",
+                (v, def) => this._valueChangedOrDefault("aggregate", v, def)
+            )
+        );
+
+        body.appendChild(topRow);
+
         host.appendChild(this._selectRow("diagram_type", "Type", this._config.diagram_type ?? "gradient", [
             ["gradient", "Gradient"],
             ["bar", "Bar"],
