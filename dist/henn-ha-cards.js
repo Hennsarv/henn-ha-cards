@@ -2563,7 +2563,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         host.appendChild(
             this._bucketSizeRow(
                 this._config.bucketing ?? "day",
-                this._config.bucket_size ?? "10m"
+                this._config.bucket_size ?? "10m" 
             )
         ); 
 
