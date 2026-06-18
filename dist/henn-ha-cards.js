@@ -2558,6 +2558,8 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         host.appendChild(hennTextRow(this, "history_period", "History", this._config.history_period ?? "1d", "1d"));
 
+        host.appendChild(createSeparator());
+
         host.appendChild(
             this._bucketSizeRow(
                 this._config.bucketing ?? "day",
