@@ -2544,18 +2544,18 @@ class HennStonehengeCardEditor extends HTMLElement {
         host.appendChild(hennTextRow(this, "history_period", "History", this._config.history_period ?? "1d", "1d"));
         host.appendChild(hennTextRow(this, "bucket_size", "Bucket size", this._config.bucket_size ?? "1h", "1h"));
 
-        host.appendChild(this._selectRow("aggregate", "Aggregate", this._config.aggregate ?? "avg", [
-            ["avg", "Average"],
-            ["sum", "Sum"],
-            ["count", "Count"],
-            ["max", "Max"],
-            ["min", "Min"],
-            ["distinct", "Distinct"]
-        ], "avg"));
+        // host.appendChild(this._selectRow("aggregate", "Aggregate", this._config.aggregate ?? "avg", [
+        //     ["avg", "Average"],
+        //     ["sum", "Sum"],
+        //     ["count", "Count"],
+        //     ["max", "Max"],
+        //     ["min", "Min"],
+        //     ["distinct", "Distinct"]
+        // ], "avg"));
 
         host.appendChild(
             hennSegmentRow(
-                "Aggregation",
+                "Aggregate",
                 this._config.aggregate ?? "avg",
                 [
                     ["avg", "Average"],
@@ -2570,16 +2570,16 @@ class HennStonehengeCardEditor extends HTMLElement {
             )
         ); 
 
-        host.appendChild(this._selectRow("diagram_type", "Type", this._config.diagram_type ?? "gradient", [
+        host.appendChild(this.hennSegmentRow("diagram_type", "Type", this._config.diagram_type ?? "gradient", [
             ["gradient", "Gradient"],
             ["bar", "Bar"],
             ["line", "Line"]
-        ], "gradient"));
+        ], "gradient", (v, def) => this._valueChangedOrDefault("diagram_type", v, def)));
 
-        host.appendChild(this._selectRow("anchor", "Anchor", this._config.anchor ?? "lower", [
+        host.appendChild(this.hennSegmentRow("anchor", "Anchor", this._config.anchor ?? "lower", [
             ["lower", "Lower"],
             ["upper", "Upper"]
-        ], "lower"));
+        ], "lower", (v, def) => this._valueChangedOrDefault("anchor", v, def)));
 
         host.appendChild(this._subTitle("Line"));
         host.appendChild(hennColorRow(this, "line.color", "Color", hennGetPath(this._config, "line.color"), null));
