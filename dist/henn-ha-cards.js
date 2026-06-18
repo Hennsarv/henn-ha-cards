@@ -3380,13 +3380,84 @@ class HennStonehengeCardEditor extends HTMLElement {
     }
 
     _bucketSizeRow(bucketing, value) {
-        return hennTextRow(
-            this,
-            "bucket_size",
-            "Bucket size",
-            value,
-            "10m"
+        const map = {
+            day: {
+                unit: "m",
+                values: [5, 10, 15, 30, 60]
+            },
+            month: {
+                unit: "h",
+                values: [3, 6, 12, 24]
+            },
+            year: {
+                unit: "d",
+                values: [1, 7, 10, 15]
+            }
+        };
+
+        const cfg = map[bucketing] || map.day;
+
+        const row = document.createElement("div");
+        row.className = "henn-editor-wide-row";
+
+        const label = document.createElement("div");
+        label.className = "henn-editor-wide-label";
+        label.textContent = "Bucket size";
+
+        const right = document.createElement("div");
+        right.style.display = "grid";
+        right.style.gridTemplateColumns = "1fr 70px 40px";
+        right.style.gap = "8px";
+        right.style.alignItems = "center";
+
+        right.appendChild(
+            hennSegmentRow(
+                "",
+                value,
+                cfg.values.map(v => [`${v}${cfg.unit}`, `${v}`]),
+                null,
+                v => this._valueChanged("bucket_size", v),
+                {
+                    wrapStyle: {
+                        display: "contents"
+                    },
+                    labelStyle: {
+                        display: "none"
+                    },
+                    segmentStyle: {
+                        width: "100%",
+                        display: "flex"
+                    },
+                    buttonStyle: {
+                        flex: "1"
+                    }
+                }
+            ).lastElementChild
         );
+
+        const input = document.createElement("input");
+        input.type = "number";
+        input.className = "henn-editor-input";
+        input.value = parseInt(value) || cfg.values[0];
+
+        input.addEventListener("change", () => {
+            this._valueChanged(
+                "bucket_size",
+                `${input.value}${cfg.unit}`
+            );
+        });
+
+        right.appendChild(input);
+
+        const unit = document.createElement("div");
+        unit.textContent = cfg.unit;
+
+        right.appendChild(unit);
+
+        row.appendChild(label);
+        row.appendChild(right);
+
+        return row;
     }
 
 }
