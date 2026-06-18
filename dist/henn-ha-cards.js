@@ -2544,15 +2544,8 @@ class HennStonehengeCardEditor extends HTMLElement {
         host.appendChild(hennTextRow(this, "history_period", "History", this._config.history_period ?? "1d", "1d"));
         host.appendChild(hennTextRow(this, "bucket_size", "Bucket size", this._config.bucket_size ?? "1h", "1h"));
 
-        // host.appendChild(this._selectRow("aggregate", "Aggregate", this._config.aggregate ?? "avg", [
-        //     ["avg", "Average"],
-        //     ["sum", "Sum"],
-        //     ["count", "Count"],
-        //     ["max", "Max"],
-        //     ["min", "Min"],
-        //     ["distinct", "Distinct"]
-        // ], "avg"));
-
+        host.appendChild(document.createElement("hr"));
+        
         host.appendChild(
             hennSegmentRow(
                 "Aggregate",
