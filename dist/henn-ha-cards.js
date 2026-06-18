@@ -2544,7 +2544,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         host.appendChild(hennTextRow(this, "history_period", "History", this._config.history_period ?? "1d", "1d"));
         host.appendChild(hennTextRow(this, "bucket_size", "Bucket size", this._config.bucket_size ?? "1h", "1h"));
 
-        host.appendChild(document.createElement("hr"));
+        host.appendChild(createSeparator());
         
         host.appendChild(
             hennSegmentRow(
@@ -2562,6 +2562,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                 (v, def) => this._valueChangedOrDefault("aggregate", v, def)
             )
         ); 
+        host.appendChild(createSeparator());
 
         const row = document.createElement("div");
 
@@ -2597,15 +2598,20 @@ class HennStonehengeCardEditor extends HTMLElement {
         );
 
         host.appendChild(row);
+        host.appendChild(createSeparator());
 
         host.appendChild(this._subTitle("Line"));
         host.appendChild(hennColorRow(this, "line.color", "Color", hennGetPath(this._config, "line.color"), null));
         host.appendChild(hennNumberRow(this, "line.stroke", "Stroke", hennGetPath(this._config, "line.stroke") ?? 2, 2));
         host.appendChild(hennCheckboxRow(this, "line.smooth", "Smooth", hennGetPath(this._config, "line.smooth") === true, false));
 
+        host.appendChild(createSeparator());
+
         host.appendChild(this._subTitle("Fill"));
         host.appendChild(hennCheckboxRow(this, "fill.show", "Enabled", hennGetPath(this._config, "fill.show") !== false, true));
         host.appendChild(hennColorRow(this, "fill.color", "Color", hennGetPath(this._config, "fill.color"), null));
+
+        host.appendChild(createSeparator());
 
         host.appendChild(this._subTitle("Gradient"));
         host.appendChild(hennColorRow(this, "gradient.color", "Color", hennGetPath(this._config, "gradient.color") ?? "orange", "orange"));
@@ -5109,4 +5115,12 @@ function hennColorCell(owner, path, value, defaultValue = null) {
     );
 
     return box;
+}
+
+function createSeparator() {
+    const hr = document.createElement("div");
+    hr.style.height = "1px";
+    hr.style.background = "var(--divider-color)";
+    hr.style.margin = "8px 0";
+    return hr;
 }
