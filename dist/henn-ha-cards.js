@@ -2402,16 +2402,14 @@ class HennStonehengeCardEditor extends HTMLElement {
                         year: "7d"
                     };
 
-                    this._config = hennSetOrDeleteDefault(
+                    this._config = hennSetPath(
                         this._config,
                         "bucket_size",
-                        defaults[v],
-                        defaults.day
+                        defaults[v]
                     );
 
                     hennFireConfigChanged(this);
-                }
-            )
+                }            )
         );
     }
 
