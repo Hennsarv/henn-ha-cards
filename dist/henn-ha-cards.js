@@ -2787,11 +2787,11 @@ class HennStonehengeCardEditor extends HTMLElement {
             this._config.color, true
         ));
 
+        host.appendChild(table);
 
-
-        host.appendChild(hennColorRow(this, "line.color", "Color", hennGetPath(this._config, "line.color"), null));
-        host.appendChild(hennNumberRow(this, "line.stroke", "Stroke", hennGetPath(this._config, "line.stroke") ?? 2, 2));
-        host.appendChild(hennCheckboxRow(this, "line.smooth", "Smooth", hennGetPath(this._config, "line.smooth") === true, false));
+        // host.appendChild(hennColorRow(this, "line.color", "Color", hennGetPath(this._config, "line.color"), null));
+        // host.appendChild(hennNumberRow(this, "line.stroke", "Stroke", hennGetPath(this._config, "line.stroke") ?? 2, 2));
+        // host.appendChild(hennCheckboxRow(this, "line.smooth", "Smooth", hennGetPath(this._config, "line.smooth") === true, false));
 
         host.appendChild(createSeparator());
 
