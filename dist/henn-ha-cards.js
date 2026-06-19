@@ -5424,13 +5424,14 @@ function hennSausageRow(value, options, defaultValue = "1mo", onChange = null, o
         ? ""
         : `<div class="henn-sausage-mumm" style="left:${mummLeft}%"></div>`;
 
-    return `
-        <div class="henn-sausage">
+    const wrap = document.createElement('div');
+    wrap.classList = "henn-sausage";
+    wrap.innerHTML = `
             ${rings}
             <div class="henn-sausage-track"></div>
             ${covers}
             ${mumm}
             ${labels}
-        </div>
     `;
+    return wrap;
 }
