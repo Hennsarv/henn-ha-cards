@@ -5351,7 +5351,7 @@ function createSeparator() {
 }
 
 function hennSausageRow(value, options, defaultValue = "1mo", onChange = null, opts = {}) {
-    const gap = opts.gap ?? 3;              // %
+    const gap = opts.gap ?? 5;              // %
     const maxExtraDays = opts.maxExtraDays ?? 10;
 
     const parsePeriod = (v) => {
