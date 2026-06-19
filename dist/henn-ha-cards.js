@@ -699,7 +699,18 @@ const HENN_EDITOR_STYLE = `
         background: #ddd; /*var(--divider-color);*/
         opacity: 1;
         z-index: 3;
-}
+    }
+
+    .henn-sausage-mumm {
+        position: absolute;
+        top: 50%;
+        width: 8px;
+        height: 8px;
+        transform: translate(-50%, -50%);
+        background: black;
+        opacity: 1;
+        z-index: 4;
+    }
 
 
     </style>
@@ -2687,6 +2698,9 @@ class HennStonehengeCardEditor extends HTMLElement {
             <div class="henn-sausage-cover" style="left:10%"></div>
             <div class="henn-sausage-cover" style="left:40%"></div>
             <div class="henn-sausage-cover" style="left:70%"></div>
+
+            <div class="henn-sausage-mumm" style="left:40%"></div>
+            <div class="henn-sausage-mumm" style="left:60%"></div>
         </div>
         `
         ;
