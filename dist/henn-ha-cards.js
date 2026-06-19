@@ -725,7 +725,15 @@ const HENN_EDITOR_STYLE = `
             z-index: 5;
             pointer-events: none;
             user-select: none;
-}
+        }
+
+        .henn-sausage-ring,
+        .henn-sausage-cover,
+        .henn-sausage-mumm,
+        .henn-sausage-label {
+            pointer-events: none;
+        }
+
     </style>
 `;
 
@@ -5424,14 +5432,69 @@ function hennSausageRow(value, options, defaultValue = "1mo", onChange = null, o
         ? ""
         : `<div class="henn-sausage-mumm" style="left:${mummLeft}%"></div>`;
 
+    const track = document.createElement('div');
+    track.className = "henn-sausage-track";
+    // siin lisame träkile eventid
+    track.addEventListener("click", ev => {
+        if (!onChange) return;
+
+        const r = track.getBoundingClientRect();
+        const x = ev.clientX - r.left;
+        const pct = gap + (x / r.width) * (100 - 2 * gap);
+
+        const newValue = hennSausageValueFromPercent(pct, points, gap);
+        if (newValue) onChange(newValue);
+    });
+
+
     const wrap = document.createElement('div');
-    wrap.classList = "henn-sausage";
-    wrap.innerHTML = `
-            ${rings}
-            <div class="henn-sausage-track"></div>
-            ${covers}
-            ${mumm}
-            ${labels}
-    `;
+    wrap.className = "henn-sausage";
+    wrap.innerHTML = rings;
+    wrap.appendChild(track);
+    wrap.insertAdjacentHTML("beforeend", covers);
+    wrap.insertAdjacentHTML("beforeend", mumm);
+    wrap.insertAdjacentHTML("beforeend", labels);
     return wrap;
+}
+
+function hennSausageValueFromPercent(pct, points, gap = 3) {
+    if (!points?.length) return null;
+
+    const first = points[0];
+    const last = points[points.length - 1];
+
+    if (pct <= first.left) return first.value;
+    if (pct >= last.left) return last.value;
+
+    for (let i = 0; i < points.length - 1; i++) {
+        const a = points[i];
+        const b = points[i + 1];
+
+        if (pct >= a.left && pct <= b.left) {
+            const k = (pct - a.left) / (b.left - a.left);
+            const days = a.parsed.days + k * (b.parsed.days - a.parsed.days);
+            return hennSausageFormatDays(days, a.parsed.unit, b.parsed.unit);
+        }
+    }
+
+    return null;
+}
+
+function hennSausageFormatDays(days, leftUnit, rightUnit) {
+    let d = Math.round(days);
+
+    if (leftUnit === "d" && rightUnit === "d") {
+        return `${d}d`;
+    }
+
+    if (leftUnit === "w" || rightUnit === "w") {
+        return d % 7 === 0 ? `${d / 7}w` : `${d}d`;
+    }
+
+    // mo-mo või mo-y piirkond
+    if (d % 30 === 0) return `${d / 30}mo`;
+    if (d % 7 === 0) return `${d / 7}w`;
+
+    d = Math.round(d / 10) * 10;
+    return `${d}d`;
 }
