@@ -2765,6 +2765,30 @@ class HennStonehengeCardEditor extends HTMLElement {
         host.appendChild(createSeparator());
 
         host.appendChild(this._subTitle("Line"));
+
+        const table = document.createElement("div");
+        table.style.display = "grid";
+        table.style.gap = "6px";
+
+        const head = document.createElement("div");
+        head.className = "henn-editor-tick-table henn-editor-tick-table-head";
+        head.innerHTML = `
+        <div></div>
+        <div>Color</div>
+        <div>Stroke</div>
+        <div></div>
+        <div>Smooth</div>
+    `;
+        table.appendChild(head);
+
+        table.appendChild(this._universalTableRow(
+            "line", "Line", line,
+            "stroke", null, "smooth",
+            this._config.color, true
+        ));
+
+
+
         host.appendChild(hennColorRow(this, "line.color", "Color", hennGetPath(this._config, "line.color"), null));
         host.appendChild(hennNumberRow(this, "line.stroke", "Stroke", hennGetPath(this._config, "line.stroke") ?? 2, 2));
         host.appendChild(hennCheckboxRow(this, "line.smooth", "Smooth", hennGetPath(this._config, "line.smooth") === true, false));
