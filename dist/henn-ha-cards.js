@@ -2726,7 +2726,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             <div class="henn-sausage-mumm" style="left:40%"></div>
             <div class="henn-sausage-mumm" style="left:60%"></div>
 
-            <div class="henn-sausage-label" style="left:40%"></div>
+            <div class="henn-sausage-label" style="left:40%">1mo</div>
         </div>
         `
         ;
