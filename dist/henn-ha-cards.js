@@ -2729,8 +2729,9 @@ class HennStonehengeCardEditor extends HTMLElement {
             <div class="henn-sausage-label" style="left:40%">1mo</div>
         </div>
         `
-        ;
+            ;
         host.appendChild(uss);
+        host.appendChild(createSeparator());
 
         host.appendChild(this._subTitle("Line"));
         host.appendChild(hennColorRow(this, "line.color", "Color", hennGetPath(this._config, "line.color"), null));
