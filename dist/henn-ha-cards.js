@@ -2629,7 +2629,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                     ["distinct", "Distinct"]
                 ],
                 "avg",
-                (v, def) => this._valueChangedOrDefault("aggregate", v, def)
+                (v, def) => this._valueChangedOrDefault("aggregate", v, def) 
             )
         ); 
         host.appendChild(createSeparator());
@@ -2672,6 +2672,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         const uss = document.createElement('div');
         uss.innerHTML = `
+        <h5>siin on USS</h5>
         <div class="henn-sausage">
             <div class="henn-sausage-ring" style="left:10%"></div>
             <div class="henn-sausage-ring" style="left:40%"></div>
