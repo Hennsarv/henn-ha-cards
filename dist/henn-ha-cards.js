@@ -651,6 +651,53 @@ const HENN_EDITOR_STYLE = `
             border: none;
             border-radius: 6px;
         }
+
+    /* sinise ussi stiilid */
+    .henn-sausage {
+        position: relative;
+        height: 44px;
+        min-width: 260px;
+    }
+
+    .henn-sausage-track {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        height: 14px;
+        transform: translateY(-50%);
+        border: 2px solid var(--primary-color);
+        border-radius: 999px;
+        background: var(--divider-color);
+        box-sizing: border-box;
+        z-index: 2;
+    }
+
+    .henn-sausage-ring {
+        position: absolute;
+        top: 50%;
+        width: 22px;
+        height: 22px;
+        transform: translate(-50%, -50%);
+        border: 2px solid var(--primary-color);
+        border-radius: 50%;
+        background: var(--divider-color);
+        box-sizing: border-box;
+        z-index: 1;
+    }
+
+    .henn-sausage-cover {
+        position: absolute;
+        top: 50%;
+        width: 14px;
+        height: 14px;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background: var(--divider-color);
+        z-index: 3;
+}
+
+
     </style>
 `;
 
@@ -2622,6 +2669,23 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         host.appendChild(row);
         host.appendChild(createSeparator());
+
+        const uss = document.createElement('div');
+        uss.innerHTML = `
+        <div class="henn-sausage">
+            <div class="henn-sausage-ring" style="left:10%"></div>
+            <div class="henn-sausage-ring" style="left:40%"></div>
+            <div class="henn-sausage-ring" style="left:70%"></div>
+
+            <div class="henn-sausage-track"></div>
+
+            <div class="henn-sausage-cover" style="left:10%"></div>
+            <div class="henn-sausage-cover" style="left:40%"></div>
+            <div class="henn-sausage-cover" style="left:70%"></div>
+        </div>
+        `
+            ;
+        host.appendChild(uss);
 
         host.appendChild(this._subTitle("Line"));
         host.appendChild(hennColorRow(this, "line.color", "Color", hennGetPath(this._config, "line.color"), null));
