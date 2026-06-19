@@ -2613,11 +2613,29 @@ class HennStonehengeCardEditor extends HTMLElement {
     `;
         table.appendChild(head);
 
-        table.appendChild(this._tickTableRow("ticks.inner", "Inner", ticks.inner, false));
-        table.appendChild(this._tickTableRow("ticks.outer", "Outer", ticks.outer, false));
-        table.appendChild(this._tickTableRow("ticks.minor", "Minor", ticks.minor, true));
-        table.appendChild(this._tickFillTableRow("ticks.fill", "Fill", ticks.fill));
+        table.appendChild(this._universalTableRow(
+            "ticks.inner", "Inner", ticks.inner,
+            "stroke", null, "show",
+            this._effectiveTicks().color, true
+        ));
 
+        table.appendChild(this._universalTableRow(
+            "ticks.outer", "Outer", ticks.outer,
+            "stroke", null, "show",
+            this._effectiveTicks().color, true
+        ));
+
+        table.appendChild(this._universalTableRow(
+            "ticks.minor", "Minor", ticks.minor,
+            "stroke", "length", "show",
+            this._effectiveTicks().color, true
+        ));
+
+        table.appendChild(this._universalTableRow(
+            "ticks.fill", "Fill", ticks.fill,
+            null, null, "show",
+            null, false
+        ));
         body.appendChild(table);
         host.appendChild(body);
     }
@@ -3498,6 +3516,76 @@ class HennStonehengeCardEditor extends HTMLElement {
         const show = this._checkbox(`${path}.show`, value.show === true, false);
         show.classList.add("henn-editor-pill-check");
         row.appendChild(show);
+
+        return row;
+    }
+
+    _universalTableRow(
+        path,
+        label,
+        value,
+        num1Name = "stroke",
+        num2Name = "length",
+        checkName = "show",
+        colorFallback = null,
+        checkDefault = true
+    ) {
+        const row = document.createElement("div");
+        row.className = "henn-editor-tick-table";
+
+        if (checkName) {
+            row.classList.toggle("henn-editor-muted", value?.[checkName] === false);
+        }
+
+        const lab = document.createElement("div");
+        lab.className = "henn-editor-tick-row-label";
+        lab.textContent = label;
+        row.appendChild(lab);
+
+        row.appendChild(
+            this._colorCellFor(
+                this,
+                `${path}.color`,
+                value?.color,
+                colorFallback
+            )
+        );
+
+        if (num1Name) {
+            const n1 = this._numberInput(
+                `${path}.${num1Name}`,
+                value?.[num1Name],
+                value?.[num1Name]
+            );
+            n1.classList.add("henn-editor-mini-number");
+            row.appendChild(n1);
+        } else {
+            row.appendChild(this._emptyCell());
+        }
+
+        if (num2Name) {
+            const n2 = this._numberInput(
+                `${path}.${num2Name}`,
+                value?.[num2Name],
+                value?.[num2Name]
+            );
+            n2.classList.add("henn-editor-mini-number");
+            row.appendChild(n2);
+        } else {
+            row.appendChild(this._emptyCell());
+        }
+
+        if (checkName) {
+            const chk = this._checkbox(
+                `${path}.${checkName}`,
+                value?.[checkName] ?? checkDefault,
+                checkDefault
+            );
+            chk.classList.add("henn-editor-pill-check");
+            row.appendChild(chk);
+        } else {
+            row.appendChild(this._emptyCell());
+        }
 
         return row;
     }
