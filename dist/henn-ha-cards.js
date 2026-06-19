@@ -2782,7 +2782,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         table.appendChild(head);
 
         table.appendChild(this._universalTableRow(
-            "line", "Line", line,
+            "line", "Line", this._config.line,
             "stroke", null, "smooth",
             this._config.color, true
         ));
