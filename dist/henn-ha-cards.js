@@ -2709,27 +2709,30 @@ class HennStonehengeCardEditor extends HTMLElement {
         host.appendChild(row);
         host.appendChild(createSeparator());
 
-        const uss = document.createElement('div');
-        uss.innerHTML = `
-        <h5>siin on USS</h5>
-        <div class="henn-sausage">
-            <div class="henn-sausage-ring" style="left:10%"></div>
-            <div class="henn-sausage-ring" style="left:40%"></div>
-            <div class="henn-sausage-ring" style="left:70%"></div>
+        // const uss = document.createElement('div');
+        // uss.innerHTML = `
+        // <h5>siin on USS</h5>
+        // <div class="henn-sausage">
+        //     <div class="henn-sausage-ring" style="left:10%"></div>
+        //     <div class="henn-sausage-ring" style="left:40%"></div>
+        //     <div class="henn-sausage-ring" style="left:70%"></div>
 
-            <div class="henn-sausage-track"></div>
+        //     <div class="henn-sausage-track"></div>
 
-            <div class="henn-sausage-cover" style="left:10%"></div>
-            <div class="henn-sausage-cover" style="left:40%"></div>
-            <div class="henn-sausage-cover" style="left:70%"></div>
+        //     <div class="henn-sausage-cover" style="left:10%"></div>
+        //     <div class="henn-sausage-cover" style="left:40%"></div>
+        //     <div class="henn-sausage-cover" style="left:70%"></div>
 
-            <div class="henn-sausage-mumm" style="left:40%"></div>
-            <div class="henn-sausage-mumm" style="left:60%"></div>
+        //     <div class="henn-sausage-mumm" style="left:40%"></div>
+        //     <div class="henn-sausage-mumm" style="left:60%"></div>
 
-            <div class="henn-sausage-label" style="left:40%">1mo</div>
-        </div>
-        `
-            ;
+        //     <div class="henn-sausage-label" style="left:40%">1mo</div>
+        // </div>
+        // `
+        //     ;
+
+        const uss = hennSausageRow(this.config.history_period, HENN_PERIOD_LIST, "1d", null);
+
         host.appendChild(uss);
         host.appendChild(createSeparator());
 
@@ -5337,4 +5340,97 @@ function createSeparator() {
     hr.style.background = "var(--divider-color)";
     hr.style.margin = "8px 0";
     return hr;
+}
+
+function hennSausageRow(value, options, defaultValue = "1mo", onChange = null, opts = {}) {
+    const gap = opts.gap ?? 3;              // %
+    const maxExtraDays = opts.maxExtraDays ?? 10;
+
+    const parsePeriod = (v) => {
+        if (!v || v === "_") return null;
+
+        const s = String(v).trim();
+        const m = s.match(/^(\d+)\s*(d|w|mo|y)$/i);
+        if (!m) return null;
+
+        const n = Number(m[1]);
+        const unit = m[2].toLowerCase();
+
+        const days =
+            unit === "d" ? n :
+                unit === "w" ? n * 7 :
+                    unit === "mo" ? n * 30 :
+                        unit === "y" ? n * 360 :
+                            null;
+
+        return { raw: s, n, unit, days };
+    };
+
+    const points = options
+        .map((p, i) => {
+            const val = parsePeriod(p[0]);
+            const lab = p[1] && p[1] !== "_" ? String(p[1]) : null;
+            return { index: i, value: p[0], label: lab, parsed: val };
+        })
+        .filter(p => p.parsed);
+
+    if (points.length < 2) return "";
+
+    const step = (100 - 2 * gap) / (points.length - 1);
+
+    for (const p of points) {
+        p.left = gap + p.index * step;
+    }
+
+    const wanted = parsePeriod(value) ?? parsePeriod(defaultValue);
+    const minDays = points[0].parsed.days;
+    const maxDays = points[points.length - 1].parsed.days;
+
+    let mummLeft = null;
+
+    if (wanted && wanted.days >= minDays && wanted.days <= maxDays + maxExtraDays) {
+        if (wanted.days >= maxDays) {
+            mummLeft = points[points.length - 1].left;
+        } else {
+            for (let i = 0; i < points.length - 1; i++) {
+                const a = points[i];
+                const b = points[i + 1];
+
+                if (wanted.days >= a.parsed.days && wanted.days <= b.parsed.days) {
+                    const k = (wanted.days - a.parsed.days) / (b.parsed.days - a.parsed.days);
+                    mummLeft = a.left + k * (b.left - a.left);
+                    break;
+                }
+            }
+        }
+    }
+
+    const rings = points
+        .filter(p => p.label)
+        .map(p => `<div class="henn-sausage-ring" style="left:${p.left}%"></div>`)
+        .join("");
+
+    const covers = points
+        .filter(p => p.label)
+        .map(p => `<div class="henn-sausage-cover" style="left:${p.left}%"></div>`)
+        .join("");
+
+    const labels = points
+        .filter(p => p.label)
+        .map(p => `<div class="henn-sausage-label" style="left:${p.left}%">${p.label}</div>`)
+        .join("");
+
+    const mumm = mummLeft == null
+        ? ""
+        : `<div class="henn-sausage-mumm" style="left:${mummLeft}%"></div>`;
+
+    return `
+        <div class="henn-sausage">
+            ${rings}
+            <div class="henn-sausage-track"></div>
+            ${covers}
+            ${mumm}
+            ${labels}
+        </div>
+    `;
 }
