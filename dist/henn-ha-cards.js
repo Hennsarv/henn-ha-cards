@@ -713,7 +713,19 @@ const HENN_EDITOR_STYLE = `
             z-index: 4;
         }
 
-
+        .henn-sausage-label {
+            position: absolute;
+            top: calc(50% + 18px);
+            transform: translateX(-50%);
+            font-size: 11px;
+            line-height: 1;
+            white-space: nowrap;
+            color: var(--primary-text-color);
+            opacity: .85;
+            z-index: 5;
+            pointer-events: none;
+            user-select: none;
+}
     </style>
 `;
 
@@ -1096,6 +1108,17 @@ const HENN_BUCKET_OPTIONS = [
     [15, "15"],
     [20, "20"],
     [30, "30"]
+];
+
+const HENN_PERIOD_LIST = [
+    ["1d", "1d"],
+    ["2d", "2d"],
+    ["3d", "_"],
+    ["1w", "1w"],
+    ["2w", "_"],
+    ["1mo", "1mo"],
+    ["2mo", "_"],
+    ["1y", "1y"]
 ];
 
 class HennWindRoseCard extends HTMLElement {
@@ -2702,6 +2725,8 @@ class HennStonehengeCardEditor extends HTMLElement {
 
             <div class="henn-sausage-mumm" style="left:40%"></div>
             <div class="henn-sausage-mumm" style="left:60%"></div>
+
+            <div class="henn-sausage-label" style="left:40%"></div>
         </div>
         `
         ;
