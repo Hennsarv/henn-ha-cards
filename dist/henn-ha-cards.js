@@ -2740,7 +2740,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         //     ;
 
         const uss = hennSausageRow(this._config.history_period ?? "1d", HENN_PERIOD_LIST, "1d",
-            (v, def) => this._seriesValueChangedOrDefault(v, def)
+            (v, def) => this._valueChangedOrDefault(v, def)
         );
 
         host.appendChild(uss);
@@ -5352,7 +5352,7 @@ function createSeparator() {
     return hr;
 }
 
-function hennSausageRow(value, options, defaultValue = "1mo", onChange = null, opts = {}) {
+function hennSausageRow(value, options, defaultValue = "1d", onChange = null, opts = {}) {
     const gap = opts.gap ?? 5;              // %
     const maxExtraDays = opts.maxExtraDays ?? 10;
 
@@ -5445,7 +5445,7 @@ function hennSausageRow(value, options, defaultValue = "1mo", onChange = null, o
         const pct = gap + (x / r.width) * (100 - 2 * gap);
 
         const newValue = hennSausageValueFromPercent(pct, points, gap);
-        if (newValue) onChange(newValue);
+        if (newValue) onChange(newValue, defaultValue);
     });
 
 
