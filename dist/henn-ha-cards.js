@@ -2685,7 +2685,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             <div class="henn-sausage-cover" style="left:70%"></div>
         </div>
         `
-            ;
+        ;
         host.appendChild(uss);
 
         host.appendChild(this._subTitle("Line"));
