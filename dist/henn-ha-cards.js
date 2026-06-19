@@ -2710,7 +2710,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         host.appendChild(createSeparator());
 
         const uss = document.createElement('div');
-        uss.innerHTML =  `
+        uss.innerHTML = `
         <h5>siin on USS</h5>
         <div class="henn-sausage">
             <div class="henn-sausage-ring" style="left:10%"></div>
