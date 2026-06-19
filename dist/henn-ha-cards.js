@@ -681,8 +681,9 @@ const HENN_EDITOR_STYLE = `
         transform: translate(-50%, -50%);
         border: 2px solid var(--primary-color);
         border-radius: 50%;
-        background: var(--divider-color);
+        background: #ddd; /*var(--divider-color);*/
         box-sizing: border-box;
+        opacity: 1;
         z-index: 1;
     }
 
@@ -693,7 +694,8 @@ const HENN_EDITOR_STYLE = `
         height: 14px;
         transform: translate(-50%, -50%);
         border-radius: 50%;
-        background: var(--divider-color);
+        background: #ddd; /*var(--divider-color);*/
+        opacity: 1;
         z-index: 3;
 }
 
