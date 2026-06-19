@@ -2666,22 +2666,26 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         if (!open) return;
 
+        const body = document.createElement("div");
+        body.className = enabled
+            ? "henn-editor-section-body"
+            : "henn-editor-section-body henn-editor-muted";
 
 
-        host.appendChild(hennTextRow(this, "history_period", "History", this._config.history_period ?? "1d", "1d"));
+        body.appendChild(hennTextRow(this, "history_period", "History", this._config.history_period ?? "1d", "1d"));
 
-        host.appendChild(createSeparator());
+        body.appendChild(createSeparator());
 
-        host.appendChild(
+        body.appendChild(
             this._bucketSizeRow(
                 this._config.bucketing ?? "day",
                 this._config.bucket_size ?? "10m" 
             )
         ); 
 
-        host.appendChild(createSeparator());
+        body.appendChild(createSeparator());
         
-        host.appendChild(
+        body.appendChild(
             hennSegmentRow(
                 "Aggregate",
                 this._config.aggregate ?? "avg",
@@ -2697,7 +2701,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                 (v, def) => this._valueChangedOrDefault("aggregate", v, def) 
             )
         ); 
-        host.appendChild(createSeparator());
+        body.appendChild(createSeparator());
 
         const row = document.createElement("div");
 
@@ -2732,8 +2736,8 @@ class HennStonehengeCardEditor extends HTMLElement {
             )
         );
 
-        host.appendChild(row);
-        host.appendChild(createSeparator());
+        body.appendChild(row);
+        body.appendChild(createSeparator());
 
         // const uss = document.createElement('div');
         // uss.innerHTML = `
@@ -2761,10 +2765,10 @@ class HennStonehengeCardEditor extends HTMLElement {
             (v, def) => this._valueChangedOrDefault("history_period", v, def) 
         );
 
-        host.appendChild(uss);
-        host.appendChild(createSeparator());
+        body.appendChild(uss);
+        body.appendChild(createSeparator());
 
-        host.appendChild(this._subTitle("Line"));
+        body.appendChild(this._subTitle("Line"));
 
         const table = document.createElement("div");
         table.style.display = "grid";
@@ -2787,22 +2791,23 @@ class HennStonehengeCardEditor extends HTMLElement {
             this._config.color, false
         )); // kumba pidi peab olema
 
-        host.appendChild(table); 
+        body.appendChild(table); 
 
-        host.appendChild(createSeparator());
+        body.appendChild(createSeparator());
 
-        host.appendChild(this._subTitle("Fill"));
-        host.appendChild(hennCheckboxRow(this, "fill.show", "Enabled", hennGetPath(this._config, "fill.show") !== false, true));
-        host.appendChild(hennColorRow(this, "fill.color", "Color", hennGetPath(this._config, "fill.color"), null));
+        body.appendChild(this._subTitle("Fill"));
+        body.appendChild(hennCheckboxRow(this, "fill.show", "Enabled", hennGetPath(this._config, "fill.show") !== false, true));
+        body.appendChild(hennColorRow(this, "fill.color", "Color", hennGetPath(this._config, "fill.color"), null));
 
-        host.appendChild(createSeparator());
+        body.appendChild(createSeparator());
 
-        host.appendChild(this._subTitle("Gradient"));
-        host.appendChild(hennColorRow(this, "gradient.color", "Color", hennGetPath(this._config, "gradient.color") ?? "orange", "orange"));
-        host.appendChild(hennNumberRow(this, "gradient.min_opacity", "Min opacity", hennGetPath(this._config, "gradient.min_opacity") ?? 0.15, 0.15, 0.05));
-        host.appendChild(hennNumberRow(this, "gradient.max_opacity", "Max opacity", hennGetPath(this._config, "gradient.max_opacity") ?? 0.9, 0.9, 0.05));
-        host.appendChild(hennColorRow(this, "gradient.min_color", "Min color", hennGetPath(this._config, "gradient.min_color"), null));
-        host.appendChild(hennColorRow(this, "gradient.max_color", "Max color", hennGetPath(this._config, "gradient.max_color"), null));
+        body.appendChild(this._subTitle("Gradient"));
+        body.appendChild(hennColorRow(this, "gradient.color", "Color", hennGetPath(this._config, "gradient.color") ?? "orange", "orange"));
+        body.appendChild(hennNumberRow(this, "gradient.min_opacity", "Min opacity", hennGetPath(this._config, "gradient.min_opacity") ?? 0.15, 0.15, 0.05));
+        body.appendChild(hennNumberRow(this, "gradient.max_opacity", "Max opacity", hennGetPath(this._config, "gradient.max_opacity") ?? 0.9, 0.9, 0.05));
+        body.appendChild(hennColorRow(this, "gradient.min_color", "Min color", hennGetPath(this._config, "gradient.min_color"), null));
+        body.appendChild(hennColorRow(this, "gradient.max_color", "Max color", hennGetPath(this._config, "gradient.max_color"), null));
+        host.append(body);
     }
 
     _renderSeriesSection() {
