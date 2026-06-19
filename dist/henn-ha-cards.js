@@ -695,7 +695,7 @@ const HENN_EDITOR_STYLE = `
             width: 16px;
             height: 16px;
             transform: translate(-50%, -50%);
-            border-radius: 50%;
+            border-radius: 50%; 
             background: #ddd; /*var(--divider-color);*/
             opacity: 1;
             z-index: 3;
