@@ -5475,15 +5475,18 @@ function hennSausageValueFromPercent(pct, points, gap = 3) {
         if (pct >= a.left && pct <= b.left) {
             const k = (pct - a.left) / (b.left - a.left);
             const days = a.parsed.days + k * (b.parsed.days - a.parsed.days);
-            return hennSausageFormatDays(days, a.parsed.unit, b.parsed.unit);
+            return hennSausageFormatDays(days, a.parsed.unit, b.parsed.unit, points);
         }
     }
 
     return null;
 }
 
-function hennSausageFormatDays(days, leftUnit, rightUnit) {
+function hennSausageFormatDays(days, leftUnit, rightUnit, points) {
     let d = Math.round(days);
+
+    const exact = points.find(p => p.parsed.days === d);
+    if (exact) return exact.value;
 
     if (leftUnit === "d" && rightUnit === "d") {
         return `${d}d`;
@@ -5493,10 +5496,13 @@ function hennSausageFormatDays(days, leftUnit, rightUnit) {
         return d % 7 === 0 ? `${d / 7}w` : `${d}d`;
     }
 
-    // mo-mo või mo-y piirkond
     if (d % 30 === 0) return `${d / 30}mo`;
     if (d % 7 === 0) return `${d / 7}w`;
 
     d = Math.round(d / 10) * 10;
+
+    const exactAfterRound = points.find(p => p.parsed.days === d);
+    if (exactAfterRound) return exactAfterRound.value;
+
     return `${d}d`;
 }
