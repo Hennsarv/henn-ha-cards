@@ -668,9 +668,10 @@ const HENN_EDITOR_STYLE = `
         transform: translateY(-50%);
         border: 2px solid var(--primary-color);
         border-radius: 999px;
-        background: var(--divider-color);
+        background: #ddd; /*var(--divider-color);*/
         box-sizing: border-box;
         z-index: 2;
+        opacity: 1;
     }
 
     .henn-sausage-ring {
