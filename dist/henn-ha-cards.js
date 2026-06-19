@@ -2667,9 +2667,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         if (!open) return;
 
         const body = document.createElement("div");
-        body.className = enabled
-            ? "henn-editor-section-body"
-            : "henn-editor-section-body henn-editor-muted";
+        body.className = "henn-editor-section-body";
 
 
         body.appendChild(hennTextRow(this, "history_period", "History", this._config.history_period ?? "1d", "1d"));
