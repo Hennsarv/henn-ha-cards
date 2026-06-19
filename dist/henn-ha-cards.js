@@ -652,65 +652,66 @@ const HENN_EDITOR_STYLE = `
             border-radius: 6px;
         }
 
-    /* sinise ussi stiilid */
-    .henn-sausage {
-        position: relative;
-        height: 44px;
-        min-width: 260px;
-        z-index: 0;
-    }
+        /* sinise ussi stiilid */
+        .henn-sausage {
+            position: relative;
+            height: 44px;
+            min-width: 260px;
+            z-index: 0;
+        }
 
-    .henn-sausage-track {
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 50%;
-        height: 14px;
-        transform: translateY(-50%);
-        border: 2px solid var(--primary-color);
-        border-radius: 999px;
-        background: #ddd; /*var(--divider-color);*/
-        box-sizing: border-box;
-        z-index: 2;
-        opacity: 1;
-    }
+        .henn-sausage-track {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 14px;
+            transform: translateY(-50%);
+            border: 2px solid var(--primary-color);
+            border-radius: 999px;
+            background: #ddd; /*var(--divider-color);*/
+            box-sizing: border-box;
+            z-index: 2;
+            opacity: 1;
+        }
 
-    .henn-sausage-ring {
-        position: absolute;
-        top: 50%;
-        width: 22px;
-        height: 22px;
-        transform: translate(-50%, -50%);
-        border: 2px solid var(--primary-color);
-        border-radius: 50%;
-        background: #ddd; /*var(--divider-color);*/
-        box-sizing: border-box;
-        opacity: 1;
-        z-index: 1;
-    }
+        .henn-sausage-ring {
+            position: absolute;
+            top: 50%;
+            width: 22px;
+            height: 22px;
+            transform: translate(-50%, -50%);
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            background: #ddd; /*var(--divider-color);*/
+            box-sizing: border-box;
+            opacity: 1;
+            z-index: 1;
+        }
 
-    .henn-sausage-cover {
-        position: absolute;
-        top: 50%;
-        width: 16px;
-        height: 16px;
-        transform: translate(-50%, -50%);
-        border-radius: 50%;
-        background: #ddd; /*var(--divider-color);*/
-        opacity: 1;
-        z-index: 3;
-    }
+        .henn-sausage-cover {
+            position: absolute;
+            top: 50%;
+            width: 16px;
+            height: 16px;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: #ddd; /*var(--divider-color);*/
+            opacity: 1;
+            z-index: 3;
+        }
 
-    .henn-sausage-mumm {
-        position: absolute;
-        top: 50%;
-        width: 8px;
-        height: 8px;
-        transform: translate(-50%, -50%);
-        background: black;
-        opacity: 1;
-        z-index: 4;
-    }
+        .henn-sausage-mumm {
+            position: absolute;
+            top: 50%;
+            width: 8px;
+            height: 8px;
+            transform: translate(-50%, -50%);
+            background: black;
+            border-radius: 50%;
+            opacity: 1;
+            z-index: 4;
+        }
 
 
     </style>
