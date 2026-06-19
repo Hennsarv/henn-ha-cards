@@ -692,8 +692,8 @@ const HENN_EDITOR_STYLE = `
     .henn-sausage-cover {
         position: absolute;
         top: 50%;
-        width: 14px;
-        height: 14px;
+        width: 16px;
+        height: 16px;
         transform: translate(-50%, -50%);
         border-radius: 50%;
         background: #ddd; /*var(--divider-color);*/
