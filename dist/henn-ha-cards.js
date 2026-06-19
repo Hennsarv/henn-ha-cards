@@ -2785,7 +2785,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             "line", "Line", this._config.line,
             "stroke", null, "smooth",
             this._config.color, false
-        ));
+        )); // kumba pidi peab olema
 
         host.appendChild(table); 
 
