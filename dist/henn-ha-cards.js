@@ -2740,7 +2740,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         //     ;
 
         const uss = hennSausageRow(this._config.history_period ?? "1d", HENN_PERIOD_LIST, "1d",
-            (v, def) => this._valueChangedOrDefault(v, def)
+            (v, def) => this._valueChangedOrDefault("history_period", v, def)
         );
 
         host.appendChild(uss);
