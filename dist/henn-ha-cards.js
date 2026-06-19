@@ -3468,57 +3468,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         return wrap;
     }
 
-    _tickTableRow(path, label, value, hasLength = false) {
-        const row = document.createElement("div");
-        row.className = "henn-editor-tick-table";
-        row.classList.toggle("henn-editor-muted", value.show === false);
 
-        const lab = document.createElement("div");
-        lab.className = "henn-editor-tick-row-label";
-        lab.textContent = label;
-        row.appendChild(lab);
-
-        row.appendChild(this._colorCellFor(this, `${path}.color`, value.color, this._effectiveTicks().color));
-
-        const stroke = this._numberInput(`${path}.stroke`, value.stroke, value.stroke);
-        stroke.classList.add("henn-editor-mini-number");
-        row.appendChild(stroke);
-
-        if (hasLength) {
-            const length = this._numberInput(`${path}.length`, value.length, value.length);
-            length.classList.add("henn-editor-mini-number");
-            row.appendChild(length);
-        } else {
-            row.appendChild(this._emptyCell());
-        }
-
-        const show = this._checkbox(`${path}.show`, value.show !== false, true);
-        show.classList.add("henn-editor-pill-check");
-        row.appendChild(show);
-
-        return row;
-    }
-
-    _tickFillTableRow(path, label, value) {
-        const row = document.createElement("div");
-        row.className = "henn-editor-tick-table";
-        row.classList.toggle("henn-editor-muted", value.show === false);
-
-        const lab = document.createElement("div");
-        lab.className = "henn-editor-tick-row-label";
-        lab.textContent = label;
-        row.appendChild(lab);
-
-        row.appendChild(this._colorCellFor(this, `${path}.color`, value.color, null));
-        row.appendChild(this._emptyCell());
-        row.appendChild(this._emptyCell());
-
-        const show = this._checkbox(`${path}.show`, value.show === true, false);
-        show.classList.add("henn-editor-pill-check");
-        row.appendChild(show);
-
-        return row;
-    }
 
     _universalTableRow(
         path,
