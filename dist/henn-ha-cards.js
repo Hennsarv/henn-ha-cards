@@ -657,6 +657,7 @@ const HENN_EDITOR_STYLE = `
         position: relative;
         height: 44px;
         min-width: 260px;
+        z-index: 0;
     }
 
     .henn-sausage-track {
