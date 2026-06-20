@@ -1664,8 +1664,8 @@ class HennStonehengeCard extends HTMLElement {
                 ...config.label
             },
 
-            lower: { stroke: 1, color: "white", radius: 30, gap: 0, ...(config.lower || {}) },
-            upper: { stroke: 1, color: "white", radius: 90, gap: 0, ...(config.upper || {}) },
+            lower: { show: false, stroke: 1, color: "white", radius: 30, gap: 0, ...(config.lower || {}) },
+            upper: { show: false, stroke: 1, color: "white", radius: 90, gap: 0, ...(config.upper || {}) },
 
             reconf: true
         };
@@ -2194,11 +2194,11 @@ class HennStonehengeCard extends HTMLElement {
         const lowerRadius = lowerCfg.radius - (lowerCfg.gap || 0);
         const upperRadius = upperCfg.radius + (upperCfg.gap || 0);
 
-        if (Number(lowerCfg.stroke) > 0) {
+        if (Number(lowerCfg.stroke) > 0 && lowerCfg.show) {
             s += this.circleLine(lowerRadius, lowerCfg.color || "white", lowerCfg.stroke);
         }
 
-        if (Number(upperCfg.stroke) > 0) {
+        if (Number(upperCfg.stroke) > 0 && upperCfg.show) {
             s += this.circleLine(upperRadius, upperCfg.color || "white", upperCfg.stroke);
         }
 
