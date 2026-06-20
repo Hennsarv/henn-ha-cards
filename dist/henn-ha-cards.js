@@ -1579,6 +1579,7 @@ class HennStonehengeCard extends HTMLElement {
 
             gradient: {
                 color: "orange",
+                opacity_or_color: true,
                 max_opacity: config.max_opacity ?? 0.9,
                 min_opacity: config.min_opacity ?? 0.15,
                 max_color: null,
@@ -2736,33 +2737,55 @@ class HennStonehengeCardEditor extends HTMLElement {
         body.appendChild(uss);
         body.appendChild(createSeparator());
 
-        body.appendChild(this._subTitle("Line"));
+//        body.appendChild(this._subTitle("Line"));
 
         const lineTable = this._createMiniTable(["", "Color", "Stroke", "", "Smoth"]);
 
         lineTable.appendChild(this._universalTableRow( 
             "line", "Line", this._config.line,
             "stroke", null, "smooth",
-            this._config.color, false
+            this._config.line.color, false
         )); // kumba pidi peab olema
 
         body.appendChild(lineTable); 
 
         body.appendChild(createSeparator());
 
-        body.appendChild(this._subTitle("Fill"));
+//        body.appendChild(this._subTitle("Fill"));
 
         const fillTable = this._createMiniTable(["", "Color", "", "", "Show"]);
 
         fillTable.appendChild(this._universalTableRow(
             "fill", "Fill", this._config.fill,
             null, null, "show",
-            this._config.color, false
+            this._config.fill.color, false
         )); // kumba pidi peab olema
 
         body.appendChild(fillTable);
 
         body.appendChild(createSeparator());
+
+        const gradientTable = this._createMiniTable(["", "grad-Color", "","", "Opa/Colors"]);
+        gradientTable.appendChild(this._universalTableRow(
+            "gradient", "Gradient\nColor", this._config.gradient,
+            null, null, "opacity_or_color",
+            this._config.gradient.color, true
+        ));
+        body.appendChild(gradientTable)
+        body.appendChild(createSeparator());
+
+        const railsTable = this._createMiniTable(["", "Color", "Stroke", "Gap", "Show"]); 
+        railsTable.appendChild(this._universalTableRow(
+            "upper", "Upper", this._config.upper,
+            "stroke", "gap", "show",
+            this._config.upper.color, true
+        ));
+        railsTable.appendChild(this._universalTableRow(
+            "lower", "Lower", this._config.lower,
+            "stroke", "gap", "show",
+            this._config.lower.color, true
+        ));
+
 
 
         body.appendChild(this._subTitle("Fill"));
