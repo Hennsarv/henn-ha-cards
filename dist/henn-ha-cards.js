@@ -1352,14 +1352,6 @@ class HennWindRoseCardEditor extends HTMLElement {
                 <div id="opacity-fields"></div>
             </div>
         `;
-        // this.querySelector("#color-field").appendChild(
-        //     hennCreateColorField(
-        //         this,
-        //         "color",
-        //         "Color",
-        //         this._config.color || "blue"  // võtsin deepskyeblue maha, et näha
-        //     )
-        // );
 
         this.querySelector("#slider-field").appendChild(
             hennCreateSingleSlider(
@@ -2737,28 +2729,6 @@ class HennStonehengeCardEditor extends HTMLElement {
         body.appendChild(row);
         body.appendChild(createSeparator());
 
-        // const uss = document.createElement('div');
-        // uss.innerHTML = `
-        // <h5>siin on USS</h5>
-        // <div class="henn-sausage">
-        //     <div class="henn-sausage-ring" style="left:10%"></div>
-        //     <div class="henn-sausage-ring" style="left:40%"></div>
-        //     <div class="henn-sausage-ring" style="left:70%"></div>
-
-        //     <div class="henn-sausage-track"></div>
-
-        //     <div class="henn-sausage-cover" style="left:10%"></div>
-        //     <div class="henn-sausage-cover" style="left:40%"></div>
-        //     <div class="henn-sausage-cover" style="left:70%"></div>
-
-        //     <div class="henn-sausage-mumm" style="left:40%"></div>
-        //     <div class="henn-sausage-mumm" style="left:60%"></div>
-
-        //     <div class="henn-sausage-label" style="left:40%">1mo</div>
-        // </div>
-        // `
-        //     ;
-
         const uss = hennSausageRow(this._config.history_period ?? "1d", HENN_PERIOD_LIST, "1d",
             (v, def) => this._valueChangedOrDefault("history_period", v, def) 
         );
@@ -2768,30 +2738,30 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         body.appendChild(this._subTitle("Line"));
 
-        const table = document.createElement("div");
-        table.style.display = "grid";
-        table.style.gap = "6px";
+        const lineTable = this._createMiniTable(["", "Color", "Stroke", "", "Smoth"]);
 
-        const head = document.createElement("div");
-        head.className = "henn-editor-tick-table henn-editor-tick-table-head";
-        head.innerHTML = `
-        <div></div>
-        <div>Color</div>
-        <div>Stroke</div>
-        <div></div>
-        <div>Smooth</div>
-    `;
-        table.appendChild(head);
-
-        table.appendChild(this._universalTableRow( 
+        lineTable.appendChild(this._universalTableRow( 
             "line", "Line", this._config.line,
             "stroke", null, "smooth",
             this._config.color, false
         )); // kumba pidi peab olema
 
-        body.appendChild(table); 
+        body.appendChild(lineTable); 
 
         body.appendChild(createSeparator());
+
+        const fillTable = this._createMiniTable(["", "Color", "", "", "Show"]);
+
+        lineTable.appendChild(this._universalTableRow(
+            "fill", "Fill", this._config.fill,
+            null, null, "show",
+            this._config.color, false
+        )); // kumba pidi peab olema
+
+        body.appendChild(fillTable);
+
+        body.appendChild(createSeparator());
+
 
         body.appendChild(this._subTitle("Fill"));
         body.appendChild(hennCheckboxRow(this, "fill.show", "Enabled", hennGetPath(this._config, "fill.show") !== false, true));
@@ -2996,6 +2966,20 @@ class HennStonehengeCardEditor extends HTMLElement {
                 color: t.fill?.color ?? null
             }
         };
+    }
+
+    _createMiniTable(headers) {
+        const table = document.createElement("div");
+        table.style.display = "grid";
+        table.style.gap = "6px";
+
+        const head = document.createElement("div");
+        head.className = "henn-editor-tick-table henn-editor-tick-table-head";
+
+        head.innerHTML = headers.map(h => `<div>${h ?? ""}</div>`).join("");
+
+        table.appendChild(head);
+        return table;
     }
 
     _tickPartRow(path, label, value, hasLength = false) {
