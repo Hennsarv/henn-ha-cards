@@ -2758,14 +2758,15 @@ class HennStonehengeCardEditor extends HTMLElement {
         fillTable.appendChild(this._universalTableRow(
             "fill", "Fill", this._config.fill,
             null, null, "show",
-            this._config.fill.color, false
+            this._config.fill.color, true
         )); // kumba pidi peab olema
 
         body.appendChild(fillTable);
 
         body.appendChild(createSeparator());
 
-        const gradientTable = this._createMiniTable(["", "grad-Color", "","", "Opa/Colors"]);
+        body.appendChild(this._subTitle("Defaul for gradient - by opacity or by color"));
+        const gradientTable = this._createMiniTable(["", "Color", "","Opacity or", "Colors"]);
         gradientTable.appendChild(this._universalTableRow(
             "gradient", "Gradient\nColor", this._config.gradient,
             null, null, "opacity_or_color",
@@ -2774,6 +2775,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         body.appendChild(gradientTable)
         body.appendChild(createSeparator());
 
+        body.appendChild(this._subTitle("Default upper-lower 'rails'"))
         const railsTable = this._createMiniTable(["", "Color", "Stroke", "Gap", "Show"]); 
         railsTable.appendChild(this._universalTableRow(
             "upper", "Upper", this._config.upper,
@@ -2785,6 +2787,8 @@ class HennStonehengeCardEditor extends HTMLElement {
             "stroke", "gap", "show",
             this._config.lower.color, true
         ));
+        body.appendChild(railsTable)
+        body.appendChild(createSeparator());
 
 
 
