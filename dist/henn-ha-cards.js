@@ -2788,7 +2788,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             this._config.lower.color, false
         ));
         body.appendChild(railsTable)
-        body.appendChild(createSeparator());
+        body.appendChild(createSeparator()); 
 
 
 
