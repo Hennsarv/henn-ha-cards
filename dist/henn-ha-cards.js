@@ -2780,12 +2780,12 @@ class HennStonehengeCardEditor extends HTMLElement {
         railsTable.appendChild(this._universalTableRow(
             "upper", "Upper", this._config.upper,
             "stroke", "gap", "show",
-            this._config.upper.color, true
+            this._config.upper.color, false
         ));
         railsTable.appendChild(this._universalTableRow(
             "lower", "Lower", this._config.lower,
             "stroke", "gap", "show",
-            this._config.lower.color, true
+            this._config.lower.color, false
         ));
         body.appendChild(railsTable)
         body.appendChild(createSeparator());
