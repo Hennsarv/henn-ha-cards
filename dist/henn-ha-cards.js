@@ -2750,6 +2750,8 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         body.appendChild(createSeparator());
 
+        body.appendChild(this._subTitle("Fill"));
+
         const fillTable = this._createMiniTable(["", "Color", "", "", "Show"]);
 
         lineTable.appendChild(this._universalTableRow(
@@ -2972,12 +2974,9 @@ class HennStonehengeCardEditor extends HTMLElement {
         const table = document.createElement("div");
         table.style.display = "grid";
         table.style.gap = "6px";
-
         const head = document.createElement("div");
         head.className = "henn-editor-tick-table henn-editor-tick-table-head";
-
         head.innerHTML = headers.map(h => `<div>${h ?? ""}</div>`).join("");
-
         table.appendChild(head);
         return table;
     }
