@@ -2754,7 +2754,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         const fillTable = this._createMiniTable(["", "Color", "", "", "Show"]);
 
-        lineTable.appendChild(this._universalTableRow(
+        fillTable.appendChild(this._universalTableRow(
             "fill", "Fill", this._config.fill,
             null, null, "show",
             this._config.color, false
