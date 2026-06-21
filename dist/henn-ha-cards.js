@@ -1561,7 +1561,7 @@ class HennStonehengeCard extends HTMLElement {
                 min_opacity: config.min_opacity ?? 0.15,
                 max_color: null,
                 min_color: null,
-                opacity: config.opacity ?? 0.5,
+                fix_opacity: config.fix_opacity ?? 0.5,
                 ...config.gradient
             },
 
@@ -2015,7 +2015,7 @@ class HennStonehengeCard extends HTMLElement {
 
         const minColor = g.min_color || c.min_color || "white";
         const maxColor = g.max_color || c.max_color || "black";
-        const opacity = Number(g.opacity ?? 0.5);
+        const fixOpacity = Number(g.fix_opacity ?? 0.5);
         const opacityOrColor = g.opacity_or_color || c.opacity_or_color || true;
 
         return buckets.map((b, i) => {
