@@ -2038,10 +2038,10 @@ class HennStonehengeCard extends HTMLElement {
         const opacityOrColor = g.opacity_or_color ?? c.opacity_or_color ?? true;
 
         const color = g.color || c.color || "orange";
-        const fixedOpacity = this.clamp01(Number(g.opacity ?? 0.7));
+        const fixedOpacity = clamp01(Number(g.opacity ?? 0.7));
 
-        const minOpacity = this.clamp01(Number(g.min_opacity ?? 0.15));
-        const maxOpacity = this.clamp01(Number(g.max_opacity ?? 0.9));
+        const minOpacity = clamp01(Number(g.min_opacity ?? 0.15));
+        const maxOpacity = clamp01(Number(g.max_opacity ?? 0.9));
 
         const minColor = g.min_color || c.min_color || "white";
         const maxColor = g.max_color || c.max_color || "black";
@@ -2049,17 +2049,17 @@ class HennStonehengeCard extends HTMLElement {
         return buckets.map((b, i) => {
             if (b.value === null) return "";
 
-            const p = this.clamp01(this.norm(b.value, min, span));
+            const p = clamp01(this.norm(b.value, min, span));
 
             let fill;
             let fillOpacity;
 
             if (opacityOrColor) {
                 fill = color;
-                fillOpacity = this.lerp(minOpacity, maxOpacity, p);
+                fillOpacity = lerp(minOpacity, maxOpacity, p);
             }
             else {
-                fill = this.mixColor(minColor, maxColor, p);
+                fill = mixColor(minColor, maxColor, p);
                 fillOpacity = fixedOpacity;
             }
 
@@ -5649,12 +5649,12 @@ function hexToRgb(hex) {
 function mixColor(c1, c2, t) {
     t = this.clamp01(t);
 
-    const a = this.hexToRgb(c1);
-    const b = this.hexToRgb(c2);
+    const a = hexToRgb(c1);
+    const b = hexToRgb(c2);
 
-    const r = Math.round(this.lerp(a.r, b.r, t));
-    const g = Math.round(this.lerp(a.g, b.g, t));
-    const b2 = Math.round(this.lerp(a.b, b.b, t));
+    const r = Math.round(lerp(a.r, b.r, t));
+    const g = Math.round(lerp(a.g, b.g, t));
+    const b2 = Math.round(lerp(a.b, b.b, t));
 
     return `rgb(${r},${g},${b2})`;
 }
