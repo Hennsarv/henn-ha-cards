@@ -2010,12 +2010,13 @@ class HennStonehengeCard extends HTMLElement {
         const step = 360 / count;
 
         const color = g.color || c.color || "orange";
-        const minOpacity = Number(g.min_opacity ?? 0.15);
-        const maxOpacity = Number(g.max_opacity ?? 0.9);
+        const minOpacity = Number(g.min_opacity ?? c.min_opacity ?? 0.15);
+        const maxOpacity = Number(g.max_opacity ?? c.max_opacity ?? 0.9);
 
         const minColor = g.min_color || c.min_color || "white";
         const maxColor = g.max_color || c.max_color || "black";
-        const fixOpacity = Number(g.fix_opacity ?? 0.5);
+        const fixOpacity = Number(g.fix_opacity ?? c.fix_opacity ?? 0.5);
+
         const opacityOrColor = g.opacity_or_color || c.opacity_or_color || true;
 
         return buckets.map((b, i) => {
