@@ -5632,17 +5632,8 @@ function mixColor(c1, c2, t) {
     return `rgb(${r},${g},${b2})`;
 }
 
-function hennGenericInput(
-    owner,
-    input,
-    path,
-    value,
-    defaultValue,
-    onChange = null,
-    classList = [],
-    style = {},
-    eventListeners = {}
-) {
+function hennGenericInput(owner, input, path, value, defaultValue,
+    onChange = null, classList = [], style = {}, eventListeners = {}) {
 
     for (const cls of classList) {
         input.classList.add(cls);
@@ -5677,12 +5668,12 @@ function hennTextInput(owner, path, value, defaultValue = "", onChange = null, c
 
     return hennGenericInput(owner, input, path, value, defaultValue, onChange, classList, style, eventListeners);
 }
-function hennNumberInput(owner, path, value, defaultValue, step = 1, onChange = null, classlist = {}, style = {}, eventListeners = {}) {
+function hennNumberInput(owner, path, value, defaultValue, step = 1, onChange = null, classList = {}, style = {}, eventListeners = {}) {
     const input = document.createElement('input');
     input.className = 'henn-editor-input';
     input.type = 'number';
     input.step = step;
     input.value = value ?? ""; 
-    return hennGenericInput(owner, input, path, value, defaultValue, onchange, classilist, style);
+    return hennGenericInput(owner, input, path, value, defaultValue, onchange, classList, style);
 }
 
