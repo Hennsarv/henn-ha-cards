@@ -5647,7 +5647,7 @@ function hexToRgb(hex) {
 }
 
 function mixColor(c1, c2, t) {
-    t = this.clamp01(t);
+    t = clamp01(t);
 
     const a = hexToRgb(c1);
     const b = hexToRgb(c2);
