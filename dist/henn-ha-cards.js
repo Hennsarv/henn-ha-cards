@@ -5635,8 +5635,10 @@ function mixColor(c1, c2, t) {
 function hennGenericInput(owner, input, path, value, defaultValue,
     onChange = null, classList = [], style = {}, eventListeners = {}) {
 
-    for (const cls of classList) {
-        input.classList.add(cls);
+    if (Array.isArray(classList)) { 
+        for (const cls of classList || []) {
+            input.classList.add(cls);
+        }
     }
 
     Object.assign(input.style, style);
