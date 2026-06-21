@@ -5683,6 +5683,6 @@ function hennNumberInput(owner, path, value, defaultValue, step = 1, onChange = 
     input.type = 'number';
     input.step = step;
     input.value = value ?? "";
-    return hennGenericCell(owner, input, path, value, defaultValue, onchange, classilist, style);
+    return hennGenericInput(owner, input, path, value, defaultValue, onchange, classilist, style);
 }
 
