@@ -1556,7 +1556,7 @@ class HennStonehengeCard extends HTMLElement {
 
             gradient: {
                 color: "orange",
-                opacity_or_color: true,
+                mode: "opacity",
                 max_opacity: config.max_opacity ?? 0.9,
                 min_opacity: config.min_opacity ?? 0.15,
                 max_color: null,
@@ -2016,9 +2016,9 @@ class HennStonehengeCard extends HTMLElement {
         const minColor = g.min_color || c.min_color || "white";
         const maxColor = g.max_color || c.max_color || "black";
         const fixOpacity = Number(g.opacity ?? c.opacity ?? 0.5);
-
-        const opacityOrColor = g.opacity_or_color || c.opacity_or_color || true;
-
+        const mode = g.mode || c.mode || "opacity";
+        const opacityOrColor = mode === "opacity"; //g.opacity_or_color || c.opacity_or_color || true;
+        
         return buckets.map((b, i) => {
             if (b.value === null) return "";
 
@@ -2035,8 +2035,8 @@ class HennStonehengeCard extends HTMLElement {
         const g = c.gradient || {};
         const count = buckets.length || 1;
         const step = 360 / count;
-
-        const opacityOrColor = g.opacity_or_color ?? c.opacity_or_color ?? true;
+        const mode = g.mode || c.mode || "opacity"; 
+        const opacityOrColor = mode === "opacity"; //g.opacity_or_color ?? c.opacity_or_color ?? true;
 
         const color = g.color || c.color || "orange";
         const fixedOpacity = clamp01(Number(g.opacity ?? 0.7));
