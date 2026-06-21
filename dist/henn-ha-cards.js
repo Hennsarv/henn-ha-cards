@@ -3041,8 +3041,8 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         row.appendChild(this._colorInputFor(owner, `${path}.color`, effective.color, defaults.color ?? "white"));
         row.appendChild(this._colorPickerFor(owner, `${path}.color`, effective.color, defaults.color ?? "white"));
-        row.appendChild(this.hennNumberInput(owner, `${path}.stroke`, effective.stroke, defaults.stroke ?? 1));
-        row.appendChild(this.hennNumberInput(owner, `${path}.gap`, effective.gap, defaults.gap ?? 0));
+        row.appendChild(hennNumberInput(owner, `${path}.stroke`, effective.stroke, defaults.stroke ?? 1));
+        row.appendChild(hennNumberInput(owner, `${path}.gap`, effective.gap, defaults.gap ?? 0));
         row.appendChild(this._checkboxFor(owner, `${path}.show`, effective.show, false));
 
         const wrap = document.createElement("div");
@@ -3093,7 +3093,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
     _numberRowFor(owner, path, label, value, defaultValue = 0, step = 1) {
         const row = this._row(label);
-        row.appendChild(this.hennNumberInput(owner, path, value, defaultValue, step));
+        row.appendChild(hennNumberInput(owner, path, value, defaultValue, step));
         return row;
     }
 
