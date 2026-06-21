@@ -5601,16 +5601,16 @@ function hennSausageFormatDays(days, leftUnit, rightUnit, points) {
     return `${d}d`;
 }
 
-clamp01(x) {
+function clamp01(x) {
     if (isNaN(x)) return 0;
     return Math.max(0, Math.min(1, x));
 }
 
-lerp(a, b, t) {
+function lerp(a, b, t) {
     return a + (b - a) * t;
 }
 
-hexToRgb(hex) {
+function hexToRgb(hex) {
     hex = String(hex || "").trim();
 
     const named = {
@@ -5646,7 +5646,7 @@ hexToRgb(hex) {
     };
 }
 
-mixColor(c1, c2, t) {
+function mixColor(c1, c2, t) {
     t = this.clamp01(t);
 
     const a = this.hexToRgb(c1);
