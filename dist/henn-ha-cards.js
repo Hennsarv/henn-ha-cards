@@ -2747,7 +2747,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             "fill", "Fill", this._config.fill,
             null, null, "show",
             this._config.fill.color, true
-        )); // kumba pidi peab olema
+        ));
 
         lineTable.appendChild(this._universalTableRow(
             "upper", "Upper\nrail", this._config.upper,
@@ -4157,7 +4157,18 @@ function hennCreateSingleSlider(editor, key, label, value, min, max, step = 1, u
     return wrapper;
 }
 
-function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valueMax, min, max, step) {
+function hennCreateDoubleSlider(
+    owner,
+    fieldMin,
+    fieldMax,
+    label,
+    valueMin,
+    valueMax,
+    min,
+    max,
+    step,
+    onChange
+) {
     const wrapper = document.createElement("div");
     wrapper.className = "henn-slider-root";
 
@@ -4190,8 +4201,6 @@ function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valu
     function pct(value) {
         return ((value - min) / (max - min)) * 100;
     }
-
-    //clampAndOrder();
 
     wrapper.innerHTML = `
         <div class="henn-slider-header">
@@ -4239,6 +4248,11 @@ function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valu
     }
 
     function fireChange() {
+        if (typeof onChange === "function") {
+            onChange(vMin, vMax);
+            return;
+        }
+
         owner._config = {
             ...owner._config,
             [fieldMin]: vMin,
@@ -4330,7 +4344,7 @@ function hennCreateDoubleSlider(owner, fieldMin, fieldMax, label, valueMin, valu
     });
 
     trackWrap.addEventListener("pointercancel", () => {
-        
+        activeThumb = null;
     });
 
     trackWrap.addEventListener("keydown", (ev) => {
