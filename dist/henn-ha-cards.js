@@ -2004,33 +2004,6 @@ class HennStonehengeCard extends HTMLElement {
         return c.color || c.gradient?.color || "orange";
     }
 
-    OLDrenderColor(c, buckets, min, span, lower, upper) {
-        const g = c.gradient || {};
-        const count = buckets.length || 1;
-        const step = 360 / count;
-
-        const color = g.color || c.color || "orange";
-        const minOpacity = Number(g.min_opacity ?? c.min_opacity ?? 0.15);
-        const maxOpacity = Number(g.max_opacity ?? c.max_opacity ?? 0.9);
-
-        const minColor = g.min_color || c.min_color || "white";
-        const maxColor = g.max_color || c.max_color || "black";
-        const fixOpacity = Number(g.opacity ?? c.opacity ?? 0.5);
-        const mode = g.mode || c.mode || "opacity";
-        const opacityOrColor = mode === "opacity"; //g.opacity_or_color || c.opacity_or_color || true;
-        
-        return buckets.map((b, i) => {
-            if (b.value === null) return "";
-
-            const p = this.norm(b.value, min, span);
-            const opacity = minOpacity + p * (maxOpacity - minOpacity);
-
-            return `<path d="${this.ringSectorPath(50, 50, lower, upper, i * step, (i + 1) * step)}"
-                    fill="${color}"
-                    fill-opacity="${opacity}"></path>`;
-        }).join("");
-    }
-
     renderColor(c, buckets, min, span, lower, upper) {
         const g = c.gradient || {};
         const count = buckets.length || 1;
@@ -2763,29 +2736,33 @@ class HennStonehengeCardEditor extends HTMLElement {
 
 //        body.appendChild(this._subTitle("Line"));
 
-        const lineTable = this._createMiniTable(["", "Color", "Stroke", "", "Smoth"]);
+        const lineTable = this._createMiniTable(["", "Color", "Stroke", "gap", "Smoth"]);
 
         lineTable.appendChild(this._universalTableRow( 
             "line", "Line", this._config.line,
             "stroke", null, "smooth",
             this._config.line.color, false
         )); // kumba pidi peab olema
-
-        body.appendChild(lineTable); 
-
-        body.appendChild(createSeparator());
-
-//        body.appendChild(this._subTitle("Fill"));
-
-        const fillTable = this._createMiniTable(["", "Color", "", "", "Show"]);
-
-        fillTable.appendChild(this._universalTableRow(
+        lineTable.appendChild(this._universalTableRow(
             "fill", "Fill", this._config.fill,
             null, null, "show",
             this._config.fill.color, true
         )); // kumba pidi peab olema
 
-        body.appendChild(fillTable);
+        lineTable.appendChild(this._universalTableRow(
+            "upper", "Upper\nrail", this._config.upper,
+            "stroke", "gap", "show",
+            this._config.upper.color, false
+        ));
+        lineTable.appendChild(this._universalTableRow(
+            "lower", "Lower\nrail", this._config.lower,
+            "stroke", "gap", "show",
+            this._config.lower.color, false
+        ));
+        body.appendChild(lineTable); 
+
+        body.appendChild(createSeparator());
+
 
         body.appendChild(createSeparator());
 
@@ -2798,23 +2775,6 @@ class HennStonehengeCardEditor extends HTMLElement {
         ));
         body.appendChild(gradientTable)
         body.appendChild(createSeparator());
-
-        body.appendChild(this._subTitle("Default upper-lower 'rails'"))
-        const railsTable = this._createMiniTable(["", "Color", "Stroke", "Gap", "Show"]); 
-        railsTable.appendChild(this._universalTableRow(
-            "upper", "Upper", this._config.upper,
-            "stroke", "gap", "show",
-            this._config.upper.color, false
-        ));
-        railsTable.appendChild(this._universalTableRow(
-            "lower", "Lower", this._config.lower,
-            "stroke", "gap", "show",
-            this._config.lower.color, false
-        ));
-        body.appendChild(railsTable)
-        body.appendChild(createSeparator()); 
-
-
 
         body.appendChild(this._subTitle("Fill"));
         body.appendChild(hennCheckboxRow(this, "fill.show", "Enabled", hennGetPath(this._config, "fill.show") !== false, true));
@@ -3681,7 +3641,6 @@ class HennStonehengeCardEditor extends HTMLElement {
 }
 
 customElements.define("henn-stonehenge-card-editor", HennStonehengeCardEditor);
-
 
 class HennLayeredCard extends HTMLElement {
 
