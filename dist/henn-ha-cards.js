@@ -1,4 +1,4 @@
-ussconst HENN_CARDS_VERSION = "1.0.28";
+const HENN_CARDS_VERSION = "1.0.28";
 const HENN_VERSION = "v28";
 console.info(
     `%c HENN HA CARDS %c v${HENN_CARDS_VERSION} `,
@@ -2816,8 +2816,6 @@ class HennStonehengeCardEditor extends HTMLElement {
         opacityGradientRow.appendChild(sliderCell);
 
         lineTable.appendChild(opacityGradientRow);
-
-        body.appendChild(createSeparator());
 
 
         body.appendChild(createSeparator());
