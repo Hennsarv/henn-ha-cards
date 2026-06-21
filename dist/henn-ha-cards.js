@@ -5682,7 +5682,7 @@ function hennNumberInput(owner, path, value, defaultValue, step = 1, onChange = 
     input.className = 'henn-editor-input';
     input.type = 'number';
     input.step = step;
-    input.value = value ?? "";
+    input.value = value ?? ""; 
     return hennGenericInput(owner, input, path, value, defaultValue, onchange, classilist, style);
 }
 
