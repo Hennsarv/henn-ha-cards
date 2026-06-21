@@ -3091,7 +3091,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         return this._numberRowFor(this, path, label, value, defaultValue, step);
     }
 
-    _numberRowFor(owner, path, label, value, defaultValue = 0, step = 1) {
+    _numberRowFor(owner, path, label, value, defaultValue = 0, step = 1) { 
         const row = this._row(label);
         row.appendChild(hennNumberInput(owner, path, value, defaultValue, step));
         return row;
