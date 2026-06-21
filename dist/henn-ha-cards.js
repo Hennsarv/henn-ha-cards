@@ -5340,21 +5340,21 @@ function hennColorRow(owner, path, label, value, defaultValue = null) {
 //     return input;
 // }
 
-function hennNumberInput(owner, path, value, defaultValue = 0, step = 1) {
-    const input = document.createElement("input");
-    input.type = "number";
-    input.step = step;
-    input.className = "henn-editor-input";
-    input.value = value ?? "";
-    input.classList.toggle("henn-editor-inherited", hennGetPath(owner._config, path) === undefined);
+// function hennNumberInput(owner, path, value, defaultValue = 0, step = 1) {
+//     const input = document.createElement("input");
+//     input.type = "number";
+//     input.step = step;
+//     input.className = "henn-editor-input";
+//     input.value = value ?? "";
+//     input.classList.toggle("henn-editor-inherited", hennGetPath(owner._config, path) === undefined);
 
-    input.addEventListener("change", () => {
-        const v = input.value === "" ? null : Number(input.value);
-        owner._valueChangedOrDefault(path, v, defaultValue);
-    });
+//     input.addEventListener("change", () => {
+//         const v = input.value === "" ? null : Number(input.value);
+//         owner._valueChangedOrDefault(path, v, defaultValue);
+//     });
 
-    return input;
-}
+//     return input;
+// }
 
 function hennCheckbox(owner, path, value, defaultValue = false) {
     const input = document.createElement("input");
