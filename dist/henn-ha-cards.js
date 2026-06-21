@@ -1393,18 +1393,6 @@ class HennWindRoseCardEditor extends HTMLElement {
             )
         );
 
-        // this.querySelector("#bucket-field").appendChild(
-        //     hennCreateSingleSlider(
-        //         this,
-        //         "bucket_size",
-        //         "Bucket size",
-        //         this._config.bucket_size ?? 5,
-        //         5,
-        //         30,
-        //         1
-        //     )
-        // );
-
         this.querySelector("#period-field2").appendChild(
             hennCreateListSelector(
                 this,
@@ -1415,17 +1403,6 @@ class HennWindRoseCardEditor extends HTMLElement {
                 "combo"
             )
         );
-
-        // this.querySelector("#period-field3").appendChild(
-        //     hennCreateListSelector(
-        //         this,
-        //         "period",
-        //         "Period",
-        //         this._config.period || "30d",
-        //         HENN_PERIOD_OPTIONS,
-        //         "search"
-        //     )
-        // );
 
         this.querySelector("#bucket-field2").appendChild(
             hennCreateLineSelector(
@@ -1584,6 +1561,7 @@ class HennStonehengeCard extends HTMLElement {
                 min_opacity: config.min_opacity ?? 0.15,
                 max_color: null,
                 min_color: null,
+                opacity: config.opacity ?? 0.5,
                 ...config.gradient
             },
 
@@ -1975,6 +1953,7 @@ class HennStonehengeCard extends HTMLElement {
             };
         });
     }
+
     renderSeries(c, buckets) {
         buckets = buckets || [];
         const values = buckets.map(b => b.value).filter(v => v !== null && !isNaN(v));
@@ -2025,7 +2004,7 @@ class HennStonehengeCard extends HTMLElement {
         return c.color || c.gradient?.color || "orange";
     }
 
-    renderColor(c, buckets, min, span, lower, upper) {
+    OLDrenderColor(c, buckets, min, span, lower, upper) {
         const g = c.gradient || {};
         const count = buckets.length || 1;
         const step = 360 / count;
@@ -2033,6 +2012,11 @@ class HennStonehengeCard extends HTMLElement {
         const color = g.color || c.color || "orange";
         const minOpacity = Number(g.min_opacity ?? 0.15);
         const maxOpacity = Number(g.max_opacity ?? 0.9);
+
+        const minColor = g.min_color || c.min_color || "white";
+        const maxColor = g.max_color || c.max_color || "black";
+        const opacity = Number(g.opacity ?? 0.5);
+        const opacityOrColor = g.opacity_or_color || c.opacity_or_color || true;
 
         return buckets.map((b, i) => {
             if (b.value === null) return "";
@@ -2043,6 +2027,45 @@ class HennStonehengeCard extends HTMLElement {
             return `<path d="${this.ringSectorPath(50, 50, lower, upper, i * step, (i + 1) * step)}"
                     fill="${color}"
                     fill-opacity="${opacity}"></path>`;
+        }).join("");
+    }
+
+    renderColor(c, buckets, min, span, lower, upper) {
+        const g = c.gradient || {};
+        const count = buckets.length || 1;
+        const step = 360 / count;
+
+        const opacityOrColor = g.opacity_or_color ?? c.opacity_or_color ?? true;
+
+        const color = g.color || c.color || "orange";
+        const fixedOpacity = this.clamp01(Number(g.opacity ?? 0.7));
+
+        const minOpacity = this.clamp01(Number(g.min_opacity ?? 0.15));
+        const maxOpacity = this.clamp01(Number(g.max_opacity ?? 0.9));
+
+        const minColor = g.min_color || c.min_color || "white";
+        const maxColor = g.max_color || c.max_color || "black";
+
+        return buckets.map((b, i) => {
+            if (b.value === null) return "";
+
+            const p = this.clamp01(this.norm(b.value, min, span));
+
+            let fill;
+            let fillOpacity;
+
+            if (opacityOrColor) {
+                fill = color;
+                fillOpacity = this.lerp(minOpacity, maxOpacity, p);
+            }
+            else {
+                fill = this.mixColor(minColor, maxColor, p);
+                fillOpacity = fixedOpacity;
+            }
+
+            return `<path d="${this.ringSectorPath(50, 50, lower, upper, i * step, (i + 1) * step)}"
+                fill="${fill}"
+                fill-opacity="${fillOpacity}"></path>`;
         }).join("");
     }
 
@@ -5576,4 +5599,62 @@ function hennSausageFormatDays(days, leftUnit, rightUnit, points) {
     if (exactAfterRound) return exactAfterRound.value;
 
     return `${d}d`;
+}
+
+clamp01(x) {
+    if (isNaN(x)) return 0;
+    return Math.max(0, Math.min(1, x));
+}
+
+lerp(a, b, t) {
+    return a + (b - a) * t;
+}
+
+hexToRgb(hex) {
+    hex = String(hex || "").trim();
+
+    const named = {
+        white: "#ffffff",
+        black: "#000000",
+        red: "#ff0000",
+        green: "#008000",
+        blue: "#0000ff",
+        orange: "#ffa500",
+        yellow: "#ffff00",
+        gray: "#808080",
+        grey: "#808080"
+    };
+
+    hex = named[hex.toLowerCase()] || hex;
+
+    if (hex.startsWith("#")) {
+        hex = hex.substring(1);
+    }
+
+    if (hex.length === 3) {
+        hex = hex.split("").map(x => x + x).join("");
+    }
+
+    if (!/^[0-9a-fA-F]{6}$/.test(hex)) {
+        return { r: 255, g: 165, b: 0 }; // orange fallback
+    }
+
+    return {
+        r: parseInt(hex.substring(0, 2), 16),
+        g: parseInt(hex.substring(2, 4), 16),
+        b: parseInt(hex.substring(4, 6), 16)
+    };
+}
+
+mixColor(c1, c2, t) {
+    t = this.clamp01(t);
+
+    const a = this.hexToRgb(c1);
+    const b = this.hexToRgb(c2);
+
+    const r = Math.round(this.lerp(a.r, b.r, t));
+    const g = Math.round(this.lerp(a.g, b.g, t));
+    const b2 = Math.round(this.lerp(a.b, b.b, t));
+
+    return `rgb(${r},${g},${b2})`;
 }
