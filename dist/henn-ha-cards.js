@@ -1,4 +1,4 @@
-const HENN_CARDS_VERSION = "1.0.28";
+ussconst HENN_CARDS_VERSION = "1.0.28";
 const HENN_VERSION = "v28";
 console.info(
     `%c HENN HA CARDS %c v${HENN_CARDS_VERSION} `,
@@ -2760,6 +2760,62 @@ class HennStonehengeCardEditor extends HTMLElement {
             this._config.lower.color, false
         ));
         body.appendChild(lineTable); 
+
+        const opacityGradientRow = document.createElement("div");
+        opacityGradientRow.className = "henn-editor-tick-table henn-editor-tick-table-row";
+
+        const gradient = this._config.gradient || (this._config.gradient = {});
+
+        const labelCell = document.createElement("div");
+        labelCell.textContent = "Opacity\ngradient";
+        labelCell.style.whiteSpace = "pre-line";
+        opacityGradientRow.appendChild(labelCell);
+
+        opacityGradientRow.appendChild(this._colorCell(
+            gradient,
+            "color",
+            gradient.color || "green",
+            (v) => {
+                this._config = {
+                    ...this._config,
+                    gradient: {
+                        ...(this._config.gradient || {}),
+                        color: v
+                    }
+                };
+                this._fireConfigChanged();
+            }
+        ));
+
+        const sliderCell = document.createElement("div");
+        sliderCell.style.gridColumn = "span 3";
+
+        sliderCell.appendChild(hennCreateDoubleSlider(
+            this,
+            null,
+            null,
+            "Opacity",
+            gradient.min_opacity ?? 0.2,
+            gradient.max_opacity ?? 0.9,
+            0,
+            1,
+            0.01,
+            (vMin, vMax) => {
+                this._config = {
+                    ...this._config,
+                    gradient: {
+                        ...(this._config.gradient || {}),
+                        min_opacity: vMin,
+                        max_opacity: vMax
+                    }
+                };
+                this._fireConfigChanged();
+            }
+        ));
+
+        opacityGradientRow.appendChild(sliderCell);
+
+        lineTable.appendChild(opacityGradientRow);
 
         body.appendChild(createSeparator());
 
