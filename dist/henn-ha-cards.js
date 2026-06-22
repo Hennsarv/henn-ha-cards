@@ -3043,7 +3043,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         row.appendChild(this._colorPickerFor(owner, `${path}.color`, effective.color, defaults.color ?? "white"));
         row.appendChild(hennNumberInput(owner, `${path}.stroke`, effective.stroke, defaults.stroke ?? 1));
         row.appendChild(hennNumberInput(owner, `${path}.gap`, effective.gap, defaults.gap ?? 0));
-        row.appendChild(this._checkboxFor(owner, `${path}.show`, effective.show, false));
+        row.appendChild(hennCheckbox(owner, `${path}.show`, effective.show, false));
 
         const wrap = document.createElement("div");
         wrap.className = effective.show ? "" : "henn-editor-muted";
@@ -3078,34 +3078,34 @@ class HennStonehengeCardEditor extends HTMLElement {
     }
 
     _textRow(path, label, value, defaultValue = "") {
-        return this._textRowFor(this, path, label, value, defaultValue);
+        return hennTextRow(this, path, label, value, defaultValue);
     }
 
-    _textRowFor(owner, path, label, value, defaultValue = "") {
-        const row = this._row(label);
-        row.appendChild(this._textInputFor(owner, path, value, defaultValue));
-        return row;
-    }
+    // _textRowFor(owner, path, label, value, defaultValue = "") {
+    //     const row = this._row(label);
+    //     row.appendChild(this._textInputFor(owner, path, value, defaultValue));
+    //     return row;
+    // }
 
     _numberRow(path, label, value, defaultValue = 0, step = 1) {
-        return this._numberRowFor(this, path, label, value, defaultValue, step);
+        return hennNumberRow(this, path, label, value, defaultValue, step);
     }
 
-    _numberRowFor(owner, path, label, value, defaultValue = 0, step = 1) { 
-        const row = this._row(label);
-        row.appendChild(hennNumberInput(owner, path, value, defaultValue, step));
-        return row;
-    }
+    // _numberRowFor(owner, path, label, value, defaultValue = 0, step = 1) { 
+    //     const row = this._row(label);
+    //     row.appendChild(hennNumberInput(owner, path, value, defaultValue, step));
+    //     return row;
+    // }
 
     _checkboxRow(path, label, value, defaultValue = false) {
-        return this._checkboxRowFor(this, path, label, value, defaultValue);
+        return hennCheckboxRow(this, path, label, value, defaultValue);
     }
 
-    _checkboxRowFor(owner, path, label, value, defaultValue = false) {
-        const row = this._row(label);
-        row.appendChild(this._checkboxFor(owner, path, value, defaultValue));
-        return row;
-    }
+    // _checkboxRowFor(owner, path, label, value, defaultValue = false) {
+    //     const row = this._row(label);
+    //     row.appendChild(this._checkboxFor(owner, path, value, defaultValue));
+    //     return row;
+    // }
 
     _selectRow(path, label, value, options, defaultValue = null) {
         return this._selectRowFor(this, path, label, value, options, defaultValue);
@@ -3271,7 +3271,7 @@ class HennStonehengeCardEditor extends HTMLElement {
     }
 
     _checkbox(path, value, defaultValue = false) {
-        return this._checkboxFor(this, path, value, defaultValue);
+        return hennCheckbox(this, path, value, defaultValue);
     }
 
     _checkboxFor(owner, path, value, defaultValue = false) {
@@ -5696,13 +5696,52 @@ function hennTextInput(owner, path, value, defaultValue = "", onChange = null, c
 
     return hennGenericInput(owner, input, path, value, defaultValue, onChange, classList, style, eventListeners);
 }
-function hennNumberInput(owner, path, value, defaultValue, step = 1, onChange = null, classList = {}, style = {}, eventListeners = {}) {
+function hennNumberInput(owner, path, value, defaultValue, step = 1, min = undefined, max = undefined, onChange = null, classList = {}, style = {}, eventListeners = {}) {
     const input = document.createElement('input');
     input.className = 'henn-editor-input';
     input.type = 'number';
     input.step = step;
+    if (min != null) input.min = min;
+    if (max != null) input.max = max;
     input.value = value ?? ""; 
-    return hennGenericInput(owner, input, path, value, defaultValue, onchange, classList, style);
+    return hennGenericInput(owner, input, path, value, defaultValue, onChange, classList, style);
 }
 
+function hennCheckbox(owner, path, value, defaultValue = "", onChange = null, classList = [], style = {}, eventListeners = {}) {
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.checked = !!value;
+    input.className = "henn-editor-input";
+    input.value = value ?? "";
 
+    return hennGenericInput(owner, input, path, value, defaultValue, onChange, classList, style, eventListeners);
+}
+
+function hennTextRow(owner, label, path, value, defaultValue = "", onChange = null, classList = [], style = {}, eventListeners = {}) {
+    const row = hennEditorRow(label);
+    row.appendChild(hennTextInput(owner, path, value, defaultValue, onChange, classList, style, eventListeners));
+    return row;
+}
+
+function hennNumberRow(owner, label, path, value, defaultValue, step = 1, min = undefined, max = undefined, onChange = null, classList = {}, style = {}, eventListeners = {}) {
+    const row = hennEditorRow(label);
+    row.appendChild(hennNumberInput(owner, path, value, defaultValue, step, min, max, onChange, classList, style, eventListeners));
+    return row;
+}
+
+function hennCheckboxRow(owner, label, path, value, defaultValue = "", onChange = null, classList = [], style = {}, eventListeners = {}) {
+    const row = hennEditorRow(label);
+    row.appendChild(hennCheckbox(owner, path, value, defaultValue, onChange, classList, style, eventListeners));
+    return row;
+}
+
+function hennEditorRow(label) {
+    const row = document.createElement("div");
+    row.className = "henn-editor-row";
+
+    const lab = document.createElement("div");
+    lab.textContent = label;
+
+    row.appendChild(lab);
+    return row;
+}
