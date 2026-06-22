@@ -2606,7 +2606,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         table.appendChild(this._universalTableRow(
             "ticks.inner", "Inner", ticks.inner,
             "stroke", null, "show",
-            this._effectiveTicks().color, this._config.color, true
+            this._effectiveTicks().color, true
         ));
 
         table.appendChild(this._universalTableRow(
@@ -3547,8 +3547,8 @@ class HennStonehengeCardEditor extends HTMLElement {
         if (checkName) {
             const chk = this._checkbox(
                 `${path}.${checkName}`,
-                value?.[checkName] ?? defaultValue,
-                defaultValue
+                value?.[checkName], //?? defaultValue,
+                null //defaultValue
             );
             chk.classList.add("henn-editor-pill-check");
             row.appendChild(chk);
