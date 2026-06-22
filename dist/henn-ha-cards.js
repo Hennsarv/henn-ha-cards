@@ -2992,7 +2992,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         return table;
     }
 
-    _tickPartRow(path, label, value, hasLength = false) {
+    old_tickPartRow(path, label, value, hasLength = false) {
         const row = document.createElement("div");
         row.className = "henn-editor-grid4";
 
@@ -3012,7 +3012,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         return wrap;
     }
 
-    _tickFillRow(path, label, value) {
+    old_tickFillRow(path, label, value) {
         const row = document.createElement("div");
         row.className = "henn-editor-grid4";
 
@@ -3094,21 +3094,9 @@ class HennStonehengeCardEditor extends HTMLElement {
         return hennNumberRow(this, path, label, value, defaultValue, step);
     }
 
-    // _numberRowFor(owner, path, label, value, defaultValue = 0, step = 1) { 
-    //     const row = this._row(label);
-    //     row.appendChild(hennNumberInput(owner, path, value, defaultValue, step));
-    //     return row;
-    // }
-
     _checkboxRow(path, label, value, defaultValue = false) {
         return hennCheckboxRow(this, path, label, value, defaultValue);
     }
-
-    // _checkboxRowFor(owner, path, label, value, defaultValue = false) {
-    //     const row = this._row(label);
-    //     row.appendChild(this._checkboxFor(owner, path, value, defaultValue));
-    //     return row;
-    // }
 
     _selectRow(path, label, value, options, defaultValue = null) {
         return this._selectRowFor(this, path, label, value, options, defaultValue);
@@ -3194,46 +3182,16 @@ class HennStonehengeCardEditor extends HTMLElement {
     }
 
     _textInput(path, value, defaultValue = "") {
-        //return this._textInputFor(this, path, value, defaultValue);
         return hennTextInput(this, path, value, defaultValue);
     }
 
-    // _textInputFor(owner, path, value, defaultValue = "") {
-    //     const input = document.createElement("input");
-    //     input.className = "henn-editor-input";
-    //     input.value = value ?? "";
-    //     input.classList.toggle("henn-editor-inherited", hennGetPath(owner._config, path) === undefined);
-
-    //     input.addEventListener("change", () => {
-    //         owner._valueChangedOrDefault(path, input.value, defaultValue);
-    //     });
-
-    //     return input;       
-    // }
 
     _numberInput(path, value, defaultValue = 0, step = 1) {
-    //    return this._numberInputFor(this, path, value, defaultValue, step);
         return hennNumberInput(this, path, value, defaultValue, step);
     }
 
-    // _numberInputFor(owner, path, value, defaultValue = 0, step = 1) {
-    //     const input = document.createElement("input");
-    //     input.type = "number";
-    //     input.step = step;
-    //     input.className = "henn-editor-input";
-    //     input.value = value ?? "";
-    //     input.classList.toggle("henn-editor-inherited", hennGetPath(owner._config, path) === undefined);
-
-    //     input.addEventListener("change", () => {
-    //         const v = input.value === "" ? null : Number(input.value);
-    //         owner._valueChangedOrDefault(path, v, defaultValue);
-    //     });
-
-    //     return input;
-    // }
-
     _colorInput(path, value, defaultValue = null) {
-        return this._colorInputFor(this, path, value, defaultValue);
+        return hennColorCell(this, path, value, defaultValue);
     }
 
     _colorInputFor(owner, path, value, defaultValue = null) {
@@ -5729,4 +5687,6 @@ function hennMultiRow(label, controls = [], className = "henn-editor-row", label
             row.appendChild(control || document.createElement("div"));
         }
     }
+
+    return row;
 }
