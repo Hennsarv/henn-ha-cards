@@ -5654,7 +5654,7 @@ function hennCheckbox(owner, path, value, defaultValue = "", onChange = null, cl
 
 function hennColorCell(owner, path, value, defaultValue = null, onChange = null, classList = [], style = {}, eventListeners = {}) {
     const box = document.createElement("div");
-    box.className = "henn-color-cell";
+    box.className = "henn-color-cell"; 
 
     const selector = hennCreateListSelector(
         owner,
