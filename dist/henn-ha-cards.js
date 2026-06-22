@@ -3005,8 +3005,8 @@ class HennStonehengeCardEditor extends HTMLElement {
         const row = document.createElement("div");
         row.className = "henn-editor-grid4";
 
-        row.appendChild(this._colorInput(`${path}.color`, effective.color, defaults.color ?? "white"));
-        row.appendChild(hennColorPicker(owner, `${path}.color`, effective.color, defaults.color ?? "white"));
+        row.appendChild(hennColorCell(owner, `${path}.color`, effective.color, defaults.color ?? "white"));
+//        row.appendChild(hennColorPicker(owner, `${path}.color`, effective.color, defaults.color ?? "white"));
         row.appendChild(hennNumberInput(owner, `${path}.stroke`, effective.stroke, defaults.stroke ?? 1));
         row.appendChild(hennNumberInput(owner, `${path}.gap`, effective.gap, defaults.gap ?? 0));
         row.appendChild(hennCheckbox(owner, `${path}.show`, effective.show, false));
