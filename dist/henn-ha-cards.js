@@ -2992,43 +2992,6 @@ class HennStonehengeCardEditor extends HTMLElement {
         return table;
     }
 
-    old_tickPartRow(path, label, value, hasLength = false) {
-        const row = document.createElement("div");
-        row.className = "henn-editor-grid4";
-
-        // row.appendChild(this._colorInput(`${path}.color`, value.color, this._effectiveTicks().color));
-        // row.appendChild(this._colorPicker(`${path}.color`, value.color, this._effectiveTicks().color));
-        row.appendChild(this._colorCell(`${path}.color`, value.color, this._effectiveTicks().color));
-        row.appendChild(this._numberInput(`${path}.stroke`, value.stroke, value.stroke));
-        row.appendChild(hasLength
-            ? this._numberInput(`${path}.length`, value.length, value.length)
-            : this._emptyCell());
-        row.appendChild(this._checkbox(`${path}.show`, value.show !== false, true));
-
-        const wrap = document.createElement("div");
-        wrap.className = value.show === false ? "henn-editor-muted" : "";
-        wrap.innerHTML = `<div class="henn-editor-small">${label}</div>`;
-        wrap.appendChild(row);
-        return wrap;
-    }
-
-    old_tickFillRow(path, label, value) {
-        const row = document.createElement("div");
-        row.className = "henn-editor-grid4";
-
-        // row.appendChild(this._colorInput(`${path}.color`, value.color, null));
-        // row.appendChild(this._colorPicker(`${path}.color`, value.color, null));
-        row.appendChild(this._colorCell(`${path}.color`, value.color, null));
-        row.appendChild(this._emptyCell());
-        row.appendChild(this._emptyCell());
-        row.appendChild(this._checkbox(`${path}.show`, value.show === true, false));
-
-        const wrap = document.createElement("div");
-        wrap.className = value.show === false ? "henn-editor-muted" : "";
-        wrap.innerHTML = `<div class="henn-editor-small">${label}</div>`;
-        wrap.appendChild(row);
-        return wrap;
-    }
 
     _railRowFor(owner, path, label, value, defaults) {
         const effective = {
@@ -3042,7 +3005,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         const row = document.createElement("div");
         row.className = "henn-editor-grid4";
 
-        row.appendChild(this._colorInputFor(owner, `${path}.color`, effective.color, defaults.color ?? "white"));
+        row.appendChild(this._colorInput(`${path}.color`, effective.color, defaults.color ?? "white"));
         row.appendChild(hennColorPicker(owner, `${path}.color`, effective.color, defaults.color ?? "white"));
         row.appendChild(hennNumberInput(owner, `${path}.stroke`, effective.stroke, defaults.stroke ?? 1));
         row.appendChild(hennNumberInput(owner, `${path}.gap`, effective.gap, defaults.gap ?? 0));
