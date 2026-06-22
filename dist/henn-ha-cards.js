@@ -3195,39 +3195,39 @@ class HennStonehengeCardEditor extends HTMLElement {
         return hennTextInput(this, path, value, defaultValue);
     }
 
-    _textInputFor(owner, path, value, defaultValue = "") {
-        const input = document.createElement("input");
-        input.className = "henn-editor-input";
-        input.value = value ?? "";
-        input.classList.toggle("henn-editor-inherited", hennGetPath(owner._config, path) === undefined);
+    // _textInputFor(owner, path, value, defaultValue = "") {
+    //     const input = document.createElement("input");
+    //     input.className = "henn-editor-input";
+    //     input.value = value ?? "";
+    //     input.classList.toggle("henn-editor-inherited", hennGetPath(owner._config, path) === undefined);
 
-        input.addEventListener("change", () => {
-            owner._valueChangedOrDefault(path, input.value, defaultValue);
-        });
+    //     input.addEventListener("change", () => {
+    //         owner._valueChangedOrDefault(path, input.value, defaultValue);
+    //     });
 
-        return input;       
-    }
+    //     return input;       
+    // }
 
     _numberInput(path, value, defaultValue = 0, step = 1) {
     //    return this._numberInputFor(this, path, value, defaultValue, step);
         return hennNumberInput(this, path, value, defaultValue, step);
     }
 
-    _numberInputFor(owner, path, value, defaultValue = 0, step = 1) {
-        const input = document.createElement("input");
-        input.type = "number";
-        input.step = step;
-        input.className = "henn-editor-input";
-        input.value = value ?? "";
-        input.classList.toggle("henn-editor-inherited", hennGetPath(owner._config, path) === undefined);
+    // _numberInputFor(owner, path, value, defaultValue = 0, step = 1) {
+    //     const input = document.createElement("input");
+    //     input.type = "number";
+    //     input.step = step;
+    //     input.className = "henn-editor-input";
+    //     input.value = value ?? "";
+    //     input.classList.toggle("henn-editor-inherited", hennGetPath(owner._config, path) === undefined);
 
-        input.addEventListener("change", () => {
-            const v = input.value === "" ? null : Number(input.value);
-            owner._valueChangedOrDefault(path, v, defaultValue);
-        });
+    //     input.addEventListener("change", () => {
+    //         const v = input.value === "" ? null : Number(input.value);
+    //         owner._valueChangedOrDefault(path, v, defaultValue);
+    //     });
 
-        return input;
-    }
+    //     return input;
+    // }
 
     _colorInput(path, value, defaultValue = null) {
         return this._colorInputFor(this, path, value, defaultValue);
@@ -5647,11 +5647,22 @@ function hennGenericInput(owner, input, path, value, defaultValue,
         if (typeof onChange === "function") {
             onChange(path, input.value, defaultValue, owner);
         }
-        else if (typeof owner._valueChangedOrDefault === "function") {
-            owner._valueChangedOrDefault(path, input.value, defaultValue);
+        else if (defaultValue !== undefined) {
+            owner._config = hennSetOrDeleteDefault(
+                owner._config,
+                path,
+                input.value,
+                defaultValue
+            );
+            hennFireConfigChanged(owner);
         }
-        else if (typeof owner._valueChanged === "function") {
-            owner._valueChanged(path, input.value);
+        else {
+            owner._config = hennSetPath(
+                owner._config,
+                path,
+                input.value
+            );
+            hennFireConfigChanged(owner);
         }
     });
 
@@ -5678,4 +5689,5 @@ function hennNumberInput(owner, path, value, defaultValue, step = 1, onChange = 
     input.value = value ?? ""; 
     return hennGenericInput(owner, input, path, value, defaultValue, onchange, classList, style);
 }
+
 
