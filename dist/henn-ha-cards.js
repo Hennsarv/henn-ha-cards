@@ -5323,17 +5323,17 @@ function hennColorRow(owner, path, label, value, defaultValue = null) {
 //     return input;
 // }
 
-function hennCheckbox(owner, path, value, defaultValue = false) {
-    const input = document.createElement("input");
-    input.type = "checkbox";
-    input.checked = !!value;
+// function hennCheckbox(owner, path, value, defaultValue = false) {
+//     const input = document.createElement("input");
+//     input.type = "checkbox";
+//     input.checked = !!value;
 
-    input.addEventListener("change", () => {
-        owner._valueChangedOrDefault(path, input.checked, defaultValue);
-    });
+//     input.addEventListener("change", () => {
+//         owner._valueChangedOrDefault(path, input.checked, defaultValue);
+//     });
 
-    return input;
-}
+//     return input;
+// }
 
 function hennColorPicker(owner, path, value, defaultValue = null) {
     const picker = document.createElement("input");
