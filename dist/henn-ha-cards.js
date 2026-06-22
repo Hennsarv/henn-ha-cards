@@ -2752,12 +2752,12 @@ class HennStonehengeCardEditor extends HTMLElement {
         lineTable.appendChild(this._universalTableRow(
             "upper", "Upper\nrail", this._config.upper,
             "stroke", "gap", "show",
-            this._config.upper.color, false
+            this._config.upper.color, true
         ));
         lineTable.appendChild(this._universalTableRow(
             "lower", "Lower\nrail", this._config.lower,
             "stroke", "gap", "show",
-            this._config.lower.color, false
+            this._config.lower.color, true
         ));
         body.appendChild(lineTable); 
 
@@ -5293,47 +5293,6 @@ function hennColorRow(owner, path, label, value, defaultValue = null) {
         hennColorCell(owner, path, value, defaultValue)
     );
 }
-
-// function hennTextInput(owner, path, value, defaultValue = "") {
-//     const input = document.createElement("input");
-//     input.className = "henn-editor-input";
-//     input.value = value ?? "";
-//     input.classList.toggle("henn-editor-inherited", hennGetPath(owner._config, path) === undefined);
-
-//     input.addEventListener("change", () => {
-//         owner._valueChangedOrDefault(path, input.value, defaultValue);
-//     });
-
-//     return input;
-// }
-
-// function hennNumberInput(owner, path, value, defaultValue = 0, step = 1) {
-//     const input = document.createElement("input");
-//     input.type = "number";
-//     input.step = step;
-//     input.className = "henn-editor-input";
-//     input.value = value ?? "";
-//     input.classList.toggle("henn-editor-inherited", hennGetPath(owner._config, path) === undefined);
-
-//     input.addEventListener("change", () => {
-//         const v = input.value === "" ? null : Number(input.value);
-//         owner._valueChangedOrDefault(path, v, defaultValue);
-//     });
-
-//     return input;
-// }
-
-// function hennCheckbox(owner, path, value, defaultValue = false) {
-//     const input = document.createElement("input");
-//     input.type = "checkbox";
-//     input.checked = !!value;
-
-//     input.addEventListener("change", () => {
-//         owner._valueChangedOrDefault(path, input.checked, defaultValue);
-//     });
-
-//     return input;
-// }
 
 function hennColorPicker(owner, path, value, defaultValue = null) {
     const picker = document.createElement("input");
