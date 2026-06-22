@@ -2606,7 +2606,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         table.appendChild(this._universalTableRow(
             "ticks.inner", "Inner", ticks.inner,
             "stroke", null, "show",
-            this._effectiveTicks().color, true
+            this._effectiveTicks().color, this._config.color, true
         ));
 
         table.appendChild(this._universalTableRow(
@@ -2743,6 +2743,9 @@ class HennStonehengeCardEditor extends HTMLElement {
             "stroke", null, "smooth",
             this._config.line.color, false
         )); // kumba pidi peab olema
+
+        
+
         lineTable.appendChild(this._universalTableRow(
             "fill", "Fill", this._config.fill,
             null, null, "show",
@@ -3040,7 +3043,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         row.className = "henn-editor-grid4";
 
         row.appendChild(this._colorInputFor(owner, `${path}.color`, effective.color, defaults.color ?? "white"));
-        row.appendChild(this._colorPickerFor(owner, `${path}.color`, effective.color, defaults.color ?? "white"));
+        row.appendChild(hennColorPicker(owner, `${path}.color`, effective.color, defaults.color ?? "white"));
         row.appendChild(hennNumberInput(owner, `${path}.stroke`, effective.stroke, defaults.stroke ?? 1));
         row.appendChild(hennNumberInput(owner, `${path}.gap`, effective.gap, defaults.gap ?? 0));
         row.appendChild(hennCheckbox(owner, `${path}.show`, effective.show, false));
@@ -3173,7 +3176,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         box.appendChild(selector);
         box.appendChild(
-            this._colorPickerFor(owner, path, value, defaultValue)
+            hennColorPicker(owner, path, value, defaultValue)
         );
 
         return box;
@@ -3249,7 +3252,7 @@ class HennStonehengeCardEditor extends HTMLElement {
     }
 
     _colorPicker(path, value, defaultValue = null) {
-        return this._colorPickerFor(this, path, value, defaultValue);
+        return hennColorPicker(this, path, value, defaultValue);
     }
 
     _colorPickerFor(owner, path, value, defaultValue = null) {
@@ -3499,7 +3502,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         const row = document.createElement("div");
         row.className = "henn-editor-tick-table";
 
-        if (checkName) {
+        if (checkDefault && checkName) {
             row.classList.toggle("henn-editor-muted", value?.[checkName] === false);
         }
 
@@ -3544,8 +3547,8 @@ class HennStonehengeCardEditor extends HTMLElement {
         if (checkName) {
             const chk = this._checkbox(
                 `${path}.${checkName}`,
-                value?.[checkName] ?? checkDefault,
-                checkDefault
+                value?.[checkName] ?? defaultValue,
+                defaultValue
             );
             chk.classList.add("henn-editor-pill-check");
             row.appendChild(chk);
@@ -5571,6 +5574,12 @@ function hennGenericInput(owner, input, path, value, defaultValue,
             return input.checked;
         }
 
+        if (input.type === "color") {
+            const hex = input.value.toLowerCase();
+            const name = hennHexToColorName(hex);
+            return name || hex;
+        }
+
         return input.value;
     }
 
@@ -5643,40 +5652,60 @@ function hennCheckbox(owner, path, value, defaultValue = "", onChange = null, cl
     return hennGenericInput(owner, input, path, value, defaultValue, onChange, classList, style, eventListeners);
 }
 
+function hennColorCell(owner, path, value, defaultValue = null, onChange = null, classList = [], style = {}, eventListeners = {}) {
+    const box = document.createElement("div");
+    box.className = "henn-color-cell";
+
+    const selector = hennCreateListSelector(
+        owner,
+        path,
+        "",
+        value ?? defaultValue ?? "",
+        HENN_CSS_COLORS2,
+        "color"
+    );
+
+    selector.classList.add("henn-color-cell-selector");
+
+    box.appendChild(selector);
+    box.appendChild(
+        hennColorPicker(owner, path, value, defaultValue)
+    );
+
+    return box;
+}
+
+function hennColorPicker(owner, path, value, defaultValue = null) {
+    const picker = document.createElement("input");
+    picker.type = "color";
+    picker.className = "henn-editor-input";
+    picker.style.width = "44px";
+    picker.style.height = "34px";
+    picker.style.padding = "2px";
+    picker.value = hennColorToHex(value ?? defaultValue ?? "#000000");
+    return hennGenericInput(owner, picker, path, value, defaultValue);
+}
+
+
+
 function hennTextRow(owner, label, path, value, defaultValue = "", onChange = null, classList = [], style = {}, eventListeners = {}) {
-    const row = hennEditorRow(label);
-    row.appendChild(hennTextInput(owner, path, value, defaultValue, onChange, classList, style, eventListeners));
-    return row;
+    return hennFieldRow(label, hennTextInput(owner, path, value, defaultValue, onChange, classList, style, eventListeners));
 }
 
 function hennNumberRow(owner, label, path, value, defaultValue, step = 1, min = undefined, max = undefined, onChange = null, classList = {}, style = {}, eventListeners = {}) {
-    const row = hennEditorRow(label);
-    row.appendChild(hennNumberInput(owner, path, value, defaultValue, step, min, max, onChange, classList, style, eventListeners));
-    return row;
+    return hennFieldRow(label, hennNumberInput(owner, path, value, defaultValue, step, min, max, onChange, classList, style, eventListeners));
 }
 
 function hennCheckboxRow(owner, label, path, value, defaultValue = "", onChange = null, classList = [], style = {}, eventListeners = {}) {
-    const row = hennEditorRow(label);
-    row.appendChild(hennCheckbox(owner, path, value, defaultValue, onChange, classList, style, eventListeners));
-    return row;
+    return hennFieldRow(label, hennCheckbox(owner, path, value, defaultValue, onChange, classList, style, eventListeners));
 }
 
-function hennEditorRow(label) {
+function hennFieldRow(label, control, className = "henn-editor-row", labelClassName = undefined) {
     const row = document.createElement("div");
-    row.className = "henn-editor-row";
+    row.className = className;
 
     const lab = document.createElement("div");
-    lab.textContent = label;
-
-    row.appendChild(lab);
-    return row;
-}
-
-function hennFieldRow(label, control) {
-    const row = document.createElement("div");
-    row.className = "henn-editor-row";
-
-    const lab = document.createElement("div");
+    if (labelClassName) lab.className = labelClassName;
     lab.textContent = label;
 
     row.appendChild(lab);
@@ -5685,23 +5714,19 @@ function hennFieldRow(label, control) {
     return row;
 }
 
-// function hennTextRow(owner, path, label, value, defaultValue = "") {
-//     return hennFieldRow(
-//         label,
-//         hennTextInput(owner, path, value, defaultValue)
-//     );
-// }
+function hennMultiRow(label, controls = [], className = "henn-editor-row", labelClassName = undefined) {
+    const row = document.createElement("div");
+    row.className = className;
 
-// function hennNumberRow(owner, path, label, value, defaultValue = 0, step = 1) {
-//     return hennFieldRow(
-//         label,
-//         hennNumberInput(owner, path, value, defaultValue, step)
-//     );
-// }
+    const lab = document.createElement("div");
+    if (labelClassName) lab.className = labelClassName;
+    lab.textContent = label;
 
-// function hennCheckboxRow(owner, path, label, value, defaultValue = false) {
-//     return hennFieldRow(
-//         label,
-//         hennCheckbox(owner, path, value, defaultValue)
-//     );
-// }
+    row.appendChild(lab);
+
+    if (Array.isArray(controls)) {
+        for (const control of controls || []) {
+            row.appendChild(control || document.createElement("div"));
+        }
+    }
+}
