@@ -5317,7 +5317,7 @@ function hennColorPicker(owner, path, value, defaultValue = null) {
     return picker;
 }
 
-function hennColorCell(owner, path, value, defaultValue = null) {
+function oldhennColorCell(owner, path, value, defaultValue = null) {
     const box = document.createElement("div");
     box.className = "henn-color-cell";
 
