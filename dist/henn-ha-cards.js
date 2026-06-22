@@ -5286,39 +5286,6 @@ function hennSegmentRow(label, value, options, defaultValue, onChange, opts = {}
     return wrap;
 }
 
-function hennFieldRow(label, control) {
-    const row = document.createElement("div");
-    row.className = "henn-editor-row";
-
-    const lab = document.createElement("div");
-    lab.textContent = label;
-
-    row.appendChild(lab);
-    row.appendChild(control);
-
-    return row;
-}
-
-function hennTextRow(owner, path, label, value, defaultValue = "") {
-    return hennFieldRow(
-        label,
-        hennTextInput(owner, path, value, defaultValue)
-    );
-}
-
-function hennNumberRow(owner, path, label, value, defaultValue = 0, step = 1) {
-    return hennFieldRow(
-        label,
-        hennNumberInput(owner, path, value, defaultValue, step)
-    );
-}
-
-function hennCheckboxRow(owner, path, label, value, defaultValue = false) {
-    return hennFieldRow(
-        label,
-        hennCheckbox(owner, path, value, defaultValue)
-    );
-}
 
 function hennColorRow(owner, path, label, value, defaultValue = null) {
     return hennFieldRow(
@@ -5745,3 +5712,37 @@ function hennEditorRow(label) {
     row.appendChild(lab);
     return row;
 }
+
+function hennFieldRow(label, control) {
+    const row = document.createElement("div");
+    row.className = "henn-editor-row";
+
+    const lab = document.createElement("div");
+    lab.textContent = label;
+
+    row.appendChild(lab);
+    row.appendChild(control);
+
+    return row;
+}
+
+// function hennTextRow(owner, path, label, value, defaultValue = "") {
+//     return hennFieldRow(
+//         label,
+//         hennTextInput(owner, path, value, defaultValue)
+//     );
+// }
+
+// function hennNumberRow(owner, path, label, value, defaultValue = 0, step = 1) {
+//     return hennFieldRow(
+//         label,
+//         hennNumberInput(owner, path, value, defaultValue, step)
+//     );
+// }
+
+// function hennCheckboxRow(owner, path, label, value, defaultValue = false) {
+//     return hennFieldRow(
+//         label,
+//         hennCheckbox(owner, path, value, defaultValue)
+//     );
+// }
