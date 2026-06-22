@@ -5297,7 +5297,7 @@ function hennColorRow(owner, path, label, value, defaultValue = null) {
     );
 }
 
-function hennColorPicker(owner, path, value, defaultValue = null) {
+function oldhennColorPicker(owner, path, value, defaultValue = null) {
     const picker = document.createElement("input");
     picker.type = "color";
     picker.className = "henn-editor-input";
