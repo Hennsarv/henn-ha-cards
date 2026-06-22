@@ -5635,6 +5635,19 @@ function mixColor(c1, c2, t) {
 function hennGenericInput(owner, input, path, value, defaultValue,
     onChange = null, classList = [], style = {}, eventListeners = {}) {
 
+    function readValue() {
+        if (input.type === "number") {
+            const v = Number(input.value);
+            return isNaN(v) ? null : v;
+        }
+
+        if (input.type === "checkbox") {
+            return input.checked;
+        }
+
+        return input.value;
+    }
+
     if (Array.isArray(classList)) { 
         for (const cls of classList || []) {
             input.classList.add(cls);
@@ -5644,14 +5657,16 @@ function hennGenericInput(owner, input, path, value, defaultValue,
     Object.assign(input.style, style);
 
     input.addEventListener("change", () => {
+        const newValue = readValue(input.value);
+
         if (typeof onChange === "function") {
-            onChange(path, input.value, defaultValue, owner);
+            onChange(path, newValue, defaultValue, owner);
         }
         else if (defaultValue !== undefined) {
             owner._config = hennSetOrDeleteDefault(
                 owner._config,
                 path,
-                input.value,
+                newValue,
                 defaultValue
             );
             hennFireConfigChanged(owner);
@@ -5660,7 +5675,7 @@ function hennGenericInput(owner, input, path, value, defaultValue,
             owner._config = hennSetPath(
                 owner._config,
                 path,
-                input.value
+                newValue
             );
             hennFireConfigChanged(owner);
         }
