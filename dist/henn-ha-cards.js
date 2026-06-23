@@ -1129,6 +1129,50 @@ const HENN_PERIOD_LIST = [
     ["1y", "1y"]
 ];
 
+if (!Element.prototype.addClasses) {
+    Element.prototype.addClasses = function (classes = null) {
+        if (!classes) return this;
+
+        if (Array.isArray(classes)) {
+            for (const cls of classes) {
+                if (cls) this.classList.add(cls);
+            }
+        }
+        else if (typeof classes === "string") {
+            for (const cls of classes.split(/\s+/)) {
+                if (cls) this.classList.add(cls);
+            }
+        }
+
+        return this;
+    };
+}
+
+if (!Element.prototype.addStyle) {
+    Element.prototype.addStyle = function (style = null) {
+        if (style) {
+            Object.assign(this.style, style);
+        }
+        return this;
+    };
+}
+
+if (Element.prototype.setType) {
+    Element.prototype.setType = function (type = null) {
+        if (type) this.type = type;
+        return this;
+    }
+}
+
+if (!Element.prototype.addProperties) {
+    Element.prototype.addProperties = function (props = null) {
+        if (props) {
+            Object.assign(this, props);
+        }
+        return this;
+    };
+}
+
 class HennWindRoseCard extends HTMLElement {
     setConfig(config) {
         if (!config.direction_entity) throw new Error("direction_entity is required");
@@ -3379,8 +3423,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             row.classList.toggle("henn-editor-muted", value?.[checkName] === false);
         }
 
-        const lab = document.createElement("div");
-        lab.className = "henn-editor-tick-row-label";
+        const lab = document.createElement("div").addClasses("henn-editor-tick-row-label");
         lab.textContent = label;
         row.appendChild(lab);
 
@@ -3398,7 +3441,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                 `${path}.${num1Name}`,
                 value?.[num1Name],
                 value?.[num1Name],
-                classList: ["henn-editor-mini-number"]
+                { classList: ["henn-editor-mini-number"] }
             );
             row.appendChild(n1);
         } else {
@@ -3410,7 +3453,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                 `${path}.${num2Name}`,
                 value?.[num2Name],
                 value?.[num2Name],
-                this.classList: ["henn-editor-mini-number"]
+                { classList: ["henn-editor-mini-number"] }
             );
             row.appendChild(n2);
         } else {
@@ -5435,7 +5478,7 @@ function mixColor(c1, c2, t) {
 }
 
 function hennGenericInput(owner, input, path, value, defaultValue,
-    onChange = null, classList = [], style = {}, eventListeners = {}) {
+    { onChange = null, classList = [], style = {}, eventListeners = {} } = {}) {
 
     function readValue() {
         if (input.type === "number") {
@@ -5465,7 +5508,7 @@ function hennGenericInput(owner, input, path, value, defaultValue,
     Object.assign(input.style, style);
 
     input.addEventListener("change", () => {
-        const newValue = readValue(input.value);
+        const newValue = readValue();
 
         if (typeof onChange === "function") {
             onChange(path, newValue, defaultValue, owner);
@@ -5496,36 +5539,40 @@ function hennGenericInput(owner, input, path, value, defaultValue,
     return input;
 }
 
-function hennTextInput(owner, path, value, defaultValue = "", onChange = null, classList = [], style = {}, eventListeners = {}) {
-    const input = document.createElement("input");
-    input.type = "text";
-    input.className = "henn-editor-input";
+function hennTextInput(owner, path, value, defaultValue = "", opt = {}) {
+    const input = document.createElement("input")
+        .setType("text")
+        .addClasses("henn-editor-input");
     input.value = value ?? "";
 
-    return hennGenericInput(owner, input, path, value, defaultValue, onChange, classList, style, eventListeners);
+    return hennGenericInput(owner, input, path, value, defaultValue, opt);
 }
-function hennNumberInput(owner, path, value, defaultValue, step = 1, min = undefined, max = undefined, onChange = null, classList = {}, style = {}, eventListeners = {}) {
-    const input = document.createElement('input');
-    input.className = 'henn-editor-input';
-    input.type = 'number';
-    input.step = step;
-    if (min != null) input.min = min;
-    if (max != null) input.max = max;
-    input.value = value ?? ""; 
-    return hennGenericInput(owner, input, path, value, defaultValue, onChange, classList, style);
-}
-
-function hennCheckbox(owner, path, value, defaultValue = "", onChange = null, classList = [], style = {}, eventListeners = {}) {
-    const input = document.createElement("input");
-    input.type = "checkbox";
-    input.checked = !!value;
-    input.className = "henn-editor-input";
-    input.value = value ?? "";
-
-    return hennGenericInput(owner, input, path, value, defaultValue, onChange, classList, style, eventListeners);
+function hennNumberInput(owner, path, value, defaultValue, step = 1, min = undefined, max = undefined, opt = {}) {
+    ({ min = min, max = max, step = step } = opt || {});
+    const input = document.createElement('input')
+        .addClasses('henn-editor-input')
+        .setType('number')
+        .addProperties(
+            {
+                step, min, max, value: value ?? ""
+            }
+        )
+        ;
+    return hennGenericInput(owner, input, path, value, defaultValue, opt);
 }
 
-function hennColorCell(owner, path, value, defaultValue = null, onChange = null, classList = [], style = {}, eventListeners = {}) {
+function hennCheckbox(owner, path, value, defaultValue = "", opt = {}) {
+    const input = document.createElement("input").addClasses('henn-editor-input').setType('checkbox')
+        .addProperties({
+            checked: !!value,
+            value: value ?? "";
+        })
+        ;
+
+    return hennGenericInput(owner, input, path, value, defaultValue, opt);
+}
+
+function hennColorCell(owner, path, value, defaultValue = null, opt = {}) {
     const box = document.createElement("div");
     box.className = "henn-color-cell"; 
 
@@ -5542,43 +5589,42 @@ function hennColorCell(owner, path, value, defaultValue = null, onChange = null,
 
     box.appendChild(selector);
     box.appendChild(
-        hennColorPicker(owner, path, value, defaultValue)
+        hennColorPicker(owner, path, value, defaultValue, opt)
     );
 
     return box;
 }
 
-function hennColorPicker(owner, path, value, defaultValue = null) {
-    const picker = document.createElement("input");
-    picker.type = "color";
-    picker.className = "henn-editor-input";
-    picker.style.width = "44px";
-    picker.style.height = "34px";
-    picker.style.padding = "2px";
+function hennColorPicker(owner, path, value, defaultValue = null, opt = {}) {
+    const picker = document.createElement("input")
+        .addClasses("henn-editor-input")
+        .addStyle({
+            width: "44px",
+            height: "34px",
+            padding: "2px"
+        }).setType("color");
     picker.value = hennColorToHex(value ?? defaultValue ?? "#000000");
-    return hennGenericInput(owner, picker, path, value, defaultValue);
+    return hennGenericInput(owner, picker, path, value, defaultValue, opt);
 }
 
 
 
-function hennTextRow(owner, label, path, value, defaultValue = "", onChange = null, classList = [], style = {}, eventListeners = {}) {
-    return hennFieldRow(label, hennTextInput(owner, path, value, defaultValue, onChange, classList, style, eventListeners));
+function hennTextRow(owner, label, path, value, defaultValue = "", opt = {}) {
+    return hennFieldRow(label, hennTextInput(owner, path, value, defaultValue, opt));
 }
 
-function hennNumberRow(owner, label, path, value, defaultValue, step = 1, min = undefined, max = undefined, onChange = null, classList = {}, style = {}, eventListeners = {}) {
-    return hennFieldRow(label, hennNumberInput(owner, path, value, defaultValue, step, min, max, onChange, classList, style, eventListeners));
+function hennNumberRow(owner, label, path, value, defaultValue, step = 1, min = undefined, max = undefined, opt = {}) {
+    return hennFieldRow(label, hennNumberInput(owner, path, value, defaultValue, step, min, max, opt));
 }
 
-function hennCheckboxRow(owner, label, path, value, defaultValue = "", onChange = null, classList = [], style = {}, eventListeners = {}) {
-    return hennFieldRow(label, hennCheckbox(owner, path, value, defaultValue, onChange, classList, style, eventListeners));
+function hennCheckboxRow(owner, label, path, value, defaultValue = "", onChange = null, opt = {}) {
+    return hennFieldRow(label, hennCheckbox(owner, path, value, defaultValue, onChange, opt));
 }
 
 function hennFieldRow(label, control, className = "henn-editor-row", labelClassName = undefined) {
-    const row = document.createElement("div");
-    row.className = className;
+    const row = document.createElement("div").addClasses(className || "henn-editor-row");
 
-    const lab = document.createElement("div");
-    if (labelClassName) lab.className = labelClassName;
+    const lab = document.createElement("div").addClasses(labelClassName);
     lab.textContent = label;
 
     row.appendChild(lab);
@@ -5588,11 +5634,9 @@ function hennFieldRow(label, control, className = "henn-editor-row", labelClassN
 }
 
 function hennMultiRow(label, controls = [], className = "henn-editor-row", labelClassName = undefined) {
-    const row = document.createElement("div");
-    row.className = className;
+    const row = document.createElement("div").addClasses(className);
 
-    const lab = document.createElement("div");
-    if (labelClassName) lab.className = labelClassName;
+    const lab = document.createElement("div"). addClasses(className);
     lab.textContent = label;
 
     row.appendChild(lab);
