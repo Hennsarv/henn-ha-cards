@@ -3091,11 +3091,6 @@ class HennStonehengeCardEditor extends HTMLElement {
         return hennTextRow(this, path, label, value, defaultValue);
     }
 
-    // _textRowFor(owner, path, label, value, defaultValue = "") {
-    //     const row = this._row(label);
-    //     row.appendChild(this._textInputFor(owner, path, value, defaultValue));
-    //     return row;
-    // }
 
     _numberRow(path, label, value, defaultValue = 0, step = 1) {
         return hennNumberRow(this, path, label, value, defaultValue, step);
@@ -3437,39 +3432,35 @@ class HennStonehengeCardEditor extends HTMLElement {
         );
 
         if (num1Name) {
-            const n1 = hennNumberInput(this,
+            row.appendChild(hennNumberInput(this,
                 `${path}.${num1Name}`,
                 value?.[num1Name],
                 value?.[num1Name],
                 { classList: ["henn-editor-mini-number"] }
-            );
-            row.appendChild(n1);
+            ));
         } else {
-            row.appendChild(this._emptyCell());
+            row.appendChild(document.createElement('div'));
         }
 
         if (num2Name) {
-            const n2 = hennNumberInput(this,
+            row.appendChild(hennNumberInput(this,
                 `${path}.${num2Name}`,
                 value?.[num2Name],
                 value?.[num2Name],
                 { classList: ["henn-editor-mini-number"] }
-            );
-            row.appendChild(n2);
+            ));
         } else {
-            row.appendChild(this._emptyCell());
+            row.appendChild(document.createElement('div'));
         }
 
         if (checkName) {
-            const chk = hennCheckbox(this,
+            row.appendChild(hennCheckbox(this,
                 `${path}.${checkName}`,
                 value?.[checkName], //?? defaultValue,
-                null //defaultValue
-            );
-            chk.classList.add("henn-editor-pill-check");
-            row.appendChild(chk);
+                null,  {classList: "henn-editor-pill-check"}
+            ));
         } else {
-            row.appendChild(this._emptyCell());
+            row.appendChild(document.createElement('div'));
         }
 
         return row;
