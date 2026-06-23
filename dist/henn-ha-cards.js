@@ -3099,7 +3099,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         cell.style.maxWidth = "260px";
 
         cell.appendChild(
-            this._colorCellFor(owner, path, value, defaultValue)
+            hennColorCell(owner, path, value, defaultValue)
         );
 
         row.appendChild(cell);
@@ -3107,7 +3107,7 @@ class HennStonehengeCardEditor extends HTMLElement {
     }
 
     _colorCell(path, value, defaultValue = null) {
-        return this._colorCellFor(this, path, value, defaultValue);
+        return hennColorCellFor(this, path, value, defaultValue);
     }
 
     _colorCellFor(owner, path, value, defaultValue = null) {
@@ -3153,11 +3153,11 @@ class HennStonehengeCardEditor extends HTMLElement {
         return hennNumberInput(this, path, value, defaultValue, step);
     }
 
-    _colorInput(path, value, defaultValue = null) {
+    old_colorInput(path, value, defaultValue = null) {
         return hennColorCell(this, path, value, defaultValue);
     }
 
-    _colorInputFor(owner, path, value, defaultValue = null) {
+    old_colorInputFor(owner, path, value, defaultValue = null) {
         const input = document.createElement("input");
         input.className = "henn-editor-input";
         input.value = value ?? "";
@@ -3176,7 +3176,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         return hennColorPicker(this, path, value, defaultValue);
     }
 
-    _colorPickerFor(owner, path, value, defaultValue = null) {
+    old_colorPickerFor(owner, path, value, defaultValue = null) {
         const picker = document.createElement("input");
         picker.type = "color";
         picker.className = "henn-editor-input";
@@ -3198,7 +3198,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         return hennCheckbox(this, path, value, defaultValue);
     }
 
-    _checkboxFor(owner, path, value, defaultValue = false) {
+    old_checkboxFor(owner, path, value, defaultValue = false) {
         const input = document.createElement("input");
         input.type = "checkbox";
         input.checked = !!value;
@@ -3433,7 +3433,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         row.appendChild(lab);
 
         row.appendChild(
-            this._colorCellFor(
+            hennColorCell(
                 this,
                 `${path}.color`,
                 value?.color,
@@ -3442,19 +3442,20 @@ class HennStonehengeCardEditor extends HTMLElement {
         );
 
         if (num1Name) {
-            const n1 = this._numberInput(
+            const n1 = hennNumberInput(this,
                 `${path}.${num1Name}`,
                 value?.[num1Name],
-                value?.[num1Name]
+                value?.[num1Name],
+                this.classList= ["henn-editor-mini-number"]
             );
-            n1.classList.add("henn-editor-mini-number");
+//            n1.classList.add("henn-editor-mini-number");
             row.appendChild(n1);
         } else {
             row.appendChild(this._emptyCell());
         }
 
         if (num2Name) {
-            const n2 = this._numberInput(
+            const n2 = hennNumberInput(this,
                 `${path}.${num2Name}`,
                 value?.[num2Name],
                 value?.[num2Name]
