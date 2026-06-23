@@ -3398,7 +3398,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                 `${path}.${num1Name}`,
                 value?.[num1Name],
                 value?.[num1Name],
-                classList= ["henn-editor-mini-number"]
+                classList: ["henn-editor-mini-number"]
             );
             row.appendChild(n1);
         } else {
@@ -3410,7 +3410,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                 `${path}.${num2Name}`,
                 value?.[num2Name],
                 value?.[num2Name],
-                this.classList= ["henn-editor-mini-number"]
+                this.classList: ["henn-editor-mini-number"]
             );
             row.appendChild(n2);
         } else {
