@@ -1157,7 +1157,7 @@ if (!Element.prototype.addStyle) {
     };
 }
 
-if (Element.prototype.setType) {
+if (!Element.prototype.setType) {
     Element.prototype.setType = function (type = null) {
         if (type) this.type = type;
         return this;
