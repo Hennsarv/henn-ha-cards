@@ -3144,70 +3144,22 @@ class HennStonehengeCardEditor extends HTMLElement {
         return row;
     }
 
-    _textInput(path, value, defaultValue = "") {
+    old_textInput(path, value, defaultValue = "") {
         return hennTextInput(this, path, value, defaultValue);
     }
 
 
-    _numberInput(path, value, defaultValue = 0, step = 1) {
+    old_numberInput(path, value, defaultValue = 0, step = 1) {
         return hennNumberInput(this, path, value, defaultValue, step);
     }
 
-    old_colorInput(path, value, defaultValue = null) {
-        return hennColorCell(this, path, value, defaultValue);
-    }
 
-    old_colorInputFor(owner, path, value, defaultValue = null) {
-        const input = document.createElement("input");
-        input.className = "henn-editor-input";
-        input.value = value ?? "";
-        input.placeholder = defaultValue ?? "inherit";
-        input.classList.toggle("henn-editor-inherited", hennGetPath(owner._config, path) === undefined);
-
-        input.addEventListener("change", () => {
-            const v = input.value.trim() || null;
-            owner._valueChangedOrDefault(path, v, defaultValue);
-        });
-
-        return input;
-    }
-
-    _colorPicker(path, value, defaultValue = null) {
+    old_colorPicker(path, value, defaultValue = null) {
         return hennColorPicker(this, path, value, defaultValue);
     }
 
-    old_colorPickerFor(owner, path, value, defaultValue = null) {
-        const picker = document.createElement("input");
-        picker.type = "color";
-        picker.className = "henn-editor-input";
-        picker.style.width = "44px";
-        picker.style.height = "34px";
-        picker.style.padding = "2px";
-        picker.value = hennColorToHex(value ?? defaultValue ?? "#000000");
-
-        picker.addEventListener("change", () => {
-            const hex = picker.value.toLowerCase();
-            const name = hennHexToColorName(hex);
-            owner._valueChangedOrDefault(path, name || hex, defaultValue);
-        });
-
-        return picker;
-    }
-
-    _checkbox(path, value, defaultValue = false) {
+     old_checkbox(path, value, defaultValue = false) {
         return hennCheckbox(this, path, value, defaultValue);
-    }
-
-    old_checkboxFor(owner, path, value, defaultValue = false) {
-        const input = document.createElement("input");
-        input.type = "checkbox";
-        input.checked = !!value;
-
-        input.addEventListener("change", () => {
-            owner._valueChangedOrDefault(path, input.checked, defaultValue);
-        });
-
-        return input;
     }
 
     _addEntityPickerTo(selector, value, onChange) {
@@ -3346,7 +3298,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         slider.step = step;
         slider.value = value ?? defaultValue;
 
-        const number = this._numberInput(path, value, defaultValue, step);
+        const number = hennNumberInput(this, path, value, defaultValue, step);
         number.classList.add("henn-editor-compact-number");
 
         slider.addEventListener("input", () => {
@@ -3376,7 +3328,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         lab.className = "henn-editor-wide-label";
         lab.textContent = label;
 
-        const input = this._numberInput(path, value, defaultValue, step);
+        const input = hennNumberInput(this, path, value, defaultValue, step);
         input.classList.add("henn-editor-compact-number");
 
         wrap.appendChild(lab);
@@ -3446,9 +3398,8 @@ class HennStonehengeCardEditor extends HTMLElement {
                 `${path}.${num1Name}`,
                 value?.[num1Name],
                 value?.[num1Name],
-                this.classList= ["henn-editor-mini-number"]
+                classList= ["henn-editor-mini-number"]
             );
-//            n1.classList.add("henn-editor-mini-number");
             row.appendChild(n1);
         } else {
             row.appendChild(this._emptyCell());
@@ -3458,16 +3409,16 @@ class HennStonehengeCardEditor extends HTMLElement {
             const n2 = hennNumberInput(this,
                 `${path}.${num2Name}`,
                 value?.[num2Name],
-                value?.[num2Name]
+                value?.[num2Name],
+                this.classList= ["henn-editor-mini-number"]
             );
-            n2.classList.add("henn-editor-mini-number");
             row.appendChild(n2);
         } else {
             row.appendChild(this._emptyCell());
         }
 
         if (checkName) {
-            const chk = this._checkbox(
+            const chk = hennCheckbox(this,
                 `${path}.${checkName}`,
                 value?.[checkName], //?? defaultValue,
                 null //defaultValue
