@@ -5565,7 +5565,7 @@ function hennCheckbox(owner, path, value, defaultValue = "", opt = {}) {
     const input = document.createElement("input").addClasses('henn-editor-input').setType('checkbox')
         .addProperties({
             checked: !!value,
-            value: value ?? "";
+            value: value ?? ""
         })
         ;
 
