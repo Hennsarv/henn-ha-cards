@@ -5533,7 +5533,7 @@ function hennTextInput(owner, path, value, defaultValue = "", opt = {}) {
     return hennGenericInput(owner, input, path, value, defaultValue, opt);
 }
 function hennNumberInput(owner, path, value, defaultValue, step = 1, min = undefined, max = undefined, opt = {}) {
-    const { min = min, max = max, step = step } = opt || {};
+    ({ min = min, max = max, step = step } = opt || {}); // siin ei tohi const olla ees
     const input = document.createElement('input')
         .addClasses('henn-editor-input')
         .setType('number')
