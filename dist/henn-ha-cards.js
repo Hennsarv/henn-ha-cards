@@ -5467,11 +5467,12 @@ function hennGenericInput(owner, input, path, value, defaultValue, opt = {}) {
         return input.value;
     }
 
-    if (Array.isArray(classList)) { 
-        for (const cls of classList || []) {
-            input.classList.add(cls);
-        }
-    }
+    input.addClasses(classlist);
+    // if (Array.isArray(classList)) { 
+    //     for (const cls of classList || []) {
+    //         input.classList.add(cls);
+    //     }
+    // }
 
     Object.assign(input.style, style);
 
