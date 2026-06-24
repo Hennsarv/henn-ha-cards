@@ -1150,7 +1150,7 @@ if (!Element.prototype.addClasses) {
 }
 
 if (!Element.prototype.addStyle) {
-    if (!predicate) return this;
+    if (!predicate) { return this; }
     Element.prototype.addStyle = function (style = null, predicate = true) {
         if (style) {
             Object.assign(this.style, style);
@@ -1161,7 +1161,7 @@ if (!Element.prototype.addStyle) {
 
 if (!Element.prototype.setType) {
     Element.prototype.setType = function (type = null, predicate = true) {
-        if (!predicate) return this;
+        if (!predicate) { return this; }
         if (type) this.type = type;
         return this;
     }
@@ -1169,7 +1169,7 @@ if (!Element.prototype.setType) {
 
 if (!Element.prototype.addProperties) {
     Element.prototype.addProperties = function (props = null, predicate = true) {
-        if (!predicate) return this;
+        if (!predicate) {return this;}
         if(props) {
             Object.assign(this, props);
         }
