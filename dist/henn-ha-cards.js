@@ -3178,24 +3178,6 @@ class HennStonehengeCardEditor extends HTMLElement {
         return row;
     }
 
-    old_textInput(path, value, defaultValue = "") {
-        return hennTextInput(this, path, value, defaultValue);
-    }
-
-
-    old_numberInput(path, value, defaultValue = 0, step = 1) {
-        return hennNumberInput(this, path, value, defaultValue, step);
-    }
-
-
-    old_colorPicker(path, value, defaultValue = null) {
-        return hennColorPicker(this, path, value, defaultValue);
-    }
-
-     old_checkbox(path, value, defaultValue = false) {
-        return hennCheckbox(this, path, value, defaultValue);
-    }
-
     _addEntityPickerTo(selector, value, onChange) {
         const host = this.querySelector(selector);
         if (!host || !this._hass) return;
@@ -3452,7 +3434,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             row.appendChild(hennCheckbox(this,
                 `${path}.${checkName}`,
                 value?.[checkName], //?? defaultValue,
-                null,  {classList: "henn-editor-pill-check"}
+                {classList: "henn-editor-pill-check"}
             ));
         } else {
             row.appendChild(document.createElement('div'));
