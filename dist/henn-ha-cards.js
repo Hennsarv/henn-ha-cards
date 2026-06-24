@@ -1150,8 +1150,8 @@ if (!Element.prototype.addClasses) {
 }
 
 if (!Element.prototype.addStyle) {
-    if (!predicate) { return this; }
     Element.prototype.addStyle = function (style = null, predicate = true) {
+        if (!predicate) { return this; }
         if (style) {
             Object.assign(this.style, style);
         }
