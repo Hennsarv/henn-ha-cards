@@ -3431,6 +3431,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         }
 
         if (checkName) {
+            debugger;
             row.appendChild(hennCheckbox(this,
                 `${path}.${checkName}`,
                 value?.[checkName], //?? defaultValue,
