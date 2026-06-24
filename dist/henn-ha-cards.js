@@ -1149,6 +1149,35 @@ if (!Element.prototype.addClasses) {
     };
 }
 
+if (!Element.prototype.addHtml) {
+    Element.prototype.addHtml = function (html = null, predicate = true) {
+        if (predicate && html) this.innerHTML += html;
+        return this;
+    }
+}
+
+if (!Element.prototype.setHtml) {
+    Element.prototype.setHtml = function (html = null, predicate = true) {
+        if (predicate && html) this.innerHTML = html;
+        return this;
+    }
+}
+
+if (!Element.prototype.appendChilds) {
+    Element.prototype.appendChilds = function (childs = []) {
+        if (Array.isArray(childs)) {
+            for (const child of childs) {
+                if (child) this.appendChild(child);
+            }
+            elseif(childs) {
+                this.appendChild(childs);
+            }
+        }
+        return this;
+    }
+}
+
+
 if (!Element.prototype.addStyle) {
     Element.prototype.addStyle = function (style = null, predicate = true) {
         if (!predicate) { return this; }
@@ -2517,10 +2546,9 @@ class HennStonehengeCardEditor extends HTMLElement {
     }
 
     _renderRootSection() {
-        const host = this.querySelector("#root-section");
-        host.className = "henn-editor-section";
-
-        host.appendChild(this._title("Stonehenge"));
+        const host = this.querySelector("#root-section").addClasses("henn-editor-section")
+            .appendChilds(hennTitle("Stonehenge"))
+            ;
 
         host.appendChild(
             hennSegmentRow(
@@ -2582,16 +2610,18 @@ class HennStonehengeCardEditor extends HTMLElement {
             )
         );
 
-        const title = this._title("Numbrilaud", right);
-        title.classList.add("henn-editor-section-title");
+        const title = hennTitle("Numbrilaud", right).addClasses("henn-editor-section-title");
         host.appendChild(title);
 
        if (!open) return;
 
-        const body = document.createElement("div");
-        body.className = enabled
-            ? "henn-editor-section-body"
-            : "henn-editor-section-body henn-editor-muted";
+        const body = document.createElement("div")
+            .addClasses("henn-editor-section-body")
+            .addClasses("henn-editor-muted", !enabled)
+            ;
+        // body.className = enabled
+        //     ? "henn-editor-section-body"
+        //     : "henn-editor-section-body henn-editor-muted";
 
         body.appendChild(this._wideColorRow("ticks.color", "Color", ticks.color, "black"));
 
@@ -2705,8 +2735,8 @@ class HennStonehengeCardEditor extends HTMLElement {
             )
         );
 
-        const title = this._title("Seeriate vaikimisi seaded", right);
-        title.classList.add("henn-editor-section-title");
+        const title = hennTitle("Seeriate vaikimisi seaded", right)
+            .addClasses("henn-editor-section-title");
         host.appendChild(title);
 
         if (!open) return;
@@ -3074,36 +3104,20 @@ class HennStonehengeCardEditor extends HTMLElement {
     }
 
     _title(text, rightEl = null) {
-        const div = document.createElement("div");
-        div.className = "henn-editor-title";
-
-        const left = document.createElement("div");
-        left.textContent = text;
-        div.appendChild(left);
-
-        if (rightEl) div.appendChild(rightEl);
-        return div;
+        return document.createElement("div")
+            .addClasses("henn-editor-title")
+            .appendChilds(
+                [
+                    document.createElement("div").setTextContent(text),
+                    rightEl
+                ]);
     }
 
     _subTitle(text) {
-        const div = document.createElement("div");
-        div.className = "henn-editor-small";
-        div.style.fontWeight = "600";
-        div.textContent = text;
-        return div;
-    }
-
-    _textRow(path, label, value, defaultValue = "") {
-        return hennTextRow(this, path, label, value, defaultValue);
-    }
-
-
-    _numberRow(path, label, value, defaultValue = 0, step = 1) {
-        return hennNumberRow(this, path, label, value, defaultValue, step);
-    }
-
-    _checkboxRow(path, label, value, defaultValue = false) {
-        return hennCheckboxRow(this, path, label, value, defaultValue);
+        return document.createElement("div")
+            .addClasses("henn-editor-small")
+            .addStyle({fontWeight: "600"})
+            .setTextContent(text);
     }
 
     _selectRow(path, label, value, options, defaultValue = null) {
@@ -3132,29 +3146,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         row.appendChild(select);
         return row;
     }
-
-    _colorRow(path, label, value, defaultValue = null) {
-        return this._colorRowFor(this, path, label, value, defaultValue);
-    }
-
-    _colorRowFor(owner, path, label, value, defaultValue = null) {
-        const row = this._row(label);
-
-        const cell = document.createElement("div");
-        cell.style.maxWidth = "260px";
-
-        cell.appendChild(
-            hennColorCell(owner, path, value, defaultValue)
-        );
-
-        row.appendChild(cell);
-        return row;
-    }
-
-    _colorCell(path, value, defaultValue = null) {
-        return hennColorCellFor(this, path, value, defaultValue);
-    }
-
+    
     _colorCellFor(owner, path, value, defaultValue = null) {
         const box = document.createElement("div");
         box.className = "henn-color-cell";
@@ -3256,16 +3248,6 @@ class HennStonehengeCardEditor extends HTMLElement {
                 editor._seriesValueChangedOrDefault(index, path, value, defaultValue);
             }
         };
-    }
-
-    old_valueChanged(path, value) {
-        this._config = hennSetPath(this._config, path, value);
-        hennFireConfigChanged(this);
-    }
-
-    old_valueChangedOrDefault(path, value, defaultValue) {
-        this._config = hennSetOrDeleteDefault(this._config, path, value, defaultValue);
-        hennFireConfigChanged(this);
     }
 
     _seriesValueChanged(index, path, value) {
@@ -5090,10 +5072,6 @@ function hennValueOrDefault(value, defaultValue) {
     return value === undefined || value === null ? defaultValue : value;
 }
 
-function hennIsInherited(config, path) {
-    return hennGetPath(config, path) === undefined;
-}
-
 function hennSetOrDeleteDefault(obj, path, value, defaultValue) {
     if (hennDeepEqual(value, defaultValue)) {
         return hennDeletePath(obj, path);
@@ -5153,16 +5131,6 @@ function hennSegmentRow(label, value, options, defaultValue, onChange, opts = {}
             .setTextContent(text)
             .addStyle(opts.buttonStyle)
             ;
-
-        // btn.className =
-        //     "henn-editor-segment-button" +
-        //     (String(v) === String(value) ? " selected" : "");
-
-        // btn.textContent = text;
-
-        // if (opts.buttonStyle) {
-        //     Object.assign(btn.style, opts.buttonStyle);
-        // }
 
         btn.addEventListener("click", e => {
             e.preventDefault();
@@ -5586,4 +5554,21 @@ function hennValueChanged(owner, path, value) {
 function hennValueChangedOrDefault(owner, path, value, defaultValue) {
     owner._config = hennSetOrDeleteDefault(owner._config, path, value, defaultValue);
     hennFireConfigChanged(owner);
+}
+
+function hennTitle(text, rightEl = null) {
+    return document.createElement("div")
+        .addClasses("henn-editor-title")
+        .appendChilds(
+            [
+                document.createElement("div").setTextContent(text),
+                rightEl
+            ]);
+}
+
+function hennSubTitle(text) {
+    return document.createElement("div")
+        .addClasses("henn-editor-small")
+        .addStyle({ fontWeight: "600" })
+        .setTextContent(text);
 }
