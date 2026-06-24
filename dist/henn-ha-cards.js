@@ -5144,10 +5144,10 @@ function hennSegmentRow(label, value, options, defaultValue, onChange, opts = {}
 
     options.forEach(([v, text]) => {
         const btn = document.createElement("button").setType("button")
-            .addClasses([
-                "henn-editor-segment-button",
+            .addClasses(
+                "henn-editor-segment-button" + 
                 (String(v) === String(value) ? " selected" : "")
-            ])
+            )
             .setTextContent(text)
             .addStyle(opts.buttonStyle)
             ;
