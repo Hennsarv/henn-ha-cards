@@ -2782,57 +2782,57 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         const lineTable = this._createMiniTable(["", "Color", "Stroke", "Gap", "Smoth\nShow"]);
 
-        // lineTable.appendChild(this._universalTableRow( 
-        //     "line", "Line", this._config.line,
-        //     "stroke", null, "smooth",
-        //     this._config.line.color, false
-        // )); // kumba pidi peab olema
+        lineTable.appendChild(this._universalTableRow( 
+            "line", "Line", this._config.line,
+            "stroke", null, "smooth",
+            this._config.line.color, false
+        )); // kumba pidi peab olema
 
         
 
-        // lineTable.appendChild(this._universalTableRow(
-        //     "fill", "Fill", this._config.fill,
-        //     null, null, "show",
-        //     this._config.fill.color, true
-        // ));
+        lineTable.appendChild(this._universalTableRow(
+            "fill", "Fill", this._config.fill,
+            null, null, "show",
+            this._config.fill.color, true
+        ));
 
-        // lineTable.appendChild(this._universalTableRow(
-        //     "upper", "Upper\nrail", this._config.upper,
-        //     "stroke", "gap", "show",
-        //     this._config.upper.color, true
-        // ));
-        // lineTable.appendChild(this._universalTableRow(
-        //     "lower", "Lower\nrail", this._config.lower,
-        //     "stroke", "gap", "show",
-        //     this._config.lower.color, true
-        // ));
-        // body.appendChild(lineTable); 
+        lineTable.appendChild(this._universalTableRow(
+            "upper", "Upper\nrail", this._config.upper,
+            "stroke", "gap", "show",
+            this._config.upper.color, true
+        ));
+        lineTable.appendChild(this._universalTableRow(
+            "lower", "Lower\nrail", this._config.lower,
+            "stroke", "gap", "show",
+            this._config.lower.color, true
+        ));
+        body.appendChild(lineTable); 
 
-        // body.appendChild(createSeparator());
+        body.appendChild(createSeparator());
 
-        // body.appendChild(this._subTitle("Defaul for gradient - by opacity or by color"));
-        // const gradientTable = this._createMiniTable(["", "Color", "","Opacity or", "Colors"]);
-        // gradientTable.appendChild(this._universalTableRow(
-        //     "gradient", "Gradient\nColor", this._config.gradient,
-        //     null, null, "opacity_or_color",
-        //     this._config.gradient.color, true
-        // ));
-        // body.appendChild(gradientTable)
-        // body.appendChild(createSeparator());
+        body.appendChild(this._subTitle("Defaul for gradient - by opacity or by color"));
+        const gradientTable = this._createMiniTable(["", "Color", "","Opacity or", "Colors"]);
+        gradientTable.appendChild(this._universalTableRow(
+            "gradient", "Gradient\nColor", this._config.gradient,
+            null, null, "opacity_or_color",
+            this._config.gradient.color, true
+        ));
+        body.appendChild(gradientTable)
+        body.appendChild(createSeparator());
 
-        // body.appendChild(this._subTitle("Fill"));
-        // body.appendChild(hennCheckboxRow(this, "fill.show", "Enabled", hennGetPath(this._config, "fill.show") !== false, true));
-        // body.appendChild(hennColorRow(this, "fill.color", "Color", hennGetPath(this._config, "fill.color"), null));
+        body.appendChild(this._subTitle("Fill"));
+        body.appendChild(hennCheckboxRow(this, "fill.show", "Enabled", hennGetPath(this._config, "fill.show") !== false, true));
+        body.appendChild(hennColorRow(this, "fill.color", "Color", hennGetPath(this._config, "fill.color"), null));
 
-        // body.appendChild(createSeparator());
+        body.appendChild(createSeparator());
 
-        // body.appendChild(this._subTitle("Gradient"));
-        // body.appendChild(hennColorRow(this, "gradient.color", "Color", hennGetPath(this._config, "gradient.color") ?? "orange", "orange"));
-        // body.appendChild(hennNumberRow(this, "gradient.min_opacity", "Min opacity", hennGetPath(this._config, "gradient.min_opacity") ?? 0.15, 0.15, 0.05));
-        // body.appendChild(hennNumberRow(this, "gradient.max_opacity", "Max opacity", hennGetPath(this._config, "gradient.max_opacity") ?? 0.9, 0.9, 0.05));
-        // body.appendChild(hennColorRow(this, "gradient.min_color", "Min color", hennGetPath(this._config, "gradient.min_color"), null));
-        // body.appendChild(hennColorRow(this, "gradient.max_color", "Max color", hennGetPath(this._config, "gradient.max_color"), null));
-        // host.append(body);
+        body.appendChild(this._subTitle("Gradient"));
+        body.appendChild(hennColorRow(this, "gradient.color", "Color", hennGetPath(this._config, "gradient.color") ?? "orange", "orange"));
+        body.appendChild(hennNumberRow(this, "gradient.min_opacity", "Min opacity", hennGetPath(this._config, "gradient.min_opacity") ?? 0.15, 0.15, 0.05));
+        body.appendChild(hennNumberRow(this, "gradient.max_opacity", "Max opacity", hennGetPath(this._config, "gradient.max_opacity") ?? 0.9, 0.9, 0.05));
+        body.appendChild(hennColorRow(this, "gradient.min_color", "Min color", hennGetPath(this._config, "gradient.min_color"), null));
+        body.appendChild(hennColorRow(this, "gradient.max_color", "Max color", hennGetPath(this._config, "gradient.max_color"), null));
+        host.append(body);
     }
 
     _renderSeriesSection() {
@@ -5464,8 +5464,8 @@ function mixColor(c1, c2, t) {
 }
 
 function hennGenericInput(owner, input, path, value, defaultValue,
-    { onChange = null, classList = [], style = {}, eventListeners = {} } = {}) {
-
+    { classList = [], style = {}, eventListeners = {} } = {}) {
+    let onChange = null;
     function readValue() {
         if (input.type === "number") {
             const v = Number(input.value);
