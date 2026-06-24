@@ -5464,7 +5464,7 @@ function mixColor(c1, c2, t) {
 }
 
 function hennGenericInput(owner, input, path, value, defaultValue, opt = {}) {
-    const { onChange = null, classList =[], style = {}, eventListeners = {} } = opt || {};
+    const { onChange = null, classList =[], style = {}, eventListeners = {} } = opt || {}; // lisasin const
     function readValue() {
         if (input.type === "number") {
             const v = Number(input.value);
