@@ -1169,10 +1169,9 @@ if (!Element.prototype.appendChilds) {
             for (const child of childs) {
                 if (child) this.appendChild(child);
             }
-            elseif(childs) {
-                this.appendChild(childs);
-            }
         }
+        else if (childs) this.appendChild(childs);
+
         return this;
     }
 }
