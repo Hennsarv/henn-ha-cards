@@ -3053,7 +3053,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 //        row.appendChild(hennColorPicker(owner, `${path}.color`, effective.color, defaults.color ?? "white"));
         row.appendChild(hennNumberInput(owner, `${path}.stroke`, effective.stroke, defaults.stroke ?? 1));
         row.appendChild(hennNumberInput(owner, `${path}.gap`, effective.gap, defaults.gap ?? 0));
-        row.appendChild(hennCheckbox(owner, `${path}.show`, effective.show, false));
+        row.appendChild(hennCheckbox(owner, `${path}.show`, effective.show, false).addClasses("henn-editor-pill-check"));
 
         const wrap = document.createElement("div");
         wrap.className = effective.show ? "" : "henn-editor-muted";
@@ -5467,7 +5467,6 @@ function hennGenericInput(owner, input, path, value, defaultValue, opt = {}) {
     }
 
     if (Array.isArray(classList)) { 
-        console.info("classList:", classList);
         for (const cls of classList || []) {
             input.classList.add(cls);
         }
@@ -5585,8 +5584,8 @@ function hennNumberRow(owner, label, path, value, defaultValue, step = 1, min = 
     return hennFieldRow(label, hennNumberInput(owner, path, value, defaultValue, step, min, max, opt));
 }
 
-function hennCheckboxRow(owner, label, path, value, defaultValue = "", onChange = null, opt = {}) {
-    return hennFieldRow(label, hennCheckbox(owner, path, value, defaultValue, onChange, opt));
+function hennCheckboxRow(owner, label, path, value, defaultValue = "", opt = {}) {
+    return hennFieldRow(label, hennCheckbox(owner, path, value, defaultValue, opt));
 }
 
 function hennFieldRow(label, control, className = "henn-editor-row", labelClassName = undefined) {
