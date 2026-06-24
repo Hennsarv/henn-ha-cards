@@ -1130,7 +1130,8 @@ const HENN_PERIOD_LIST = [
 ];
 
 if (!Element.prototype.addClasses) {
-    Element.prototype.addClasses = function (classes = null) {
+    Element.prototype.addClasses = function (classes = null, predicate = true) {
+        if (!predicate) return this;
         if (!classes) return this;
 
         if (Array.isArray(classes)) {
@@ -1149,7 +1150,8 @@ if (!Element.prototype.addClasses) {
 }
 
 if (!Element.prototype.addStyle) {
-    Element.prototype.addStyle = function (style = null) {
+    if (!predicate) return this;
+    Element.prototype.addStyle = function (style = null, predicate = true) {
         if (style) {
             Object.assign(this.style, style);
         }
@@ -1158,15 +1160,17 @@ if (!Element.prototype.addStyle) {
 }
 
 if (!Element.prototype.setType) {
-    Element.prototype.setType = function (type = null) {
+    Element.prototype.setType = function (type = null, predicate = true) {
+        if (!predicate) return this;
         if (type) this.type = type;
         return this;
     }
 }
 
 if (!Element.prototype.addProperties) {
-    Element.prototype.addProperties = function (props = null) {
-        if (props) {
+    Element.prototype.addProperties = function (props = null, predicate = true) {
+        if (!predicate) return this;
+        if(props) {
             Object.assign(this, props);
         }
         return this;
@@ -1174,8 +1178,8 @@ if (!Element.prototype.addProperties) {
 }
 
 if (!Element.prototype.setTextContent) {
-    Element.prototype.setTextContent = function (text = null) {
-        if (text) this.textContent = text;
+    Element.prototype.setTextContent = function (text = null, predicate = true) {
+        if (predicate && text) this.textContent = text;
         return this;
     }
 }
@@ -5144,10 +5148,8 @@ function hennSegmentRow(label, value, options, defaultValue, onChange, opts = {}
 
     options.forEach(([v, text]) => {
         const btn = document.createElement("button").setType("button")
-            .addClasses(
-                "henn-editor-segment-button" + 
-                (String(v) === String(value) ? " selected" : "")
-            )
+            .addClasses("henn-editor-segment-button")
+            .addClasses("seleted", String(v) === String(value))
             .setTextContent(text)
             .addStyle(opts.buttonStyle)
             ;
