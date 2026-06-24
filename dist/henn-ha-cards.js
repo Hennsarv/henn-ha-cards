@@ -5464,7 +5464,7 @@ function mixColor(c1, c2, t) {
 }
 
 function hennGenericInput(owner, input, path, value, defaultValue, opt = {}) {
-    ({ onChange = null, classList =[], style = {}, eventListeners = {} } = opt || {});
+    const { onChange = null, classList =[], style = {}, eventListeners = {} } = opt || {};
     function readValue() {
         if (input.type === "number") {
             const v = Number(input.value);
@@ -5533,7 +5533,7 @@ function hennTextInput(owner, path, value, defaultValue = "", opt = {}) {
     return hennGenericInput(owner, input, path, value, defaultValue, opt);
 }
 function hennNumberInput(owner, path, value, defaultValue, step = 1, min = undefined, max = undefined, opt = {}) {
-    ({ min = min, max = max, step = step } = opt || {});
+    const { min = min, max = max, step = step } = opt || {};
     const input = document.createElement('input')
         .addClasses('henn-editor-input')
         .setType('number')
