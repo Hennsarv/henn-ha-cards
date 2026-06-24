@@ -5463,9 +5463,8 @@ function mixColor(c1, c2, t) {
     return `rgb(${r},${g},${b2})`;
 }
 
-function hennGenericInput(owner, input, path, value, defaultValue,
-    { classList = [], style = {}, eventListeners = {} } = {}) {
-    let onChange = null;
+function hennGenericInput(owner, input, path, value, defaultValue, opt = {}) {
+    ({ onChange = null, classList = [], style = {}, eventListeners = {} } = opt || { })
     function readValue() {
         if (input.type === "number") {
             const v = Number(input.value);
