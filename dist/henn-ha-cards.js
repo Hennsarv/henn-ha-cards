@@ -5123,16 +5123,13 @@ function hennIconButton(icon, active = false, onClick = null) {
 }
 
 function hennSegmentRow(label, value, options, defaultValue, onChange, opts = {}) {
-    const wrap = document.createElement("div");
-    wrap.className = "henn-editor-wide-row";
+    const wrap = document.createElement("div").addClasses("henn-editor-wide-row");
 
     if (opts.wrapStyle) {
         Object.assign(wrap.style, opts.wrapStyle);
     }
 
-    const lab = document.createElement("div");
-    lab.className = "henn-editor-wide-label";
-    lab.textContent = label;
+    const lab = document.createElement("div").addClasses("henn-editor-wide-label").setTextContent(label);
 
     if (opts.labelStyle) {
         Object.assign(lab.style, opts.labelStyle);
@@ -5146,19 +5143,24 @@ function hennSegmentRow(label, value, options, defaultValue, onChange, opts = {}
     }
 
     options.forEach(([v, text]) => {
-        const btn = document.createElement("button");
+        const btn = document.createElement("button").setType("button")
+            .addClasses([
+                "henn-editor-segment-button",
+                (String(v) === String(value) ? " selected" : "")
+            ])
+            .setTextContent(text)
+            .addStyle(opts.buttonStyle)
+            ;
 
-        btn.type = "button";
+        // btn.className =
+        //     "henn-editor-segment-button" +
+        //     (String(v) === String(value) ? " selected" : "");
 
-        btn.className =
-            "henn-editor-segment-button" +
-            (String(v) === String(value) ? " selected" : "");
+        // btn.textContent = text;
 
-        btn.textContent = text;
-
-        if (opts.buttonStyle) {
-            Object.assign(btn.style, opts.buttonStyle);
-        }
+        // if (opts.buttonStyle) {
+        //     Object.assign(btn.style, opts.buttonStyle);
+        // }
 
         btn.addEventListener("click", e => {
             e.preventDefault();
@@ -5195,10 +5197,6 @@ function createSeparator() {
         background: "var(--divider-color)",
         margin: "8px 0"
     });
-    // hr.style.height = "1px";
-    // hr.style.background = "var(--divider-color)";
-    // hr.style.margin = "8px 0";
-    // return hr;
 }
 
 function hennSausageRow(value, options, defaultValue = "1d", onChange = null, opts = {}) {
