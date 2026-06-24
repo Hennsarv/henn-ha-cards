@@ -1170,7 +1170,9 @@ if (!Element.prototype.appendChilds) {
                 if (child) this.appendChild(child);
             }
         }
-        else if (childs) this.appendChild(childs);
+        else if (childs) {
+            this.appendChild(childs);
+        }
 
         return this;
     }
