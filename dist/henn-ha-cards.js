@@ -5587,4 +5587,3 @@ function hennValueChangedOrDefault(owner, path, value, defaultValue) {
     owner._config = hennSetOrDeleteDefault(owner._config, path, value, defaultValue);
     hennFireConfigChanged(owner);
 }
-
