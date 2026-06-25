@@ -2591,7 +2591,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             .addStyle({
                 display: "flex",
                 gap: "6px",
-                alignItems = "center"
+                alignItems: "center"
             })
             .appendChilds(hennIconButton("✓", enabled, () => hennValueChanged(this, "ticks.show", !enabled)))
             .appendChilds(hennIconButton(open ? "▾" : "▸", false, () => hennValueChanged(this, "_editor_ticks_open", !open)
