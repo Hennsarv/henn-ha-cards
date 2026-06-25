@@ -3208,9 +3208,11 @@ class HennStonehengeCardEditor extends HTMLElement {
         const wrap = document.createElement("div");
         wrap.className = "henn-editor-wide-row";
 
-        const lab = document.createElement("div");
-        lab.className = "henn-editor-wide-label";
-        lab.textContent = label;
+        // const lab = document.createElement("div");
+        // lab.className = "henn-editor-wide-label";
+        // lab.textContent = label;
+        const lab = hennLabel(label, "henn-editor-wide-label");
+
 
         wrap.appendChild(lab);
         wrap.appendChild(this._colorCellFor(this, path, value, defaultValue));
