@@ -2602,6 +2602,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         body.appendChild(this._wideColorRow("ticks.color", "Color", ticks.color, "black"
             //, { rowClassName: "henn-editor-wide-row", labelClassName: "henn-editor-wide-label" }
+            , {min: 25, max: 95, step: 5}
         ));
         body.appendChild(this._sliderNumberRow("ticks.radius", "Radius", ticks.radius, 95,
             { min: 25, max: 95, step: 5 }));
