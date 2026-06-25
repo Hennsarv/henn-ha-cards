@@ -3233,7 +3233,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         const row = document.createElement("div");
         row.className = "henn-editor-slider-number-row";
 
-        const slider = hennSliderInput(this, path, value, defaultValue, { step: step });
+        const slider = hennSliderInput(this, path, value, defaultValue, { step: step, min, max });
         // const slider = document.createElement("input");
         // slider.type = "range";
         // slider.min = min;
@@ -3241,7 +3241,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         // slider.step = step;
         // slider.value = value ?? defaultValue;
 
-        const number = hennNumberInput(this, path, value, defaultValue, { step, classList: "henn-editor-compact-number" });
+        const number = hennNumberInput(this, path, value, defaultValue, { step, min, max, classList: "henn-editor-compact-number" });
   //      number.classList.add("henn-editor-compact-number");
 
         slider.addEventListener("input", () => {
