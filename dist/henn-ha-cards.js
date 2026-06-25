@@ -2648,20 +2648,22 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         body.appendChild(topRow);
 
-        const table = document.createElement("div");
-        table.style.display = "grid";
-        table.style.gap = "6px";
+        const table = this._createMiniTable(["Color", "Stroke", "Length", "Show!"]);
 
-        const head = document.createElement("div");
-        head.className = "henn-editor-tick-table henn-editor-tick-table-head";
-        head.innerHTML = `
-        <div></div>
-        <div>Color</div>
-        <div>Stroke</div>
-        <div>Length</div>
-        <div>Show</div>
-    `;
-        table.appendChild(head);
+    //     const table = document.createElement("div");
+    //     table.style.display = "grid";
+    //     table.style.gap = "6px";
+
+    //     const head = document.createElement("div");
+    //     head.className = "henn-editor-tick-table henn-editor-tick-table-head";
+    //     head.innerHTML = `
+    //     <div></div>
+    //     <div>Color</div>
+    //     <div>Stroke</div>
+    //     <div>Length</div>
+    //     <div>Show</div>
+    // `;
+    //     table.appendChild(head);
 
         table.appendChild(this._universalTableRow(
             "ticks.inner", "Inner", ticks.inner,
@@ -3042,15 +3044,27 @@ class HennStonehengeCardEditor extends HTMLElement {
         };
     }
 
+
+
     _createMiniTable(headers) {
-        const table = document.createElement("div");
-        table.style.display = "grid";
-        table.style.gap = "6px";
-        const head = document.createElement("div");
-        head.className = "henn-editor-tick-table henn-editor-tick-table-head";
-        head.innerHTML = headers.map(h => `<div>${h ?? ""}</div>`).join("");
-        table.appendChild(head);
-        return table;
+        return hennTableHeader(headers, "henn-editor-tick-table henn-editor-tick-table-head");
+
+        // return (document.createElement('div')
+        //     .addStyle({ display: "grid", gap: "6px" })
+        //     .appendChilds(document.createElement('div')
+        //         .addClasses("henn-editor-tick-table henn-editor-tick-table-head")
+        //         .setHtml(headers.map(h => `<div>${h ?? ""}</div>`).join(""))
+        //         )   
+        //     );
+        
+        // const table = document.createElement("div");
+        // table.style.display = "grid";
+        // table.style.gap = "6px";
+        // const head = document.createElement("div");
+        // head.className = "henn-editor-tick-table henn-editor-tick-table-head";
+        // head.innerHTML = headers.map(h => `<div>${h ?? ""}</div>`).join("");
+        // table.appendChild(head);
+        // return table;
     }
 
 
@@ -5623,4 +5637,15 @@ function hennSliderNumberRow(owner, path, label, value, defaultValue = 0, opt = 
     // wrap.appendChild(row);
 
     // return wrap;
+}
+
+function hennTableHeader(headers, className = null, style = { display: "grid", gap: "6px" }) {
+        return (document.createElement('div')
+            .addStyle(style)
+            .appendChilds(document.createElement('div')
+                .addClasses(className)
+                .setHtml(headers.map(h => `<div>${h ?? ""}</div>`).join(""))
+            )
+        );
+
 }
