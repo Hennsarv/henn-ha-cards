@@ -2588,15 +2588,11 @@ class HennStonehengeCardEditor extends HTMLElement {
         const open = this._config._editor_ticks_open !== false;
 
         const right = document.createElement("div")
-            .addStyle({
-                display: "flex",
-                gap: "6px",
-                alignItems: "center"
-            })
-            .appendChilds(hennIconButton("✓", enabled, () => hennValueChanged(this, "ticks.show", !enabled)))
-            .appendChilds(hennIconButton(open ? "▾" : "▸", false, () => hennValueChanged(this, "_editor_ticks_open", !open)
-            )
-        );
+            .addStyle({display: "flex", gap: "6px", alignItems: "center"})
+            .appendChilds([
+                hennIconButton("✓", enabled, () => hennValueChanged(this, "ticks.show", !enabled)),
+                hennIconButton(open ? "▾" : "▸", false, () => hennValueChanged(this, "_editor_ticks_open", !open))
+            ]);
 
         const title = hennTitle("Numbrilaud", right).addClasses("henn-editor-section-title");
         host.appendChild(title);
