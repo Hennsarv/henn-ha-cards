@@ -2600,12 +2600,12 @@ class HennStonehengeCardEditor extends HTMLElement {
         const body = hennDiv("henn-editor-section-body")
             .addClasses("henn-editor-muted", !enabled);
 
-        body.appendChilds(this._wideColorRow("ticks.color", "Color", ticks.color, "black"
+        body.appendChild(this._wideColorRow("ticks.color", "Color", ticks.color, "black"
             //, { rowClassName: "henn-editor-wide-row", labelClassName: "henn-editor-wide-label" }
         ));
-        body.appendChilds(this._sliderNumberRow("ticks.radius", "Radius", ticks.radius, 95,
+        body.appendChild(this._sliderNumberRow("ticks.radius", "Radius", ticks.radius, 95,
             { min: 25, max: 95, step: 5 }));
-        body.appendChilds(hennSliderNumberRow(this, "ticks.radius", "Radius", ticks.radius, 95,
+        body.appendChild(hennSliderNumberRow(this, "ticks.radius", "Radius", ticks.radius, 95,
             { min: 25, max: 95, step: 5 }));
 
         const topRow = hennDiv("henn-editor-top-row");
