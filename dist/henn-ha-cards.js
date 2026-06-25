@@ -3208,11 +3208,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         const wrap = document.createElement("div");
         wrap.className = "henn-editor-wide-row";
 
-        // const lab = document.createElement("div");
-        // lab.className = "henn-editor-wide-label";
-        // lab.textContent = label;
         const lab = hennLabel(label, "henn-editor-wide-label");
-
 
         wrap.appendChild(lab);
         wrap.appendChild(this._colorCellFor(this, path, value, defaultValue));
@@ -3225,26 +3221,23 @@ class HennStonehengeCardEditor extends HTMLElement {
     // selle asemele hennSliderNumberRow
     _sliderNumberRow(path, label, value, defaultValue = 0, opt = {}) {
         const { min = 0, max = 100, step = 1 } = opt || {}
-        const wrap = document.createElement("div");
-        wrap.className = "henn-editor-wide-row";
+        const wrap = hennDiv("henn-editor-wide-row");
 
-        const lab = document.createElement("div");
-        lab.className = "henn-editor-wide-label";
-        lab.textContent = label;
-        wrap.appendChild(lab);
-
+        const lab = hennLabel(label, "henn-editor-wide-label");
+ 
         const row = document.createElement("div");
         row.className = "henn-editor-slider-number-row";
 
-        const slider = document.createElement("input");
-        slider.type = "range";
-        slider.min = min;
-        slider.max = max;
-        slider.step = step;
-        slider.value = value ?? defaultValue;
+        const slider = hennSliderInput(this, path, value, defaultValue, { step: step });
+        // const slider = document.createElement("input");
+        // slider.type = "range";
+        // slider.min = min;
+        // slider.max = max;
+        // slider.step = step;
+        // slider.value = value ?? defaultValue;
 
-        const number = hennNumberInput(this, path, value, defaultValue, step);
-        number.classList.add("henn-editor-compact-number");
+        const number = hennNumberInput(this, path, value, defaultValue, { step, classList: "henn-editor-compact-number" });
+  //      number.classList.add("henn-editor-compact-number");
 
         slider.addEventListener("input", () => {
             number.value = slider.value;
