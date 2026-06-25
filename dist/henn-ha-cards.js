@@ -5541,10 +5541,16 @@ function hennSubTitle(text) {
 
 function hennSliderNumberRow(owner, path, label, value, defaultValue = 0, opt = {}) {
     // const { min = 0, max = 100, step = 1 } = opt || {};
-    return hennMultiBoxRow(label, [
-        hennSliderInput(owner, path, value, defaultValue, opt),
-        hennNumberInput(owner, path, value, defaultValue, { classList: "henn-editor-compact-number", ...opt })
-    ], { rowClassName: "henn-editor-wide-row", labelClassName: "henn-editor-wide-label", ...opt });
+    const slider = hennSliderInput(owner, path, value, defaultValue, opt);
+    const number = hennNumberInput(owner, path, value, defaultValue, { classList: "henn-editor-compact-number", ...opt });
+
+    slider.addEventListener("input", () => { number.value = slider.value; });
+    number.addEventListener("input", () => {if (number.value !== "") slider.value = number.value;});
+
+    return hennMultiBoxRow(label, [slider, number],
+        { rowClassName: "henn-editor-wide-row", labelClassName: "henn-editor-wide-label", ...opt });
+
+
 
     // const wrap = document.createElement("div");
     // wrap.className = "henn-editor-wide-row";
