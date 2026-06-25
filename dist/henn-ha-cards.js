@@ -5500,7 +5500,7 @@ function hennMultiBox(controls = [], { boxClassName = null } = {}) {
 
 function hennLabel(label, labelClassName = undefined) {
     return hennDiv(labelClassName)
-        .setType(label); 
+        .setTextContent(label); 
 }
 
 function hennMultiRow(label, controls = [], { rowClassName = "henn-editor-row", labelClassName = undefined } = {} ) {
