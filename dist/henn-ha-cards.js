@@ -2586,7 +2586,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         const enabled = ticks.show !== false;
         const open = this._config._editor_ticks_open !== false;
 
-        const right = document.createElement("div")
+        const right = hennDiv()
             .addStyle({display: "flex", gap: "6px", alignItems: "center"})
             .appendChilds([
                 hennIconButton("✓", enabled, () => hennValueChanged(this, "ticks.show", !enabled)),
@@ -2597,8 +2597,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
        if (!open) return;
 
-        const body = document.createElement("div")
-            .addClasses("henn-editor-section-body")
+        const body = hennDiv("henn-editor-section-body")
             .addClasses("henn-editor-muted", !enabled);
 
         body.appendChilds(this._wideColorRow("ticks.color", "Color", ticks.color, "black"
@@ -2609,8 +2608,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         body.appendChilds(hennSliderNumberRow(this, "ticks.radius", "Radius", ticks.radius, 95,
             { min: 25, max: 95, step: 5 }));
 
-        const topRow = document.createElement("div");
-        topRow.className = "henn-editor-top-row";
+        const topRow = hennDiv("henn-editor-top-row");
 
         topRow.appendChild(
             hennCompactNumberRow(this,
@@ -2684,7 +2682,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         const open = this._config._editor_defaults_open !== false;
 
-        const right = document.createElement("div");
+        const right = hennDiv();
         right.style.display = "flex";
         right.style.gap = "6px";
         right.style.alignItems = "center";
@@ -2703,9 +2701,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         if (!open) return;
 
-        const body = document.createElement("div");
-        body.className = "henn-editor-section-body"; // 
-
+        const body = hennDiv("henn-editor-section-body"); // 
 
         body.appendChild(hennTextRow(this, "history_period", "History", this._config.history_period ?? "1d", "1d"));
 
@@ -2738,7 +2734,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         ); 
         body.appendChild(createSeparator());
 
-        const row = document.createElement("div");
+        const row = hennDiv();
 
         row.style.display = "grid";
         row.style.gridTemplateColumns = "1fr 1fr";
@@ -2854,8 +2850,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         const series = this._config.series || [];
 
         if (!series.length) {
-            const empty = document.createElement("div")
-                .addClasses("henn-editor-small")
+            const empty = hennDiv("henn-editor-small")
                 .setTextContent("No series yet.");
             host.appendChild(empty);
             return;
@@ -2867,8 +2862,7 @@ class HennStonehengeCardEditor extends HTMLElement {
     }
 
     _renderSeries(index, s) {
-        const wrap = document.createElement("div");
-        wrap.style.display = "grid";
+        const wrap = hennDiv().addStyle({display: "grid"});
 
         const open = s._editor_open !== false;
         const enabled = s.enabled !== false;
@@ -2879,9 +2873,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             s.value_entity ||
             `Series ${index + 1}`;
 
-        const header = document.createElement("div");
-        header.className = "henn-series-header";
-        header.innerHTML = `
+        const header = hennDiv("henn-series-header").setHtml ( `
         <button class="henn-editor-button" data-action="up">↕</button>
         <div>
             <div>${title}</div>
@@ -2890,7 +2882,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         <button class="henn-editor-button" data-action="open">${open ? "Close" : "Open"}</button>
         <input type="checkbox" data-action="enabled" ${enabled ? "checked" : ""}>
         <button class="henn-editor-button" data-action="delete">×</button>
-    `;
+    `);
 
         header.querySelector('[data-action="open"]').addEventListener("click", () => {
             this._seriesValueChanged(index, "_editor_open", !open);
@@ -2908,14 +2900,12 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         if (!open) return wrap;
 
-        const body = document.createElement("div");
-        body.className = enabled ? "henn-series-body" : "henn-series-body henn-editor-muted";
+        const body = hennDiv("henn-serie-body").addClasses("henn-editor-muted", !enabled);
 
         const owner = this._seriesOwner(index);
 
-        const entityHost = document.createElement("div");
-        entityHost.className = "henn-editor-row";
-        entityHost.innerHTML = `<div>Entity</div><div id="series-entity-${index}"></div>`;
+        const entityHost = hennDiv("henn-editor-row")
+            .setHtml( `<div>Entity</div><div id="series-entity-${index}"></div>`);
         body.appendChild(entityHost);
 
         body.appendChild(hennTextRow(owner, "name", "Name", s.name ?? "", ""));
@@ -5517,18 +5507,30 @@ function hennCheckboxRow(owner, label, path, value, defaultValue = "", opt = {})
 }
 
 function hennFieldRow(label, control, { className = "henn-editor-row", labelClassName = undefined } = {}) {
-    return document.createElement("div")
-        .addClasses(className || "henn-editor-row")
+    return hennDiv(className)
         .appendChilds([
             document.createElement("div").addClasses(labelClassName).setTextContent(label),
             control
         ]);
 }
 
-function hennMultiRow(label, controls = [], { className = "henn-editor-row", labelClassName = undefined } = {} ) {
+function hennDiv(className = null) {
+    return document.createElement('div').addClasses(className);
+}
+
+function hennMultiBox(controls = [], boxClassName = null, opt = {}) {
+    const box = decument.createElement("div").addClasses(boxClassName);
+    if (Array.isArray(controls)) {
+        for (const control of controls || []) {
+            row.appendChild(control || document.createElement("div"));
+        }
+    }
+}
+
+function hennMultiRow(label, controls = [], { rowClassName = "henn-editor-row", labelClassName = undefined } = {} ) {
     const row = document.createElement("div")
-        .addClasses(className)
-        .appendChilds(document.createElement("div"). addClasses(labelClassName).setTextContent(label));
+        .addClasses(rowClassName)
+        .appendChilds(document.createElement("div").addClasses(labelClassName).setTextContent(label));
 
 
     if (Array.isArray(controls)) {
@@ -5564,7 +5566,7 @@ function hennSliderNumberRow(owner, path, label, value, defaultValue = 0, opt = 
     opt.labClassName = "henn-editor-wide-label";
     return hennMultiRow(label, [
         hennSliderInput(owner, path, value, defaultValue, opt),
-        hennNumberInput(owner, path, value, defaultValue, opt)
+        hennNumberInput(owner, path, value, defaultValue, opt).addClasses("henn-editor-compact-number")
     ], opt);
 
     // const wrap = document.createElement("div");
