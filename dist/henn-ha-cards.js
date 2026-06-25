@@ -3221,9 +3221,7 @@ class HennStonehengeCardEditor extends HTMLElement {
     // selle asemele hennSliderNumberRow
     _sliderNumberRow(path, label, value, defaultValue = 0, opt = {}) {
         const { min = 0, max = 100, step = 1 } = opt || {}
-        const wrap = hennDiv("henn-editor-wide-row");
-
-        const lab = hennLabel(label, "henn-editor-wide-label");
+        const wrap = hennDiv("henn-editor-wide-row").appendChilds(hennLabel(label, "henn-editor-wide-label"));
  
         const row = document.createElement("div");
         row.className = "henn-editor-slider-number-row";
