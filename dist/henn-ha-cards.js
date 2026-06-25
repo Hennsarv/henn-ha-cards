@@ -2855,9 +2855,10 @@ class HennStonehengeCardEditor extends HTMLElement {
         const host = this.querySelector("#series-section");
         host.className = "henn-editor-section";
 
-        const addButton = document.createElement("button");
-        addButton.className = "henn-editor-button";
-        addButton.textContent = "+";
+        const addButton = document.createElement("button")
+            .addClasses("henn-editor-button")
+            .setTextContent("+")
+            ;
         addButton.title = "Add series";
         addButton.addEventListener("click", () => this._addSeries());
 
@@ -2866,9 +2867,9 @@ class HennStonehengeCardEditor extends HTMLElement {
         const series = this._config.series || [];
 
         if (!series.length) {
-            const empty = document.createElement("div");
-            empty.className = "henn-editor-small";
-            empty.textContent = "No series yet.";
+            const empty = document.createElement("div")
+                .addClasses("henn-editor-small")
+                .setTextContent("No series yet.");
             host.appendChild(empty);
             return;
         }
