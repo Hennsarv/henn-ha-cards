@@ -5513,6 +5513,7 @@ function hennMultiBoxRow(label, controls = [], opt = {}) {
     const box = hennDiv(rowClassName);
     box.appendChild(hennLabel(label, labelClassName));
     box.appendChild(hennMultiBox(controls, opt));
+    return box;
 }
 
 function hennTitle(text, rightEl = null, { className = "henn-editor-title", labelClassName = undefined } = {}) {
