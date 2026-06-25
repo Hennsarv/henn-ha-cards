@@ -1167,10 +1167,10 @@ if (!Element.prototype.appendChilds) {
     Element.prototype.appendChilds = function (childs = []) {
         if (Array.isArray(childs)) {
             for (const child of childs) {
-                if (child) this.appendChild(child); //else this.appendChild(document.createElement('div'));
+                if (child instanceof Node) this.appendChild(child); //else this.appendChild(document.createElement('div'));
             }
         }
-        else if (childs) {
+        else if (childs instanceof Node) {
             this.appendChild(childs);
         }
         // else this.appendChild(document.createElement('div'));
