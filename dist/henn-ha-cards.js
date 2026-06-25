@@ -5509,8 +5509,9 @@ function hennMultiRow(label, controls = [], { rowClassName = "henn-editor-row", 
 
 function hennMultiBoxRow(label, controls = [], opt = {}) {
     const { rowClassName = "henn-editor-row", labelClassName = undefined } = opt || {};
-    return hennDiv(rowClassName)
-        .appendChilds([hennLabel(label, labelClassName), hennMultiBox(controls, opt)]);
+    const box = hennDiv(rowClassName);
+    box.appendChild(hennLabel(label, labelClassName));
+    box.appendChild(hennMultiBox(controls, opt));
 }
 
 function hennTitle(text, rightEl = null, { className = "henn-editor-title", labelClassName = undefined } = {}) {
