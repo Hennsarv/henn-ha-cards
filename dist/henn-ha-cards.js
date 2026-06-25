@@ -2603,11 +2603,11 @@ class HennStonehengeCardEditor extends HTMLElement {
         body.appendChild(hennColorRow(this, "ticks.color", "Color", ticks.color, "black"
             , { rowClassName: "henn-editor-wide-row", labelClassName: "henn-editor-wide-label" }
         ));
-        body.appendChild(this._sliderNumberRow("ticks.radius", "Radius", ticks.radius, 95,
-            {
-                rowClassName: "henn-editor-wide-row", labelClassName: "henn-editor-wide-label",
-                min: 25, max: 95, step: 5
-            }));
+        // body.appendChild(this._sliderNumberRow("ticks.radius", "Radius", ticks.radius, 95,
+        //     {
+        //         rowClassName: "henn-editor-wide-row", labelClassName: "henn-editor-wide-label",
+        //         min: 25, max: 95, step: 5
+        //     }));
         body.appendChild(hennSliderNumberRow(this, "ticks.radius", "Radius", ticks.radius, 95,
             {
                 rowClassName: "henn-editor-wide-row", labelClassName: "henn-editor-wide-label",
@@ -2652,7 +2652,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         body.appendChild(topRow);
 
-        const table = this._createMiniTable(["Color", "Stroke", "Length", "Show!"]);
+        const table = this._createMiniTable(["", "Color", "Stroke", "Length", "Show!"]);
 
 
         table.appendChild(this._universalTableRow(
