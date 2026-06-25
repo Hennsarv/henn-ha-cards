@@ -5519,7 +5519,7 @@ function hennMultiBoxRow(label, controls = [], opt = {}) {
     const { rowClassName = "henn-editor-row", labelClassName = undefined } = opt || {};
     return hennDiv(rowClassName)
         .appendChilds([
-            label,
+            hennLabel(label, labelClassName),
             hennMultiBox(controls, opt)
         ])
 }
