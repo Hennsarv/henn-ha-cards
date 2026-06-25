@@ -5380,7 +5380,7 @@ function hennNumberInput(owner, path, value, defaultValue, opt = {}) {
 function hennSliderInput(owner, path, value, defaultValue, opt = {}) {
     const { min = undefined, max = undefined, step = 1 } = opt || {};
     const input = document.createElement('input')
-        .addClasses('henn-editor-input')
+        .addClasses('henn-editor-slider')
         .setType('range')
         .addProperties(
             {
