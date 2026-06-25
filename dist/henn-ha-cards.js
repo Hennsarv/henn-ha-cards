@@ -2601,7 +2601,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             .addClasses("henn-editor-muted", !enabled);
 
         body.appendChilds(this._wideColorRow("ticks.color", "Color", ticks.color, "black"
-            //, { className: "henn-editor-wide-row", labelClassName: "henn-editor-wide-label" }
+            //, { rowClassName: "henn-editor-wide-row", labelClassName: "henn-editor-wide-label" }
         ));
         body.appendChilds(this._sliderNumberRow("ticks.radius", "Radius", ticks.radius, 95,
             { min: 25, max: 95, step: 5 }));
@@ -3035,8 +3035,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             gap: value.gap ?? defaults.gap ?? 0
         };
 
-        const row = document.createElement("div");
-        row.className = "henn-editor-grid4";
+        const row = hennDiv("henn-editor-grid4");
 
         row.appendChild(hennColorCell(owner, `${path}.color`, effective.color, defaults.color ?? "white"));
 //        row.appendChild(hennColorPicker(owner, `${path}.color`, effective.color, defaults.color ?? "white"));
@@ -3044,8 +3043,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         row.appendChild(hennNumberInput(owner, `${path}.gap`, effective.gap, defaults.gap ?? 0));
         row.appendChild(hennCheckbox(owner, `${path}.show`, effective.show, false).addClasses("henn-editor-pill-check"));
 
-        const wrap = document.createElement("div");
-        wrap.className = effective.show ? "" : "henn-editor-muted";
+        const wrap = hennDiv().addClasses("henn-editor-muted",!effective.show);
         wrap.innerHTML = `<div class="henn-editor-small">${label}</div>`;
         wrap.appendChild(row);
         return wrap;
@@ -3265,30 +3263,10 @@ class HennStonehengeCardEditor extends HTMLElement {
         return wrap;
     }
 
-    old_compactNumberBox(path, label, value, defaultValue = 0, step = 1) {
-        const wrap = document.createElement("div");
-        wrap.className = "henn-editor-wide-row";
-
-        const lab = document.createElement("div");
-        lab.className = "henn-editor-wide-label";
-        lab.textContent = label;
-
-        const input = hennNumberInput(this, path, value, defaultValue, step);
-        input.classList.add("henn-editor-compact-number");
-
-        wrap.appendChild(lab);
-        wrap.appendChild(input);
-
-        return wrap;
-    }
-
     _lineSelectorRow(path, label, value, options, defaultValue = null) {
-        const wrap = document.createElement("div");
-        wrap.className = "henn-editor-wide-row";
+        const wrap = hennDiv("henn-editor-wide-row");
 
-        const lab = document.createElement("div");
-        lab.className = "henn-editor-wide-label";
-        lab.textContent = label;
+        const lab = hennLabel(label, "henn-editor-wide-label");
 
         const selector = hennCreatePathLineSelector(
             this,
@@ -3317,15 +3295,13 @@ class HennStonehengeCardEditor extends HTMLElement {
         colorFallback = null,
         checkDefault = true
     ) {
-        const row = document.createElement("div");
-        row.className = "henn-editor-tick-table";
+        const row = hennDiv("henn-editor-tick-table");
 
         if (checkDefault && checkName) {
             row.classList.toggle("henn-editor-muted", value?.[checkName] === false);
         }
 
-        const lab = document.createElement("div").addClasses("henn-editor-tick-row-label");
-        lab.textContent = label;
+        const lab = hennLabel(label,"henn-editor-tick-row-label");
         row.appendChild(lab);
 
         row.appendChild(
@@ -3391,19 +3367,12 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         const cfg = map[bucketing] || map.day;
 
-        const row = document.createElement("div");
-        row.className = "henn-editor-wide-row";
+        const row = hennDiv("henn-editor-wide-row");
 
-        const label = document.createElement("div");
-        label.className = "henn-editor-wide-label";
-        label.textContent = "Bucket size";
+        const label = hennDiv("henn-editor-wide-label").setTextContent("Bucket size");
 
-        const right = document.createElement("div");
-        right.style.display = "grid";
-        right.style.gridTemplateColumns = "1fr 70px 40px";
-        right.style.gap = "8px";
-        right.style.alignItems = "center";
-
+        const right = hennDiv().addStyle({display: "grid", gridTemplateColumns: "1fr 70px 40px", gap: "8px", alignItems: "center"});
+ 
         right.appendChild(
             hennSegmentRow(
                 "",
@@ -5047,7 +5016,7 @@ function hennSegmentRow(label, value, options, defaultValue, onChange, opts = {}
         Object.assign(wrap.style, opts.wrapStyle);
     }
 
-    const lab = document.createElement("div").addClasses("henn-editor-wide-label").setTextContent(label);
+    const lab = hennLabel(label,"henn-editor-wide-label");
 
     if (opts.labelStyle) {
         Object.assign(lab.style, opts.labelStyle);
@@ -5506,10 +5475,10 @@ function hennCheckboxRow(owner, label, path, value, defaultValue = "", opt = {})
     return hennFieldRow(label, hennCheckbox(owner, path, value, defaultValue, opt), opt);
 }
 
-function hennFieldRow(label, control, { className = "henn-editor-row", labelClassName = undefined } = {}) {
-    return hennDiv(className)
+function hennFieldRow(label, control, { rowClassName = "henn-editor-row", labelClassName = undefined } = {}) {
+    return hennDiv(rowClassName)
         .appendChilds([
-            document.createElement("div").addClasses(labelClassName).setTextContent(label),
+            hennLabel(label, labelClassName),
             control
         ]);
 }
@@ -5518,20 +5487,23 @@ function hennDiv(className = null) {
     return document.createElement('div').addClasses(className);
 }
 
-function hennMultiBox(controls = [], boxClassName = null, opt = {}) {
-    const box = decument.createElement("div").addClasses(boxClassName);
+function hennMultiBox(controls = [], { boxClassName = null } = {}) {
+    const box = hennDiv(boxClassName);
     if (Array.isArray(controls)) {
         for (const control of controls || []) {
-            row.appendChild(control || document.createElement("div"));
+            box.appendChild(control || document.createElement("div"));
         }
     }
+}
+
+function hennLabel(label, labelClassName = undefined) {
+    return hennLabel(label,labelClassName);
 }
 
 function hennMultiRow(label, controls = [], { rowClassName = "henn-editor-row", labelClassName = undefined } = {} ) {
     const row = document.createElement("div")
         .addClasses(rowClassName)
-        .appendChilds(document.createElement("div").addClasses(labelClassName).setTextContent(label));
-
+        .appendChilds(hennLabel(label, labelClassName));
 
     if (Array.isArray(controls)) {
         for (const control of controls || []) {
@@ -5542,6 +5514,14 @@ function hennMultiRow(label, controls = [], { rowClassName = "henn-editor-row", 
     return row;
 }
 
+function hennMultiBoxRow(label, controls = [], opt = {}) {
+    const { rowClassName = "henn-editor-row", labelClassName = undefined } = opt || {};
+    return hennDiv(rowClassName)
+        .appendChilds(
+            label,
+            hennMultiBox(controls, opt)
+        )
+}
 
 function hennTitle(text, rightEl = null, { className = "henn-editor-title", labelClassName = undefined } = {}) {
     return document.createElement("div")
@@ -5562,12 +5542,10 @@ function hennSubTitle(text) {
 
 function hennSliderNumberRow(owner, path, label, value, defaultValue = 0, opt = {}) {
     const { min = 0, max = 100, step = 1 } = opt || {};
-    opt.className = "henn-editor-wide-row";
-    opt.labClassName = "henn-editor-wide-label";
-    return hennMultiRow(label, [
+    return hennMultiBoxRow(label, [
         hennSliderInput(owner, path, value, defaultValue, opt),
-        hennNumberInput(owner, path, value, defaultValue, opt).addClasses("henn-editor-compact-number")
-    ], opt);
+        hennNumberInput(owner, path, value, defaultValue, { classList = "henn-editor-compact-number", ...opt })
+    ], { rowClassName = "henn-editor-wide-row", labelClassName = "henn-editor-wide-label", ...opt });
 
     // const wrap = document.createElement("div");
     // wrap.className = "henn-editor-wide-row";
