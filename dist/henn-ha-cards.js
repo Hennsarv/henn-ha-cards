@@ -5450,7 +5450,13 @@ function hennCompactNumberRow(owner, path, label, value, defaultValue = 0, opt =
     opt.labelClassName = "henn-editor-wide-label";
     opt.classList = "henn-editor-compact-number";
 
-    return hennFieldRow(label, hennNumberInput(owner, value, defaultValue, opt), opt);
+    return hennFieldRow(label, hennNumberInput(owner, value, defaultValue, {
+        classList: "henn-editor-compact-number", ...opt }),
+        {
+            className: "henn-editor-wide-row",
+            labelClassName: "henn-editor-wide-label",
+            ...opt
+        });
 
     // const wrap = document.createElement("div");
     // wrap.className = "henn-editor-wide-row";
