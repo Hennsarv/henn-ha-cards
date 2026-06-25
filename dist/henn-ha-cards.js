@@ -5446,9 +5446,9 @@ function hennNumberRow(owner, label, path, value, defaultValue, opt = {}) {
 // tekib _compactNumberBox asemele
 function hennCompactNumberRow(owner, path, label, value, defaultValue = 0, opt = {}) {
 
-    opt.className = "henn-editor-wide-row";
-    opt.labelClassName = "henn-editor-wide-label";
-    opt.classList = "henn-editor-compact-number";
+    // opt.className = "henn-editor-wide-row";
+    // opt.labelClassName = "henn-editor-wide-label";
+    // opt.classList = "henn-editor-compact-number";
 
     return hennFieldRow(label, hennNumberInput(owner, value, defaultValue, {
         classList: "henn-editor-compact-number", ...opt }),
