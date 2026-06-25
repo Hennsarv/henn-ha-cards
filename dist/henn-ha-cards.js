@@ -5544,8 +5544,8 @@ function hennSliderNumberRow(owner, path, label, value, defaultValue = 0, opt = 
     const { min = 0, max = 100, step = 1 } = opt || {};
     return hennMultiBoxRow(label, [
         hennSliderInput(owner, path, value, defaultValue, opt),
-        hennNumberInput(owner, path, value, defaultValue, { classList = "henn-editor-compact-number", ...opt })
-    ], { rowClassName = "henn-editor-wide-row", labelClassName = "henn-editor-wide-label", ...opt });
+        hennNumberInput(owner, path, value, defaultValue, { classList: "henn-editor-compact-number", ...opt })
+    ], { rowClassName: "henn-editor-wide-row", labelClassName: "henn-editor-wide-label", ...opt });
 
     // const wrap = document.createElement("div");
     // wrap.className = "henn-editor-wide-row";
