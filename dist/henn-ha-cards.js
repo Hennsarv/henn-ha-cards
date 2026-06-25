@@ -2861,7 +2861,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         addButton.title = "Add series";
         addButton.addEventListener("click", () => this._addSeries());
 
-        host.appendChild(hsTitle("Seeriad", addButton));
+        host.appendChild(hennTitle("Seeriad", addButton));
 
         const series = this._config.series || [];
 
