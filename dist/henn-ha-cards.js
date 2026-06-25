@@ -3028,9 +3028,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
 
 
-    _createMiniTable(headers) {
-        return hennTableHeader(headers, "henn-editor-tick-table henn-editor-tick-table-head");
-    }
+    _createMiniTable(headers) {return hennTableHeader(headers, "henn-editor-tick-table henn-editor-tick-table-head");}
 
 
     _railRowFor(owner, path, label, value, defaults) {
