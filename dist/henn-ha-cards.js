@@ -1167,7 +1167,7 @@ if (!Element.prototype.appendChilds) {
     Element.prototype.appendChilds = function (childs = []) {
         if (Array.isArray(childs)) {
             for (const child of childs) {
-                if (child instanceof Node) this.appendChild(child); //else this.appendChild(document.createElement('div'));
+                if (child) this.appendChild(child); //else this.appendChild(document.createElement('div'));
             }
         }
         else if (childs instanceof Node) {
@@ -2605,8 +2605,8 @@ class HennStonehengeCardEditor extends HTMLElement {
         ));
         body.appendChilds(this._sliderNumberRow("ticks.radius", "Radius", ticks.radius, 95,
             { min: 25, max: 95, step: 5 }));
-        // body.appendChilds(hennSliderNumberRow(this, "ticks.radius", "Radius", ticks.radius, 95,
-        //     { min: 25, max: 95, step: 5 }));
+        body.appendChilds(hennSliderNumberRow(this, "ticks.radius", "Radius", ticks.radius, 95,
+            { min: 25, max: 95, step: 5 }));
 
         const topRow = hennDiv("henn-editor-top-row");
 
@@ -5518,10 +5518,10 @@ function hennMultiRow(label, controls = [], { rowClassName = "henn-editor-row", 
 function hennMultiBoxRow(label, controls = [], opt = {}) {
     const { rowClassName = "henn-editor-row", labelClassName = undefined } = opt || {};
     return hennDiv(rowClassName)
-        .appendChilds(
+        .appendChilds([
             label,
             hennMultiBox(controls, opt)
-        )
+        ])
 }
 
 function hennTitle(text, rightEl = null, { className = "henn-editor-title", labelClassName = undefined } = {}) {
