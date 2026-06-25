@@ -5487,6 +5487,7 @@ function hennMultiBox(controls = [], { boxClassName = null } = {}) {
             box.appendChild(control || document.createElement("div"));
         }
     }
+    return box;
 }
 
 function hennLabel(label, labelClassName = undefined) {
