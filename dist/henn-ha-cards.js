@@ -2808,7 +2808,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             "stroke", "gap", "show",
             this._config.lower.color, true
         ));
-        const lowerRadius = this._config.lower?.radius ?? 30;
+        const lowerRadius = this._config.lower?.radius ?? 30; // teine katse
         const upperRadius = this._config.upper?.radius ?? 90;
 
         lineTable.appendChild(hennMultiBox([
