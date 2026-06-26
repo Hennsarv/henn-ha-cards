@@ -2690,7 +2690,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             hennColorCell(this, "ticks.font.color", ticks.font?.color, ticks.color),
             hennNumberInput(this, "ticks.font.size", fontSize, 5, {classList: "henn-editor-mini-number", min: 4, max:10, step:1}),
             hennNumberInput(this, "ticks.width", width, fontSize * 2,
-                { classList: "henn-editor-mini-number", min: fontSize, max: fontSize * 3 }).addProperties({colspan: 2})
+                { min: fontSize, max: fontSize * 3 }).addStyle({gridColumn: "4 / 6" })
             //,hennDiv()
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
