@@ -5446,15 +5446,12 @@ function hennNumberRow(owner, label, path, value, defaultValue, opt = {}) {
 // tekib _compactNumberBox asemele
 function hennCompactNumberRow(owner, path, label, value, defaultValue = 0, opt = {}) {
 
-    // opt.className = "henn-editor-wide-row";
-    // opt.labelClassName = "henn-editor-wide-label";
-    // opt.classList = "henn-editor-compact-number";
 
     return hennFieldRow(label, hennNumberInput(owner, path, value, defaultValue, {
         classList: "henn-editor-compact-number", ...opt }),
         {
-            className: "henn-editor-wide-row",
-            labelClassName: "henn-editor-wide-label",
+            //className: "henn-editor-wide-row",
+            //labelClassName: "henn-editor-wide-label",
             ...opt
         });
 
@@ -5546,10 +5543,12 @@ function hennSubTitle(text) {
 function hennSliderNumberRow(owner, path, label, value, defaultValue = 0, opt = {}) {
     // const { min = 0, max = 100, step = 1 } = opt || {};
     const slider = hennSliderInput(owner, path, value, defaultValue, opt);
-    const number = hennNumberInput(owner, path, value, defaultValue, { classList: "henn-editor-compact-number", ...opt });
+    const number = hennNumberInput(owner, path, value, defaultValue, { ...opt , classList: "henn-editor-compact-number" });
 
     slider.addEventListener("input", () => { number.value = slider.value; });
-    number.addEventListener("input", () => {if (number.value !== "") slider.value = number.value;});
+    number.addEventListener("input", () => { if (number.value !== "") slider.value = number.value; });
+
+    slider.addEventListener("change", () => { hennValueChangedOrDefault(this, path, Number(slider.value), defaultValue); });
 
     return hennMultiBoxRow(label, [slider, number],
         { rowClassName: "henn-editor-wide-row", labelClassName: "henn-editor-wide-label", ...opt });
