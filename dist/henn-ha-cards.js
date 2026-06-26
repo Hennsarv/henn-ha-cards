@@ -5298,7 +5298,7 @@ function hennValueChangedOrDefault(owner, path, value, defaultValue) {
 function hennGenericInput(owner, input, path, value, defaultValue, opt = {}) {
     const { onChange = null, classList = null, style = {}, eventListeners = {} } = opt || {}; // lisasin const
     function readValue() {
-        if (input.type === "number") {
+        if (input.type === "number" || input.type = "range") {
             const v = Number(input.value);
             return isNaN(v) ? null : v;
         }
@@ -5548,7 +5548,7 @@ function hennSliderNumberRow(owner, path, label, value, defaultValue = 0, opt = 
     slider.addEventListener("input", () => { number.value = slider.value; });
     number.addEventListener("input", () => { if (number.value !== "") slider.value = number.value; });
 
-    slider.addEventListener("change", () => { hennValueChangedOrDefault(this, path, Number(slider.value), defaultValue); });
+    //slider.addEventListener("change", () => { hennValueChangedOrDefault(this, path, Number(slider.value), defaultValue); });
 
     return hennMultiBoxRow(label, [slider, number],
         { rowClassName: "henn-editor-wide-row", labelClassName: "henn-editor-wide-label", ...opt });
