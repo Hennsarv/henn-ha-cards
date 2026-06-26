@@ -3345,7 +3345,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                 { classList: ["henn-editor-mini-number"] }
             ));
         } else {
-            row.appendChild(hennDiv);
+            row.appendChild(hennDiv());
         }
 
         if (checkName) {
