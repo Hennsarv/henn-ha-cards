@@ -2653,12 +2653,12 @@ class HennStonehengeCardEditor extends HTMLElement {
         body.appendChild(topRow);
 
         const table2 = this._createMiniTable(["", "Color", "Font", "Width", ""]);
-
+        const size = this._effectiveTicks.font.size ?? 5;
         table2.appendChild(hennMultiRow("", [
             hennColorCell(this, "ticks.color", this._effectiveTicks.color, "black"),
             hennNumberRow(this, "ticks.font.size", this._effectiveTicks.font.size, 5, { min: 4, max: 10, step: 1 }),
-            hennNumberRow(this, "ticks.width", this._effectiveTicks.width, this._effectiveTicks.font.size * 2,
-                { min: this._effectiveTicks.font.size, max: this._effectiveTicks.font.size * 4 })
+            hennNumberRow(this, "ticks.width", this._effectiveTicks.width, size * 2,
+                { min: size, max: size * 4 })
         ]));
         
         body.appendChild(table2);
