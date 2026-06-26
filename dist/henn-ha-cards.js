@@ -2652,22 +2652,11 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         body.appendChild(topRow);
 
-        const table2 = this._createMiniTable(["", "Color", "Font", "Width", ""]);
-        const size = this._effectiveTicks?.font?.size ?? 5; 
-        table2.appendChild(hennMultiRow("", [
-            hennColorCell(this, "ticks.color", this._effectiveTicks.color, "black"),
-            hennNumberInput(this, "ticks.font.size", size, 5, { min: 4, max: 10, step: 1 }),
-            hennNumberInput(this, "ticks.width", this._effectiveTicks.width, size * 2,
-                { min: size, max: size * 4 }),
-            hennDiv() // panin Input asemele Field ja lisasin tühja Divvi
-        ]));
-        
-        body.appendChild(table2);
-
+ 
         const table = this._createMiniTable(["", "Color", "Stroke", "Length", "Show!"]);
 
 
-        table2.appendChild(this._universalTableRow(
+        table.appendChild(this._universalTableRow(
             "ticks.inner", "Inner", ticks.inner,
             "stroke", null, "show",
             this._effectiveTicks().color, true
@@ -2690,6 +2679,12 @@ class HennStonehengeCardEditor extends HTMLElement {
             null, null, "show",
             null, false
         ));
+
+        table.appendChild(this._universalTableRow(
+            "ticks.font", "Font", ticks.font,
+            "size", null, null, false
+        ));
+
         body.appendChild(table);
         host.appendChild(body);
     }
