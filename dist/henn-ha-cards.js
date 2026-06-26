@@ -2689,8 +2689,9 @@ class HennStonehengeCardEditor extends HTMLElement {
         table.appendChild(hennMultiRow("FontW", [
             hennColorCell(this, "ticks.font.color", ticks.font?.color, ticks.color),
             hennNumberInput(this, "ticks.font.size", fontSize, 5, {classList: "henn-editor-mini-number", min: 4, max:10, step:1}),
-            hennNumberInput(this, "ticks.width", width, fontSize * 2, { classList: "henn-editor-mini-number", min: fontSize, max: fontSize * 3 }),
-            hennDiv()
+            hennNumberInput(this, "ticks.width", width, fontSize * 2,
+                { classList: "henn-editor-mini-number", min: fontSize, max: fontSize * 3 }).addProperties({colspan: 2})
+            //,hennDiv()
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
         body.appendChild(table);
