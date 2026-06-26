@@ -2811,14 +2811,14 @@ class HennStonehengeCardEditor extends HTMLElement {
         const lowerRadius = this._config.lower?.radius ?? 30; // teine katse
         const upperRadius = this._config.upper?.radius ?? 90;
 
-        lineTable.appendChild(hennMultiBox([
-            hennNumberInput(this, "lower.radius", lowerRadius, 30, { min: 0, max: upperRadius - 10, step: 5 }),
-            hennCreateDoubleSlider(this, "lower.radius", "upper.radius", "none",
-                lowerRadius, upperRadius, 0, 100, 5),
-            hennNumberInput(this, "upper.radius", upperRadius, 90, {min: lowerRadius + 10, max: 100, step: 5})
-        ]));
+        // lineTable.appendChild(hennMultiBox([
+        //     hennNumberInput(this, "lower.radius", lowerRadius, 30, { min: 0, max: upperRadius - 10, step: 5 }),
+        //     hennCreateDoubleSlider(this, "lower.radius", "upper.radius", "Rööbaste raadiused",
+        //         lowerRadius, upperRadius, 0, 100, 5),
+        //     hennNumberInput(this, "upper.radius", upperRadius, 90, {min: lowerRadius + 10, max: 100, step: 5})
+        // ]));
 
-        lineTable.appendChild(hennCreateDoubleSlider(this, "lower.radius", "upper.radius", "Radius", lowerRadius, upperRadius, 0, 100, 5))
+        lineTable.appendChild(hennCreateDoubleSlider(this, "lower.radius", "upper.radius", "Rööbaste raadiused", lowerRadius, upperRadius, 0, 100, 5))
 
 
         body.appendChild(lineTable); 
@@ -3891,7 +3891,7 @@ function hennCreateDoubleSlider(
         return ((value - min) / (max - min)) * 100;
     }
     // oli tükeldusviga proovime uuesti
-    const labelPart = label === "none" ? "" : `
+    const labelPart = `
         <div class="henn-slider-header">
             <span>${label}</span>
             <strong>
@@ -3912,7 +3912,7 @@ function hennCreateDoubleSlider(
         </div>
     `;
 
-    trackWrap.innerHTML = labelPart + bodypart;
+    wrapper.innerHTML = labelPart + bodypart;
 
     const trackWrap = wrapper.querySelector(".henn-slider-track-wrap");
     const rangeEl = wrapper.querySelector(".henn-slider-range");
