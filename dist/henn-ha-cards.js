@@ -2811,7 +2811,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         const lowerRadius = this._config.lower?.radius ?? 30;
         const upperRadius = this._config.upper?.radius ?? 90;
 
-        linetable.appendChild(hennMultiBox([
+        lineTable.appendChild(hennMultiBox([
             hennNumberInput(this, "lower.radius", lowerRadius, 30, { min: 0, max: upperRadius - 10, step: 5 }),
             hennCreateDoubleSlider(this, "lower.radius", "upper.radius", "none",
                 lowerRadius, upperRadius, 0, 100, 5),
