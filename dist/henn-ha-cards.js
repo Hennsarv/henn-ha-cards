@@ -2617,25 +2617,6 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         const topRow = hennDiv("henn-editor-top-row");
 
-        // topRow.appendChild(
-        //     hennCompactNumberRow(this,
-        //         "ticks.font.size",
-        //         "Font",
-        //         ticks.font.size,
-        //         5,
-        //         {step: 1}
-        //     )
-        // );
-
-        // topRow.appendChild(
-        //     hennCompactNumberRow(this, 
-        //         "ticks.width",
-        //         "Width",
-        //         ticks.width,
-        //         ticks.font.size * 2,
-        //         { step: 1 }
-        //     )
-        // );
 
         topRow.appendChild(
             hennSegmentRow(
@@ -2653,9 +2634,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         body.appendChild(topRow);
 
  
-        const table = this._createMiniTable(["", "Color", "Stroke", "Length", "Show!"]);
-
-
+        const table = hennTableHeader(["", "Color", "Stroke", "Length", "Show"], "henn-editor-tick-table henn-editor-tick-table-head");
         table.appendChild(this._universalTableRow(
             "ticks.inner", "Inner", ticks.inner,
             "stroke", null, "show",
@@ -2680,13 +2659,9 @@ class HennStonehengeCardEditor extends HTMLElement {
             null, false
         ));
 
-        table.appendChild(this._universalTableRow(
-            "ticks.font", "Font", ticks.font,
-            "size", null, null, false
-        ));
         const fontSize = ticks.font?.size ?? 5;
         const width = ticks.width ?? fontSize * 2;
-        table.appendChild(hennMultiRow("FontW", [
+        table.appendChild(hennMultiRow("Font", [
             hennColorCell(this, "ticks.font.color", ticks.font?.color, ticks.color),
             hennNumberInput(this, "ticks.font.size", fontSize, 5, {classList: "henn-editor-mini-number", min: 4, max:10, step:1}),
             hennNumberInput(this, "ticks.width", width, fontSize * 2,
@@ -2802,7 +2777,9 @@ class HennStonehengeCardEditor extends HTMLElement {
 
 //        body.appendChild(this._subTitle("Line"));
 
-        const lineTable = this._createMiniTable(["", "Color", "Stroke", "Gap", "Smoth\nShow"]);
+        const lineTable = hennTableHeader(["", "Color", "Stroke", "Gap", "Smoth\nShow"],
+            "henn-editor-tick-table henn-editor-tick-table-head"
+        );
 
         lineTable.appendChild(this._universalTableRow( 
             "line", "Line", this._config.line,
@@ -2818,22 +2795,37 @@ class HennStonehengeCardEditor extends HTMLElement {
             this._config.fill.color, true
         ));
 
+
+
         lineTable.appendChild(this._universalTableRow(
             "upper", "Upper\nrail", this._config.upper,
             "stroke", "gap", "show",
             this._config.upper.color, true
         ));
+
         lineTable.appendChild(this._universalTableRow(
             "lower", "Lower\nrail", this._config.lower,
             "stroke", "gap", "show",
             this._config.lower.color, true
         ));
+        const lowerRadius = this._config.lower?.radius ?? 30;
+        const upperRadius = this._config.upper?.radius ?? 90;
+
+        linetable.appendChild(hennMultiBox([
+            hennNumberInput(this, "lower.radius", lowerRadius, 30, { min: 0, max: upperRadius - 10, step: 5 }),
+            hennCreateDoubleSlider(this, "lower.radius", "upper.radius", "Radius",
+                lowerRadius, upperRadius, 0, 100, 5),
+            hennNumberInput(this, "upper.radius", upperRadius, 90, {min: lowerRadius + 10, max: 100, step: 5})
+        ]));
+
+
         body.appendChild(lineTable); 
 
         body.appendChild(createSeparator());
 
         body.appendChild(hennSubTitle("Defaul for gradient - by opacity or by color"));
-        const gradientTable = this._createMiniTable(["", "Color", "","Opacity or", "Colors"]);
+        const gradientTable = hennTableHeader(["", "Color", "", "Opacity or", "Colors"],
+            "henn-editor-tick-table henn-editor-tick-table-head");
         gradientTable.appendChild(this._universalTableRow(
             "gradient", "Gradient\nColor", this._config.gradient,
             null, null, "opacity_or_color",
@@ -3042,11 +3034,6 @@ class HennStonehengeCardEditor extends HTMLElement {
         };
     }
 
-
-
-    _createMiniTable(headers) {return hennTableHeader(headers, "henn-editor-tick-table henn-editor-tick-table-head");}
-
-
     _railRowFor(owner, path, label, value, defaults) {
         const effective = {
             show: value.show === true,
@@ -3059,7 +3046,6 @@ class HennStonehengeCardEditor extends HTMLElement {
         const row = hennDiv("henn-editor-grid4");
 
         row.appendChild(hennColorCell(owner, `${path}.color`, effective.color, defaults.color ?? "white"));
-//        row.appendChild(hennColorPicker(owner, `${path}.color`, effective.color, defaults.color ?? "white"));
         row.appendChild(hennNumberInput(owner, `${path}.stroke`, effective.stroke, defaults.stroke ?? 1));
         row.appendChild(hennNumberInput(owner, `${path}.gap`, effective.gap, defaults.gap ?? 0));
         row.appendChild(hennCheckbox(owner, `${path}.show`, effective.show, false).addClasses("henn-editor-pill-check"));
@@ -3069,7 +3055,6 @@ class HennStonehengeCardEditor extends HTMLElement {
         wrap.appendChild(row);
         return wrap;
     }
-
 
     _selectRow(path, label, value, options, defaultValue = null) {
         return this._selectRowFor(this, path, label, value, options, defaultValue);
@@ -3096,29 +3081,6 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         row.appendChild(select);
         return row;
-    }
-    
-    _colorCellFor(owner, path, value, defaultValue = null) {
-        const box = document.createElement("div");
-        box.className = "henn-color-cell";
-
-        const selector = hennCreateListSelector(
-            owner,
-            path,
-            "",
-            value ?? defaultValue ?? "",
-            HENN_CSS_COLORS2,
-            "color"
-        );
-
-        selector.classList.add("henn-color-cell-selector");
-
-        box.appendChild(selector);
-        box.appendChild(
-            hennColorPicker(owner, path, value, defaultValue)
-        );
-
-        return box;
     }
 
     _row(label) {
@@ -3224,80 +3186,6 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         hennFireConfigChanged(this);
     }
-
-    _wideColorRow(path, label, value, defaultValue = null) {
-        const wrap = document.createElement("div");
-        wrap.className = "henn-editor-wide-row";
-
-        const lab = hennLabel(label, "henn-editor-wide-label");
-
-        wrap.appendChild(lab);
-        wrap.appendChild(this._colorCellFor(this, path, value, defaultValue));
-
-        return wrap;
-    }
-
-
-
-    // selle asemele hennSliderNumberRow
-    _sliderNumberRow(path, label, value, defaultValue = 0, opt = {}) {
-        const { min = 0, max = 100, step = 1 } = opt || {}
-        const wrap = hennDiv("henn-editor-wide-row").appendChilds(hennLabel(label, "henn-editor-wide-label"));
- 
-        const row = document.createElement("div");
-        row.className = "henn-editor-slider-number-row";
-
-        const slider = hennSliderInput(this, path, value, defaultValue, { step: step, min, max });
-        // const slider = document.createElement("input");
-        // slider.type = "range";
-        // slider.min = min;
-        // slider.max = max;
-        // slider.step = step;
-        // slider.value = value ?? defaultValue;
-
-        const number = hennNumberInput(this, path, value, defaultValue, { step, min, max, classList: "henn-editor-compact-number" });
-  //      number.classList.add("henn-editor-compact-number");
-
-        slider.addEventListener("input", () => {
-            number.value = slider.value;
-        });
-
-        slider.addEventListener("change", () => {
-            hennValueChangedOrDefault(this, path, Number(slider.value), defaultValue);
-        });
-
-        number.addEventListener("input", () => {
-            if (number.value !== "") slider.value = number.value;
-        });
-
-        row.appendChild(slider);
-        row.appendChild(number);
-        wrap.appendChild(row);
-
-        return wrap;
-    }
-
-    _lineSelectorRow(path, label, value, options, defaultValue = null) {
-        const wrap = hennDiv("henn-editor-wide-row");
-
-        const lab = hennLabel(label, "henn-editor-wide-label");
-
-        const selector = hennCreatePathLineSelector(
-            this,
-            path,
-            "",
-            value ?? defaultValue,
-            options,
-            defaultValue
-        );
-
-        wrap.appendChild(lab);
-        wrap.appendChild(selector);
-
-        return wrap;
-    }
-
-
 
     _universalTableRow(
         path,
@@ -4001,7 +3889,7 @@ function hennCreateDoubleSlider(
         return ((value - min) / (max - min)) * 100;
     }
 
-    wrapper.innerHTML = `
+    wrapper.innerHTML = label === "none" ? "" :`
         <div class="henn-slider-header">
             <span>${label}</span>
             <strong>
@@ -5081,7 +4969,7 @@ function hennColorRow(owner, path, label, value, defaultValue = null, opt = {}) 
 }
 
 function createSeparator() {
-    return document.createElement("div").addStyle({
+    return hennDiv().addStyle({
         height: "1px",
         background: "var(--divider-color)",
         margin: "8px 0"
@@ -5404,7 +5292,6 @@ function hennSliderInput(owner, path, value, defaultValue, opt = {}) {
     return hennGenericInput(owner, input, path, value, defaultValue, opt);
 }
 
-
 function hennCheckbox(owner, path, value, defaultValue = "", opt = {}) {
     const input = document.createElement("input").addClasses('henn-editor-input').setType('checkbox')
         .addProperties({
@@ -5461,30 +5348,8 @@ function hennNumberRow(owner, label, path, value, defaultValue, opt = {}) {
 
 // tekib _compactNumberBox asemele
 function hennCompactNumberRow(owner, path, label, value, defaultValue = 0, opt = {}) {
-
-
     return hennFieldRow(label, hennNumberInput(owner, path, value, defaultValue, {
-        classList: "henn-editor-compact-number", ...opt }),
-        {
-            //className: "henn-editor-wide-row",
-            //labelClassName: "henn-editor-wide-label",
-            ...opt
-        });
-
-    // const wrap = document.createElement("div");
-    // wrap.className = "henn-editor-wide-row";
-
-    // const lab = document.createElement("div");
-    // lab.className = "henn-editor-wide-label";
-    // lab.textContent = label;
-
-    // const input = hennNumberInput(owner, path, value, defaultValue, opt);
-    // input.classList.add("henn-editor-compact-number");
-
-    // wrap.appendChild(lab);
-    // wrap.appendChild(input);
-
-    // return wrap;
+        classList: "henn-editor-compact-number", ...opt }), opt);
 }
 
 function hennCheckboxRow(owner, label, path, value, defaultValue = "", opt = {}) {
@@ -5499,9 +5364,7 @@ function hennFieldRow(label, control, { rowClassName = "henn-editor-row", labelC
         ]);
 }
 
-function hennDiv(className = null) {
-    return document.createElement('div').addClasses(className);
-}
+function hennDiv(className = null) { return document.createElement('div').addClasses(className); }
 
 function hennMultiBox(controls = [], { boxClassName = null } = {}) {
     const box = hennDiv(boxClassName);
@@ -5510,7 +5373,7 @@ function hennMultiBox(controls = [], { boxClassName = null } = {}) {
             box.appendChild(control || document.createElement("div"));
         }
     }
-    return box; // ikka ei lähe üles
+    return box; 
 }
 
 function hennLabel(label, labelClassName = undefined) {
@@ -5527,7 +5390,6 @@ function hennMultiRow(label, controls = [], { rowClassName = "henn-editor-row", 
             row.appendChild(control || document.createElement("div"));
         }
     }
-
     return row;
 }
 
@@ -5559,7 +5421,7 @@ function hennSubTitle(text) {
 function hennSliderNumberRow(owner, path, label, value, defaultValue = 0, opt = {}) {
     // const { min = 0, max = 100, step = 1 } = opt || {};
     const slider = hennSliderInput(owner, path, value, defaultValue, opt);
-    const number = hennNumberInput(owner, path, value, defaultValue, { ...opt , classList: "henn-editor-compact-number" });
+    const number = hennNumberInput(owner, path, value, defaultValue, { classList: "henn-editor-compact-number", ...opt });
 
     slider.addEventListener("input", () => { number.value = slider.value; });
     number.addEventListener("input", () => { if (number.value !== "") slider.value = number.value; });
@@ -5619,6 +5481,5 @@ function hennTableHeader(headers, className = null, style = { display: "grid", g
                 .setHtml(headers.map(h => `<div>${h ?? ""}</div>`).join(""))
             )
         );
-
 }
 
