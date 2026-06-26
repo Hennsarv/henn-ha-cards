@@ -2656,8 +2656,8 @@ class HennStonehengeCardEditor extends HTMLElement {
         const size = this._effectiveTicks?.font?.size ?? 5; 
         table2.appendChild(hennMultiRow("", [
             hennColorCell(this, "ticks.color", this._effectiveTicks.color, "black"),
-            hennNumberField(this, "ticks.font.size", size, 5, { min: 4, max: 10, step: 1 }),
-            hennNumberField(this, "ticks.width", this._effectiveTicks.width, size * 2,
+            hennNumberInput(this, "ticks.font.size", size, 5, { min: 4, max: 10, step: 1 }),
+            hennNumberInput(this, "ticks.width", this._effectiveTicks.width, size * 2,
                 { min: size, max: size * 4 }),
             hennDiv()
         ]));
