@@ -2659,7 +2659,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             hennNumberInput(this, "ticks.font.size", size, 5, { min: 4, max: 10, step: 1 }),
             hennNumberInput(this, "ticks.width", this._effectiveTicks.width, size * 2,
                 { min: size, max: size * 4 }),
-            hennDiv()
+            hennDiv() // panin Input asemele Field ja lisasin tühja Divvi
         ]));
         
         body.appendChild(table2);
