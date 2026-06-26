@@ -2617,25 +2617,25 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         const topRow = hennDiv("henn-editor-top-row");
 
-        topRow.appendChild(
-            hennCompactNumberRow(this,
-                "ticks.font.size",
-                "Font",
-                ticks.font.size,
-                5,
-                {step: 1}
-            )
-        );
+        // topRow.appendChild(
+        //     hennCompactNumberRow(this,
+        //         "ticks.font.size",
+        //         "Font",
+        //         ticks.font.size,
+        //         5,
+        //         {step: 1}
+        //     )
+        // );
 
-        topRow.appendChild(
-            hennCompactNumberRow(this, 
-                "ticks.width",
-                "Width",
-                ticks.width,
-                ticks.font.size * 2,
-                { step: 1 }
-            )
-        );
+        // topRow.appendChild(
+        //     hennCompactNumberRow(this, 
+        //         "ticks.width",
+        //         "Width",
+        //         ticks.width,
+        //         ticks.font.size * 2,
+        //         { step: 1 }
+        //     )
+        // );
 
         topRow.appendChild(
             hennSegmentRow(
@@ -2652,10 +2652,21 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         body.appendChild(topRow);
 
+        const table2 = this._createMiniTable(["", "Color", "Font", "Width", ""]);
+
+        table2.appendChild(hennMultiRow("", [
+            hennColorCell(this, "ticks.color", this._effectiveTicks.color, "black"),
+            hennNumberRow(this, "ticks.font.size", this._effectiveTicks.font.size, 5, { min: 4, max: 10, step: 1 }),
+            hennNumberRow(this, "ticks.width", this._effectiveTicks.width, this._effectiveTicks.font.size * 2,
+                { min: this._effectiveTicks.font.size, max: this._effectiveTicks.font.size * 4 })
+        ]));
+        
+        body.appendChild(table2);
+
         const table = this._createMiniTable(["", "Color", "Stroke", "Length", "Show!"]);
 
 
-        table.appendChild(this._universalTableRow(
+        table2.appendChild(this._universalTableRow(
             "ticks.inner", "Inner", ticks.inner,
             "stroke", null, "show",
             this._effectiveTicks().color, true
