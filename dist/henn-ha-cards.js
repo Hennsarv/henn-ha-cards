@@ -3890,16 +3890,15 @@ function hennCreateDoubleSlider(
     function pct(value) {
         return ((value - min) / (max - min)) * 100;
     }
-
-    wrapper.innerHTML = label === "none" ? "" :`
+    // oli tükeldusviga
+    wrapper.innerHTML = (label === "none" ? "" :`
         <div class="henn-slider-header">
             <span>${label}</span>
             <strong>
                 <span class="henn-slider-value-min">${vMin}</span> – 
                 <span class="henn-slider-value-max">${vMax}</span>
             </strong>
-        </div>
-
+        </div>`)+`
         <div class="henn-slider-track-wrap" tabindex="0" role="slider"
              aria-label="${label}"
              aria-valuemin="${min}"
