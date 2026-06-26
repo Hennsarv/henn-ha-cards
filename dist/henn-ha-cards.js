@@ -5298,7 +5298,7 @@ function hennValueChangedOrDefault(owner, path, value, defaultValue) {
 function hennGenericInput(owner, input, path, value, defaultValue, opt = {}) {
     const { onChange = null, classList = null, style = {}, eventListeners = {} } = opt || {}; // lisasin const
     function readValue() {
-        if (input.type === "number" || input.type = "range") {
+        if (input.type === "number" || input.type === "range") {
             const v = Number(input.value);
             return isNaN(v) ? null : v;
         }
