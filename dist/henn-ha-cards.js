@@ -2684,6 +2684,14 @@ class HennStonehengeCardEditor extends HTMLElement {
             "ticks.font", "Font", ticks.font,
             "size", null, null, false
         ));
+        const fontSize = ticks.font?.size ?? 5;
+        const width = ticks.width ?? fontSize * 2;
+        table.appendChild(hennMultiRow("FontW", [
+            hennColorCell(this, "ticks.font.color", ticks.font?.color, ticks.color),
+            hennNumberInput(this, "ticks.font.size", fontSize, 5, {classList: "henn-editor-mini-number", min: 4, max:10, step:1}),
+            hennNumberInput(this, "ticks.width", width, fontSize * 2, { classList: "henn-editor-mini-number", min: fontSize, max: fontSize * 3 }),
+            hennDiv()
+        ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
         body.appendChild(table);
         host.appendChild(body);
@@ -3337,7 +3345,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                 { classList: ["henn-editor-mini-number"] }
             ));
         } else {
-            row.appendChild(document.createElement('div'));
+            row.appendChild(hennDiv);
         }
 
         if (checkName) {
@@ -3348,7 +3356,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                 {classList: "henn-editor-pill-check"}
             ));
         } else {
-            row.appendChild(document.createElement('div'));
+            row.appendChild(hennDiv());
         }
 
         return row;
