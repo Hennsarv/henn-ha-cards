@@ -3890,8 +3890,8 @@ function hennCreateDoubleSlider(
     function pct(value) {
         return ((value - min) / (max - min)) * 100;
     }
-    // oli tükeldusviga
-    wrapper.innerHTML = `
+    // oli tükeldusviga proovime uuesti
+    const labelPart = label === "none" ? "" : `
         <div class="henn-slider-header">
             <span>${label}</span>
             <strong>
@@ -3899,7 +3899,8 @@ function hennCreateDoubleSlider(
                 <span class="henn-slider-value-max">${vMax}</span>
             </strong>
         </div>
-
+        `
+        const bodypart = `
         <div class="henn-slider-track-wrap" tabindex="0" role="slider"
              aria-label="${label}"
              aria-valuemin="${min}"
@@ -3910,6 +3911,8 @@ function hennCreateDoubleSlider(
             <div class="henn-slider-thumb henn-slider-thumb-max"></div>
         </div>
     `;
+
+    trackWrap.innerHTML = labelPart + bodypart;
 
     const trackWrap = wrapper.querySelector(".henn-slider-track-wrap");
     const rangeEl = wrapper.querySelector(".henn-slider-range");
