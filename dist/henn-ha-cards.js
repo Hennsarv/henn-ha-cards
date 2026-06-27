@@ -2662,8 +2662,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             hennColorCell(this, "ticks.fill.color", ticks.fill?.color, "white"),
             hennDiv(), hennDiv(),
             hennCheckbox(this, "ticks.fill.show", ticks.fill?.show, false)
-        ])
-        );
+        ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" })); // lisasin klassid
 
         const fontSize = ticks.font?.size ?? 5;
         const width = ticks.width ?? fontSize * 2;
