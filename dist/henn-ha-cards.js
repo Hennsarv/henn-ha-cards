@@ -6068,8 +6068,8 @@ function hennSelectorInput(owner, path, value, defaultValue, options, opt = {}) 
 
         popup.addEventListener("pointerdown", shieldHard);
         popup.addEventListener("pointerup", shieldHard);
-        popup.addEventListener("click", shieldHard);
-        popup.addEventListener("dblclick", shieldHard);
+        //popup.addEventListener("click", shieldHard);
+        //popup.addEventListener("dblclick", shieldHard);
         popup.addEventListener("keydown", shield);
 
         if (isColor) {
