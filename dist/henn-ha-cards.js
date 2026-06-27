@@ -5544,7 +5544,6 @@ function hennColorSelectorInput(owner, path, value, defaultValue, opt = {}) {
 
 function hennSelectorInput(owner, path, value, defaultValue, options, opt = {}) {
     const mode0 = opt.mode ?? "list";
-
     const items = hennListSelectorNormalizeOptions(options);
     const isColor = mode0 === "color";
 
