@@ -5553,7 +5553,8 @@ function hennSelectorInput(owner, path, value, defaultValue, options = [], opt =
         maxRows = 12,
     } = opt || {};
 
-    const items = hennNormalizeSelectorOptions(options);
+//    const items = hennNormalizeSelectorOptions(options);
+    const items = hennListSelectorNormalizeOptions(options);
     const isList = mode === "list";
     const isCombo = mode === "combo";
     const isColor = mode === "color";
