@@ -6057,10 +6057,6 @@ function hennSelectorInput(owner, path, value, defaultValue, options, opt = {}) 
         popup = document.createElement("div");
         popup.className = "henn-select-popup";
 
-        popup.addEventListener("keydown", e => {
-            e.stopPropagation();
-        });
-
         if (isColor) {
             popup.style.minWidth = "320px";
         }
@@ -6083,14 +6079,6 @@ function hennSelectorInput(owner, path, value, defaultValue, options, opt = {}) 
                 ${isColor ? `<span class="henn-select-row-color" style="background:${item.value};"></span>` : ""}
             </span>
         `;
-
-            row.addEventListener("pointerdown", e => {
-                e.stopPropagation();
-            }, true);
-
-            row.addEventListener("pointerup", e => {
-                e.stopPropagation();
-            }, true);
 
             row.addEventListener("click", e => {
                 e.preventDefault();
