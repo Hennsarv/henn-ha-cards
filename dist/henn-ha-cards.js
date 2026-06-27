@@ -2658,11 +2658,11 @@ class HennStonehengeCardEditor extends HTMLElement {
             null, null, "show",
             null, false
         ));
-        table.appendChild(hennMultiRow("Fill!", [ // seekorrektuur ei läinud üles
+        table.appendChild(hennMultiRow("Fill!", [ 
             hennColorCell(this, "ticks.fill.color", ticks.fill?.color, "white"),
             hennDiv(), hennDiv(),
-            hennCheckbox(this, "ticks.fill.show", ticks.fill?.show, false)
-        ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" })); // lisasin klassid
+            hennCheckbox(this, "ticks.fill.show", ticks.fill?.show, false, { classList: "henn-editor-pill-check" }) // siia ka klass
+        ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" })); 
 
         const fontSize = ticks.font?.size ?? 5;
         const width = ticks.width ?? fontSize * 2;
