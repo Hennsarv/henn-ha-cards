@@ -2634,34 +2634,51 @@ class HennStonehengeCardEditor extends HTMLElement {
         body.appendChild(topRow);
 
  
-        const table = hennTableHeader(["", "Color", "Stroke", "Length", "Show"], "henn-editor-tick-table henn-editor-tick-table-head");
-        table.appendChild(this._universalTableRow(
-            "ticks.inner", "Inner", ticks.inner,
-            "stroke", null, "show",
-            this._effectiveTicks().color, true
-        ));
+        // const table = hennTableHeader(["", "Color", "Stroke", "Length", "Show"], "henn-editor-tick-table henn-editor-tick-table-head");
+        // table.appendChild(this._universalTableRow(
+        //     "ticks.inner", "Inner", ticks.inner,
+        //     "stroke", null, "show",
+        //     this._effectiveTicks().color, true
+        // ));
 
-        table.appendChild(this._universalTableRow(
-            "ticks.outer", "Outer", ticks.outer,
-            "stroke", null, "show",
-            this._effectiveTicks().color, true
-        ));
+        // table.appendChild(this._universalTableRow(
+        //     "ticks.outer", "Outer", ticks.outer,
+        //     "stroke", null, "show",
+        //     this._effectiveTicks().color, true
+        // ));
 
-        table.appendChild(this._universalTableRow(
-            "ticks.minor", "Minor", ticks.minor,
-            "stroke", "length", "show",
-            this._effectiveTicks().color, true
-        ));
+        // table.appendChild(this._universalTableRow(
+        //     "ticks.minor", "Minor", ticks.minor,
+        //     "stroke", "length", "show",
+        //     this._effectiveTicks().color, true
+        // ));
 
-        table.appendChild(this._universalTableRow(
-            "ticks.fill", "Fill", ticks.fill,
-            null, null, "show",
-            null, false
-        ));
-        table.appendChild(hennMultiRow("Fill!", [ 
-            hennColorCell(this, "ticks.fill.color", ticks.fill?.color, "white"),
+        table.appendChild(hennMultiRow("Inner", [
+            hennColorCell(this, "ticks.inner.color", ticks.inner?.color ?? ticks.color ?? "black", ticks.color),
+            hennNumberInput(this, "ticks.inner.stroke", ticks.inner?.stroke ?? 1, 1),
+            hennNUmberInput(this, "ticks.inner.gap", ticks.inner?.gap ?? 0, 0),
+            hennCheckbox(this, "ticks.inner.show", ticks.inner?.show ?? true, true, { classList: "henn-editor-pill-check" }) // siia ka klass
+        ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
+
+        table.appendChild(hennMultiRow("Outer", [
+            hennColorCell(this, "ticks.outer.color", ticks.outer?.color ?? ticks.color ?? "black", ticks.color),
+            hennNumberInput(this, "ticks.outer.stroke", ticks.outer?.stroke ?? 1, 1),
+            hennNUmberInput(this, "ticks.outer.gap", ticks.outer?.gap ?? 0, 0),
+            hennCheckbox(this, "ticks.outer.show", ticks.outer?.show ?? true, true, { classList: "henn-editor-pill-check" }) // siia ka klass
+        ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" })); 
+
+        table.appendChild(hennMultiRow("Minor", [
+            hennColorCell(this, "ticks.minor.color", ticks.minor?.color, ticks.color),
+            hennNumberInput(this, "ticks.minor.stroke", ticks.minor?.stroke, 1),
+            hennNUmberInput(this, "ticks.minor.length", ticks.minor?.length, 2),
+            hennCheckbox(this, "ticks.minor.show", ticks.minor?.show, true, { classList: "henn-editor-pill-check" }) // siia ka klass
+        ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" })); 
+
+
+        table.appendChild(hennMultiRow("Fill", [ 
+            hennColorCell(this, "ticks.fill.color", ticks.fill?.color ?? "white", "white"),
             hennDiv(), hennDiv(),
-            hennCheckbox(this, "ticks.fill.show", ticks.fill?.show, false, { classList: "henn-editor-pill-check" }) // siia ka klass
+            hennCheckbox(this, "ticks.fill.show", ticks.fill?.show ?? false, false, { classList: "henn-editor-pill-check" }) // siia ka klass
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" })); 
 
         const fontSize = ticks.font?.size ?? 5;
