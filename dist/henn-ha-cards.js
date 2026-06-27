@@ -983,7 +983,7 @@ const HENN_STONE_STYLE = `
 
     .henn-series-header {
         display: grid;
-        grid-template-columns: 32px 1fr 80px 34px 34px;
+        grid-template-columns: auto minmax(0, 1fr) auto auto auto;
         gap: 6px;
         align-items: center;
         border: 1px solid var(--divider-color, #ddd);
@@ -992,15 +992,15 @@ const HENN_STONE_STYLE = `
         background: var(--secondary-background-color, #f5f5f5);
     }
 
-    .henn-series-header-v2 {
-        display: grid;
-        grid-template-columns: 34px minmax(0, 1fr) 34px 34px 34px;
-        gap: 6px;
-        align-items: center;
-        border: 1px solid var(--divider-color, #ddd);
-        border-radius: 8px;
-        padding: 6px;
-        background: var(--secondary-background-color, #f5f5f5);
+    .henn-series-header > div {
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .henn-series-header > div > div:first-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .henn-series-body {
