@@ -5538,10 +5538,7 @@ function hennComboSelectorInput(owner, path, value, defaultValue, options = [], 
 }
 
 function hennColorSelectorInput(owner, path, value, defaultValue, opt = {}) {
-    return hennSelectorInput(owner, path, value, defaultValue, HENN_CSS_COLORS2, {
-        ...opt,
-        mode: "color"
-    });
+    return hennSelectorInput(owner, path, value, defaultValue, HENN_CSS_COLORS2, { ...opt, mode: "color" });
 }
 
 function hennSelectorInput(owner, path, value, defaultValue, options = [], opt = {}) {
