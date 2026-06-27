@@ -5541,7 +5541,7 @@ function hennColorSelectorInput(owner, path, value, defaultValue, opt = {}) {
     return hennSelectorInput(owner, path, value, defaultValue, HENN_CSS_COLORS2, { ...opt, mode: "color" });
 }
 
-OLDfunction hennSelectorInput(owner, path, value, defaultValue, options = [], opt = {}) {
+function OLDhennSelectorInput(owner, path, value, defaultValue, options = [], opt = {}) {
     const {
         mode = "list",
         popupClass = "henn-select-popup",
