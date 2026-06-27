@@ -2656,21 +2656,21 @@ class HennStonehengeCardEditor extends HTMLElement {
         table.appendChild(hennMultiRow("Inner", [
             hennColorCell(this, "ticks.inner.color", ticks.inner?.color ?? ticks.color ?? "black", ticks.color),
             hennNumberInput(this, "ticks.inner.stroke", ticks.inner?.stroke ?? 1, 1),
-            hennNUmberInput(this, "ticks.inner.gap", ticks.inner?.gap ?? 0, 0),
+            hennNumberInput(this, "ticks.inner.gap", ticks.inner?.gap ?? 0, 0),
             hennCheckbox(this, "ticks.inner.show", ticks.inner?.show ?? true, true, { classList: "henn-editor-pill-check" }) // siia ka klass
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
         table.appendChild(hennMultiRow("Outer", [
             hennColorCell(this, "ticks.outer.color", ticks.outer?.color ?? ticks.color ?? "black", ticks.color),
             hennNumberInput(this, "ticks.outer.stroke", ticks.outer?.stroke ?? 1, 1),
-            hennNUmberInput(this, "ticks.outer.gap", ticks.outer?.gap ?? 0, 0),
+            hennNumberInput(this, "ticks.outer.gap", ticks.outer?.gap ?? 0, 0),
             hennCheckbox(this, "ticks.outer.show", ticks.outer?.show ?? true, true, { classList: "henn-editor-pill-check" }) // siia ka klass
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" })); 
 
         table.appendChild(hennMultiRow("Minor", [
             hennColorCell(this, "ticks.minor.color", ticks.minor?.color, ticks.color),
             hennNumberInput(this, "ticks.minor.stroke", ticks.minor?.stroke, 1),
-            hennNUmberInput(this, "ticks.minor.length", ticks.minor?.length, 2),
+            hennNumberInput(this, "ticks.minor.length", ticks.minor?.length, 2),
             hennCheckbox(this, "ticks.minor.show", ticks.minor?.show, true, { classList: "henn-editor-pill-check" }) // siia ka klass
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" })); 
 
