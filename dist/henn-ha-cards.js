@@ -5541,7 +5541,7 @@ function hennColorSelectorInput(owner, path, value, defaultValue, opt = {}) {
     return hennSelectorInput(owner, path, value, defaultValue, HENN_CSS_COLORS2, { ...opt, mode: "color" });
 }
 
-function hennSelectorInput(owner, path, value, defaultValue, options = [], opt = {}) {
+OLDfunction hennSelectorInput(owner, path, value, defaultValue, options = [], opt = {}) {
     const {
         mode = "list",
         popupClass = "henn-select-popup",
@@ -6043,6 +6043,591 @@ function hennSelectorInput(owner, path, value, defaultValue, options = [], opt =
         }
 
         closePopup();
+    });
+
+    return root;
+}
+
+function hennSelectorInput(owner, path, value, defaultValue, options, opt = {}) {
+    const mode0 = opt.mode ?? "list";
+
+    const items = hennListSelectorNormalizeOptions(options);
+    const isColor = mode0 === "color";
+
+    let mode = mode0;
+    if (isColor) mode = "search";
+
+    const root = document.createElement("div");
+    root.className = "henn-select-root";
+
+    const hidden = document.createElement("input");
+    hidden.type = "hidden";
+    hidden.value = normalizeCommitValue(value ?? defaultValue ?? "");
+
+    hennGenericInput(owner, hidden, path, value, defaultValue, opt);
+
+    const preview = document.createElement("div");
+    preview.className = "henn-select-preview";
+    preview.tabIndex = 0;
+
+    const text = document.createElement("span");
+    text.textContent = getLabel(hidden.value);
+
+    const arrow = document.createElement("span");
+    arrow.className = "henn-select-arrow";
+    arrow.textContent = "▾";
+
+    preview.append(text, arrow);
+    root.append(hidden, preview);
+
+    let popup = null;
+    let currentValue = hidden.value;
+    let activeIndex = getIndex(currentValue);
+
+    let input = null;
+    let inputHint = null;
+    let firstComboBackspace = true;
+
+    if (activeIndex < 0) activeIndex = 0;
+
+    function normalizeCommitValue(v) {
+        if (v == null) return "";
+
+        const s = String(v).trim();
+
+        if (!isColor) return s;
+
+        if (s.startsWith("#")) {
+            const hex = s.toLowerCase();
+            return hennHexToColorName(hex) || hex;
+        }
+
+        return s;
+    }
+
+    function isCombo() {
+        return mode === "combo";
+    }
+
+    function isSearch() {
+        return mode === "search";
+    }
+
+    function hasInput() {
+        return isCombo() || isSearch();
+    }
+
+    function getIndex(v) {
+        for (let i = 0; i < items.length; i++) {
+            if (String(items[i].value) === String(v) || String(items[i].label) === String(v)) return i;
+        }
+        return -1;
+    }
+
+    function getLabel(v) {
+        for (const item of items) {
+            if (String(item.value) === String(v) || String(item.label) === String(v)) return item.label;
+        }
+        return v ?? "";
+    }
+
+    function getItem(v) {
+        for (const item of items) {
+            if (String(item.value) === String(v) || String(item.label) === String(v)) return item;
+        }
+        return null;
+    }
+
+    function fireChanged(v) {
+        currentValue = normalizeCommitValue(v);
+        hidden.value = currentValue;
+
+        hidden.dispatchEvent(new Event("change", {
+            bubbles: true
+        }));
+    }
+
+    function closePopup() {
+        if (popup) {
+            popup.remove();
+            popup = null;
+        }
+
+        input = null;
+        inputHint = null;
+    }
+
+    function getRows() {
+        if (!popup) return [];
+        return Array.from(popup.querySelectorAll(".henn-select-row"));
+    }
+
+    function isRowVisible(row) {
+        return row && row.style.display !== "none";
+    }
+
+    function markActive() {
+        if (!popup) return;
+
+        const rows = getRows();
+
+        rows.forEach((row, i) => {
+            row.classList.toggle("active", i === activeIndex);
+        });
+
+        const activeRow = rows[activeIndex];
+
+        if (activeRow && isRowVisible(activeRow)) {
+            activeRow.scrollIntoView({ block: "nearest" });
+        }
+    }
+
+    function firstVisibleIndex() {
+        const rows = getRows();
+
+        for (let i = 0; i < rows.length; i++) {
+            if (isRowVisible(rows[i])) return i;
+        }
+
+        return -1;
+    }
+
+    function moveActiveVisible(delta) {
+        const rows = getRows();
+
+        if (!rows.length) return;
+
+        let i = activeIndex;
+
+        if (i < 0 || !isRowVisible(rows[i])) {
+            activeIndex = firstVisibleIndex();
+            markActive();
+            return;
+        }
+
+        while (true) {
+            i += delta;
+
+            if (i < 0 || i >= rows.length) return;
+
+            if (isRowVisible(rows[i])) {
+                activeIndex = i;
+                markActive();
+                return;
+            }
+        }
+    }
+
+    function updateInputHint() {
+        if (!inputHint || !input) return;
+
+        if (isCombo()) {
+            const item = getItem(input.value);
+            inputHint.textContent = item ? item.label : "";
+        }
+
+        if (isSearch()) {
+            inputHint.textContent = "";
+        }
+    }
+
+    function updateActiveFromComboValue() {
+        if (!input) return;
+
+        const ix = getIndex(input.value);
+
+        if (ix >= 0) {
+            activeIndex = ix;
+        } else if (isColor && input.value.startsWith("#")) {
+            activeIndex = -1;
+        }
+
+        markActive();
+        updateInputHint();
+    }
+
+    function filterRows() {
+        if (!popup || !input) return;
+
+        if (input.value.startsWith("#")) {
+            activeIndex = -1;
+            return;
+        }
+
+        const q = String(input.value ?? "").toLowerCase();
+        const rows = getRows();
+
+        rows.forEach((row, i) => {
+            const item = items[i];
+
+            const hit =
+                String(item.label ?? "").toLowerCase().includes(q) ||
+                String(item.value ?? "").toLowerCase().includes(q);
+
+            row.style.display = hit ? "" : "none";
+        });
+
+        activeIndex = firstVisibleIndex();
+        markActive();
+    }
+
+    function commitValue(v) {
+        currentValue = normalizeCommitValue(v);
+
+        const item = getItem(currentValue);
+        text.textContent = item ? item.label : currentValue;
+
+        fireChanged(currentValue);
+        closePopup();
+    }
+
+    function commitIndex(index) {
+        if (index < 0 || index >= items.length) return;
+
+        const item = items[index];
+
+        if (isCombo()) {
+            activeIndex = index;
+            input.value = item.value;
+            updateInputHint();
+            markActive();
+            input.focus();
+            return;
+        }
+
+        if (isSearch()) {
+            activeIndex = index;
+            markActive();
+            input.focus();
+            return;
+        }
+
+        currentValue = item.value;
+        activeIndex = index;
+        text.textContent = item.label;
+
+        fireChanged(currentValue);
+        closePopup();
+    }
+
+    function commitCurrent() {
+        if (isCombo()) {
+            commitValue(input ? input.value : currentValue);
+            return;
+        }
+
+        else if (isColor) {
+            if (activeIndex >= 0) {
+                const item = items[activeIndex];
+                if (item) commitValue(item.label);
+            } else if (input) {
+                commitValue(input.value);
+            }
+            return;
+        }
+
+        else if (isSearch()) {
+            if (activeIndex >= 0) {
+                const item = items[activeIndex];
+                if (item) commitValue(item.value);
+            }
+            return;
+        }
+
+        commitIndex(activeIndex);
+    }
+
+    function moveActive(delta) {
+        if (!popup) {
+            openPopup();
+            return;
+        }
+
+        if (isSearch()) {
+            moveActiveVisible(delta);
+            return;
+        }
+
+        activeIndex += delta;
+
+        if (activeIndex < 0) activeIndex = 0;
+        if (activeIndex >= items.length) activeIndex = items.length - 1;
+
+        if (isCombo() && input && items[activeIndex]) {
+            input.value = items[activeIndex].value;
+            updateInputHint();
+            input.focus();
+        }
+
+        markActive();
+    }
+
+    function createInput() {
+        const wrap = document.createElement("div");
+        wrap.className = "henn-select-combo-wrap";
+
+        input = document.createElement("input");
+        input.className = "henn-select-combo-input";
+
+        if (isCombo() || isColor) {
+            input.value = currentValue ?? "";
+        } else if (isSearch()) {
+            input.value = "";
+            input.placeholder = "Search...";
+        }
+
+        inputHint = document.createElement("div");
+        inputHint.className = "henn-select-combo-hint";
+
+        wrap.append(input, inputHint);
+
+        input.addEventListener("input", () => {
+            if (isCombo()) {
+                firstComboBackspace = false;
+                updateActiveFromComboValue();
+                filterRows();
+            }
+
+            if (isSearch()) {
+                filterRows();
+            }
+        });
+
+        input.addEventListener("keydown", e => {
+            if ((isCombo() || isColor) && e.key === "Backspace" && firstComboBackspace) {
+                e.preventDefault();
+                input.value = "";
+                firstComboBackspace = false;
+                updateActiveFromComboValue();
+                return;
+            }
+
+            firstComboBackspace = false;
+
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                moveActive(1);
+                return;
+            }
+
+            if (e.key === "ArrowUp") {
+                e.preventDefault();
+                moveActive(-1);
+                return;
+            }
+
+            if (e.key === "Enter") {
+                e.preventDefault();
+                commitCurrent();
+                return;
+            }
+
+            if (e.key === "Escape") {
+                e.preventDefault();
+                closePopup();
+                return;
+            }
+        });
+
+        requestAnimationFrame(() => {
+            input.focus();
+
+            if (isCombo()) {
+                input.select();
+                updateActiveFromComboValue();
+            }
+
+            if (isSearch()) {
+                input.select();
+            }
+        });
+
+        return wrap;
+    }
+
+    function createButtons() {
+        const buttons = document.createElement("div");
+        buttons.className = "henn-select-buttons";
+
+        const ok = document.createElement("button");
+        ok.type = "button";
+        ok.className = "henn-select-button";
+        ok.textContent = "OK";
+
+        const cancel = document.createElement("button");
+        cancel.type = "button";
+        cancel.className = "henn-select-button";
+        cancel.textContent = "Cancel";
+
+        ok.addEventListener("click", e => {
+            e.preventDefault();
+            e.stopPropagation();
+            commitCurrent();
+        });
+
+        cancel.addEventListener("click", e => {
+            e.preventDefault();
+            e.stopPropagation();
+            closePopup();
+        });
+
+        buttons.append(ok, cancel);
+        return buttons;
+    }
+
+    function positionPopup() {
+        const gap = 6;
+
+        popup.style.position = "fixed";
+        popup.style.zIndex = "99999";
+        popup.style.visibility = "hidden";
+        popup.style.left = "0px";
+        popup.style.top = "0px";
+        popup.style.right = "auto";
+        popup.style.width = `${preview.getBoundingClientRect().width}px`;
+
+        const previewRect = preview.getBoundingClientRect();
+        const popupRect = popup.getBoundingClientRect();
+
+        let left = previewRect.left;
+        let top = previewRect.bottom + gap;
+
+        if (top + popupRect.height > window.innerHeight) {
+            top = previewRect.top - popupRect.height - gap;
+        }
+
+        if (left + popupRect.width > window.innerWidth - gap) {
+            left = window.innerWidth - popupRect.width - gap;
+        }
+
+        if (left < gap) left = gap;
+        if (top < gap) top = gap;
+
+        popup.style.left = `${left}px`;
+        popup.style.top = `${top}px`;
+        popup.style.visibility = "";
+    }
+
+    function openPopup() {
+        if (popup) return;
+
+        activeIndex = getIndex(currentValue);
+        if (activeIndex < 0) activeIndex = 0;
+
+        firstComboBackspace = true;
+
+        popup = document.createElement("div");
+        popup.className = "henn-select-popup";
+
+        if (isColor) {
+            popup.style.minWidth = "320px";
+        }
+
+        if (hasInput()) {
+            popup.appendChild(createInput());
+        }
+
+        const list = document.createElement("div");
+        list.className = "henn-select-list";
+
+        items.forEach((item, i) => {
+            const row = document.createElement("div");
+            row.className = "henn-select-row";
+
+            row.innerHTML = `
+                <span class="henn-select-row-label">${item.label}</span>
+                <span class="henn-select-row-right">
+                    <span class="henn-select-row-value">${item.value}</span>
+                    ${isColor ? `<span class="henn-select-row-color" style="background:${item.value};"></span>` : ""}
+                </span>
+            `;
+
+            row.addEventListener("click", e => {
+                e.preventDefault();
+                e.stopPropagation();
+                commitIndex(i);
+            });
+
+            row.addEventListener("dblclick", e => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (isCombo()) {
+                    commitValue(items[i].value);
+                } else if (isColor) {
+                    commitValue(items[i].label);
+                } else if (isSearch()) {
+                    commitValue(items[i].value);
+                } else {
+                    commitIndex(i);
+                }
+            });
+
+            list.appendChild(row);
+        });
+
+        popup.appendChild(list);
+
+        if (hasInput()) {
+            popup.appendChild(createButtons());
+        }
+
+        const popupHost =
+            root.closest("hui-dialog-edit-card") ||
+            root.closest("ha-dialog") ||
+            root.closest("ha-card") ||
+            root.parentElement ||
+            root;
+
+        popupHost.appendChild(popup);
+
+        positionPopup();
+
+        requestAnimationFrame(markActive);
+    }
+
+    function togglePopup() {
+        if (popup) closePopup();
+        else openPopup();
+    }
+
+    preview.addEventListener("click", e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        preview.focus();
+        togglePopup();
+    });
+
+    preview.addEventListener("keydown", e => {
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            moveActive(1);
+            return;
+        }
+
+        if (e.key === "ArrowUp") {
+            e.preventDefault();
+            moveActive(-1);
+            return;
+        }
+
+        if (e.key === "Enter") {
+            e.preventDefault();
+
+            if (popup) {
+                commitCurrent();
+            } else {
+                openPopup();
+            }
+
+            return;
+        }
+
+        if (e.key === "Escape") {
+            e.preventDefault();
+            closePopup();
+        }
     });
 
     return root;
