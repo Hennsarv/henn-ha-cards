@@ -2811,12 +2811,27 @@ class HennStonehengeCardEditor extends HTMLElement {
         const lowerRadius = this._config.lower?.radius ?? 30; // teine katse
         const upperRadius = this._config.upper?.radius ?? 90;
 
-        // lineTable.appendChild(hennMultiBox([
-        //     hennNumberInput(this, "lower.radius", lowerRadius, 30, { min: 0, max: upperRadius - 10, step: 5 }),
-        //     hennCreateDoubleSlider(this, "lower.radius", "upper.radius", "Rööbaste raadiused",
-        //         lowerRadius, upperRadius, 0, 100, 5),
-        //     hennNumberInput(this, "upper.radius", upperRadius, 90, {min: lowerRadius + 10, max: 100, step: 5})
-        // ]));
+        const lowerNumber = hennNumberInput(this, "lower.radius", lowerRadius, 30, { min: 0, max: upperRadius - 10, step: 5 });
+            // hennCreateDoubleSlider(this, "lower.radius", "upper.radius", "Rööbaste raadiused",
+            //     lowerRadius, upperRadius, 0, 100, 5),
+
+        const doubleSlider = hennDoubleSliderCore(lowerRadius, upperRadius, 0, 100, 5, {
+                minGap: 10,
+                value1OnChange: v => {
+                    lowerNumber.value = v;
+                    lowerNumber.dispatchEvent(new Event("change", { bubbles: true }));
+                },
+                value2OnChange: v => {
+                    upperNumber.value = v;
+                    upperNumber.dispatchEvent(new Event("change", { bubbles: true }));
+                }
+            });
+
+        const upperNumber = hennNumberInput(this, "upper.radius", upperRadius, 90, { min: lowerRadius + 10, max: 100, step: 5 });
+
+
+
+        lineTable.appendChild(hennMultiBox([ lowerNumber, doubleSlider, upperNumber ]));
 
         lineTable.appendChild(hennCreateDoubleSlider(this, "lower.radius", "upper.radius", "Rööbaste raadiused", lowerRadius, upperRadius, 0, 100, 5))
 
@@ -6171,6 +6186,172 @@ function hennSelectorInput(owner, path, value, defaultValue, options, opt = {}) 
             closePopup();
         }
     });
+
+    return root;
+}
+
+function hennDoubleSliderCore(value1, value2, min = 0, max = 100, step = 1, opt = {}) {
+    const {
+        minGap = 0,
+        value1OnChange = null,
+        value2OnChange = null,
+        className = "henn-double-slider-core"
+    } = opt || {};
+
+    const root = document.createElement("div");
+    root.className = `henn-slider-root ${className}`;
+
+    const track = document.createElement("div");
+    track.className = "henn-slider-track-wrap";
+
+    const base = document.createElement("div");
+    base.className = "henn-slider-track";
+
+    const fill = document.createElement("div");
+    fill.className = "henn-slider-range";
+
+    const thumb1 = document.createElement("div");
+    thumb1.className = "henn-slider-thumb lower";
+
+    const thumb2 = document.createElement("div");
+    thumb2.className = "henn-slider-thumb upper";
+
+    track.append(base, fill, thumb1, thumb2);
+    root.appendChild(track);
+    let v1 = Number(value1 ?? min);
+    let v2 = Number(value2 ?? max);
+    let dragging = null;
+
+    function clamp(v) {
+        v = Number(v);
+        if (isNaN(v)) v = min;
+        v = Math.max(min, Math.min(max, v));
+        return Math.round(v / step) * step;
+    }
+
+    function clampPair(moved) {
+        v1 = clamp(v1);
+        v2 = clamp(v2);
+
+        if (v1 > v2 - minGap) {
+            if (moved === 1) v1 = v2 - minGap;
+            else v2 = v1 + minGap;
+        }
+
+        v1 = clamp(v1);
+        v2 = clamp(v2);
+    }
+
+    function pct(v) {
+        return ((v - min) / (max - min)) * 100;
+    }
+
+    function draw() {
+        const p1 = pct(v1);
+        const p2 = pct(v2);
+
+        thumb1.style.left = `${p1}%`;
+        thumb2.style.left = `${p2}%`;
+
+        fill.style.left = `${p1}%`;
+        fill.style.width = `${p2 - p1}%`;
+    }
+
+    function valueFromEvent(e) {
+        const r = track.getBoundingClientRect();
+        const x = Math.max(0, Math.min(r.width, e.clientX - r.left));
+        const raw = min + (x / r.width) * (max - min);
+        return clamp(raw);
+    }
+
+    function fire(moved) {
+        if (moved === 1 && typeof value1OnChange === "function") {
+            value1OnChange(v1, v2, root);
+        }
+
+        if (moved === 2 && typeof value2OnChange === "function") {
+            value2OnChange(v2, v1, root);
+        }
+    }
+
+    function startDrag(moved, e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        dragging = moved;
+        root.setPointerCapture?.(e.pointerId);
+    }
+
+    function drag(e) {
+        if (!dragging) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (dragging === 1) v1 = valueFromEvent(e);
+        if (dragging === 2) v2 = valueFromEvent(e);
+
+        clampPair(dragging);
+        draw();
+    }
+
+    function endDrag(e) {
+        if (!dragging) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const moved = dragging;
+        dragging = null;
+
+        root.releasePointerCapture?.(e.pointerId);
+        fire(moved);
+    }
+
+    thumb1.addEventListener("pointerdown", e => startDrag(1, e));
+    thumb2.addEventListener("pointerdown", e => startDrag(2, e));
+
+    root.addEventListener("pointermove", drag);
+    root.addEventListener("pointerup", endDrag);
+    root.addEventListener("pointercancel", endDrag);
+
+    track.addEventListener("pointerdown", e => {
+        const clicked = valueFromEvent(e);
+        const d1 = Math.abs(clicked - v1);
+        const d2 = Math.abs(clicked - v2);
+
+        startDrag(d1 <= d2 ? 1 : 2, e);
+
+        if (dragging === 1) v1 = clicked;
+        else v2 = clicked;
+
+        clampPair(dragging);
+        draw();
+    });
+
+    root.getValues = () => [v1, v2];
+
+    root.setValues = (newValue1, newValue2) => {
+        v1 = Number(newValue1 ?? v1);
+        v2 = Number(newValue2 ?? v2);
+        clampPair(null);
+        draw();
+    };
+
+    root.setValue1 = newValue => {
+        v1 = Number(newValue ?? v1);
+        clampPair(1);
+        draw();
+    };
+
+    root.setValue2 = newValue => {
+        v2 = Number(newValue ?? v2);
+        clampPair(2);
+        draw();
+    };
+
+    clampPair(null);
+    draw();
 
     return root;
 }
