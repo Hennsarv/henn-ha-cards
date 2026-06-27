@@ -2658,7 +2658,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             null, null, "show",
             null, false
         ));
-        table.appendChild(henn.hennMultiRow("Fill!", [
+        table.appendChild(hennMultiRow("Fill!", [
             hennColorCell(this, "ticks.fill.color", ticks.fill?.color, "white"),
             hennDiv(), hennDiv(),
             hennCheckbox(this, "ticks.fill.show", ticks.fill?.show, false)
