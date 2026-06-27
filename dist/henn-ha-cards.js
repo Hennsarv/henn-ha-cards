@@ -5321,7 +5321,7 @@ function hennColorCell(owner, path, value, defaultValue = null, opt = {}) {
     //     "color"
     // );
 
-    const selector = hennColorSelectorInput(this, path, value, defaultValue);
+    const selector = hennColorSelectorInput(owner, path, value, defaultValue);
 
     selector.classList.add("henn-color-cell-selector");
 
