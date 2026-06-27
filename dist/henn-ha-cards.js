@@ -2634,7 +2634,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         body.appendChild(topRow);
 
  
-        // const table = hennTableHeader(["", "Color", "Stroke", "Length", "Show"], "henn-editor-tick-table henn-editor-tick-table-head");
+        const table = hennTableHeader(["", "Color", "Stroke", "Length", "Show"], "henn-editor-tick-table henn-editor-tick-table-head");
         // table.appendChild(this._universalTableRow(
         //     "ticks.inner", "Inner", ticks.inner,
         //     "stroke", null, "show",
