@@ -5641,13 +5641,58 @@ function hennSelectorInput(owner, path, value, defaultValue, options, opt = {}) 
     }
 
     function closePopup() {
+        if (typeof uninstallOutsideClose === "function") {
+            uninstallOutsideClose();
+        }
+
         if (popup) {
             popup.remove();
+
             popup = null;
         }
 
         input = null;
         inputHint = null;
+
+        activeIndex = getIndex(currentValue);
+    }
+
+    let outsideCloseHandler = null;
+
+    function installOutsideClose() {
+        if (outsideCloseHandler) return;
+
+        outsideCloseHandler = function (e) {
+
+            if (!popup) return;
+
+            if (popup.contains(e.target) || root.contains(e.target)) {
+                return;
+            }
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            closePopup();
+        };
+
+        document.addEventListener(
+            "pointerdown",
+            outsideCloseHandler,
+            true           // capture !!!
+        );
+    }
+
+    function uninstallOutsideClose() {
+        if (!outsideCloseHandler) return;
+
+        document.removeEventListener(
+            "pointerdown",
+            outsideCloseHandler,
+            true
+        );
+
+        outsideCloseHandler = null;
     }
 
     function getRows() {
@@ -5969,7 +6014,7 @@ function hennSelectorInput(owner, path, value, defaultValue, options, opt = {}) 
     }
 
     function positionPopup() {
-        const gap = 6;
+        const gap = 0;
 
         popup.style.position = "fixed";
         popup.style.zIndex = "99999";
@@ -6012,6 +6057,21 @@ function hennSelectorInput(owner, path, value, defaultValue, options, opt = {}) 
         popup = document.createElement("div");
         popup.className = "henn-select-popup";
 
+        function shield(e) {
+            e.stopPropagation();
+        }
+
+        function shieldHard(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        popup.addEventListener("pointerdown", shieldHard);
+        popup.addEventListener("pointerup", shieldHard);
+        popup.addEventListener("click", shieldHard);
+        popup.addEventListener("dblclick", shieldHard);
+        popup.addEventListener("keydown", shield);
+
         if (isColor) {
             popup.style.minWidth = "320px";
         }
@@ -6028,12 +6088,12 @@ function hennSelectorInput(owner, path, value, defaultValue, options, opt = {}) 
             row.className = "henn-select-row";
 
             row.innerHTML = `
-                <span class="henn-select-row-label">${item.label}</span>
-                <span class="henn-select-row-right">
-                    <span class="henn-select-row-value">${item.value}</span>
-                    ${isColor ? `<span class="henn-select-row-color" style="background:${item.value};"></span>` : ""}
-                </span>
-            `;
+            <span class="henn-select-row-label">${item.label}</span>
+            <span class="henn-select-row-right">
+                <span class="henn-select-row-value">${item.value}</span>
+                ${isColor ? `<span class="henn-select-row-color" style="background:${item.value};"></span>` : ""}
+            </span>
+        `;
 
             row.addEventListener("click", e => {
                 e.preventDefault();
@@ -6073,6 +6133,10 @@ function hennSelectorInput(owner, path, value, defaultValue, options, opt = {}) 
             root;
 
         popupHost.appendChild(popup);
+
+        if (typeof installOutsideClose === "function") {
+            installOutsideClose();
+        }
 
         positionPopup();
 
