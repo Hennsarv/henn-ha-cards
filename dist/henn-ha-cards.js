@@ -5544,50 +5544,47 @@ function hennColorSelectorInput(owner, path, value, defaultValue, opt = {}) {
 function hennSelectorInput(owner, path, value, defaultValue, options = [], opt = {}) {
     const {
         mode = "list",
-        classList = null,
-        style = {},
-        placeholder = "",
         popupClass = "henn-select-popup",
-        optionClass = "henn-select-row",
-        inputClass = "henn-select-input",
-        maxRows = 12,
+        maxRows = 12
     } = opt || {};
 
-//    const items = hennNormalizeSelectorOptions(options);
     const items = hennListSelectorNormalizeOptions(options);
+
     const isList = mode === "list";
     const isCombo = mode === "combo";
     const isColor = mode === "color";
-    const hasTextInput = isCombo || isColor;
+    const hasInput = isCombo || isColor;
 
     const root = document.createElement("div");
     root.className = "henn-select-root";
 
-    const input = document.createElement("input");
-    input.type = "text";
-    input.className = inputClass;
-    input.value = normalizeValue(value ?? defaultValue ?? "");
-    input.placeholder = placeholder;
+    const hidden = document.createElement("input");
+    hidden.type = "hidden";
 
-    if (isList) input.readOnly = true;
+    const preview = document.createElement("div");
+    preview.className = "henn-select-preview";
+    preview.tabIndex = 0;
+
+    const text = document.createElement("span");
+    text.className = "henn-select-preview-text";
 
     const arrow = document.createElement("span");
     arrow.className = "henn-select-arrow";
     arrow.textContent = "▾";
 
-    root.append(input, arrow);
+    preview.append(text, arrow);
+    root.append(hidden, preview);
+
+    hennGenericInput(owner, hidden, path, value, defaultValue, opt);
 
     let popup = null;
-    let activeIndex = findIndex(input.value);
-    let suppressBlur = false;
+    let input = null;
+    let activeIndex = -1;
+    let suppressClose = false;
+    let currentValue = normalizeValue(value ?? defaultValue ?? "");
 
-    if (activeIndex < 0) activeIndex = 0;
-
-    hennGenericInput(owner, input, path, value, defaultValue, {
-        ...opt,
-        classList,
-        style
-    });
+    hidden.value = currentValue;
+    updatePreview();
 
     function normalizeValue(v) {
         if (v == null) return "";
@@ -5604,50 +5601,46 @@ function hennSelectorInput(owner, path, value, defaultValue, options = [], opt =
         return s;
     }
 
-    function displayLabel(v) {
-        const item = getItem(v);
-        return item ? item.label : v ?? "";
-    }
-
     function getItem(v) {
-        return items.find(x => String(x.value) === String(v)) || null;
+        return items.find(x => String(x.value) === String(v) || String(x.label) === String(v)) || null;
     }
 
-    function findIndex(v) {
-        return items.findIndex(x => String(x.value) === String(v));
+    function getIndex(v) {
+        return items.findIndex(x => String(x.value) === String(v) || String(x.label) === String(v));
+    }
+
+    function updatePreview() {
+        const item = getItem(currentValue);
+
+        text.textContent = item ? item.label : currentValue;
+
+        preview.querySelector(".henn-select-preview-color")?.remove();
+
+        if (isColor) {
+            const swatch = document.createElement("span");
+            swatch.className = "henn-select-preview-color";
+            swatch.style.background = item ? item.value : currentValue;
+            preview.insertBefore(swatch, text);
+        }
     }
 
     function fireChange(v) {
-        input.value = normalizeValue(v);
-        input.dispatchEvent(new Event("change", { bubbles: true }));
+        currentValue = normalizeValue(v);
+        hidden.value = currentValue;
+        updatePreview();
+        hidden.dispatchEvent(new Event("change", { bubbles: true }));
     }
 
     function closePopup() {
         if (!popup) return;
+
         popup.remove();
         popup = null;
+        input = null;
     }
 
     function getRows() {
-        if (!popup) return [];
-        return Array.from(popup.querySelectorAll(`.${optionClass}`));
-    }
-
-    function visibleRows() {
-        return getRows().filter(r => r.style.display !== "none");
-    }
-
-    function markActive() {
-        const rows = getRows();
-
-        rows.forEach((r, i) => {
-            r.classList.toggle("active", i === activeIndex);
-        });
-
-        const row = rows[activeIndex];
-        if (row && row.style.display !== "none") {
-            row.scrollIntoView({ block: "nearest" });
-        }
+        return popup ? Array.from(popup.querySelectorAll(".henn-select-row")) : [];
     }
 
     function firstVisibleIndex() {
@@ -5660,14 +5653,28 @@ function hennSelectorInput(owner, path, value, defaultValue, options = [], opt =
         return -1;
     }
 
+    function markActive() {
+        const rows = getRows();
+
+        rows.forEach((row, i) => {
+            row.classList.toggle("active", i === activeIndex);
+        });
+
+        const row = rows[activeIndex];
+
+        if (row && row.style.display !== "none") {
+            row.scrollIntoView({ block: "nearest" });
+        }
+    }
+
     function filterRows() {
-        if (!popup || isList) return;
+        if (!popup || !input) return;
 
         const q = String(input.value ?? "").toLowerCase();
         const rows = getRows();
 
         if (isColor && q.startsWith("#")) {
-            rows.forEach(r => r.style.display = "none");
+            rows.forEach(row => row.style.display = "none");
             activeIndex = -1;
             return;
         }
@@ -5689,38 +5696,37 @@ function hennSelectorInput(owner, path, value, defaultValue, options = [], opt =
     function commitValue(v) {
         fireChange(v);
         closePopup();
-        input.blur();
+        preview.focus();
     }
 
-    function commitIndex(i, finalCommit = true) {
+    function commitIndex(i, immediate = true) {
         if (i < 0 || i >= items.length) return;
 
+        activeIndex = i;
         const item = items[i];
 
-        activeIndex = i;
-        input.value = isColor ? item.label : item.value;
-        markActive();
-
-        if (isList || finalCommit) {
-            commitValue(isColor ? item.label : item.value);
-        }
-        else {
+        if (isCombo && input && !immediate) {
+            input.value = item.value;
+            markActive();
             input.focus();
+            return;
         }
+
+        commitValue(isColor ? item.label : item.value);
     }
 
     function commitCurrent() {
-        if (activeIndex >= 0 && !hasTextInput) {
-            commitIndex(activeIndex, true);
+        if (hasInput) {
+            if (isColor && activeIndex >= 0) {
+                commitValue(items[activeIndex].label);
+            }
+            else {
+                commitValue(input ? input.value : currentValue);
+            }
             return;
         }
 
-        if (activeIndex >= 0 && isColor) {
-            commitValue(items[activeIndex].label);
-            return;
-        }
-
-        commitValue(input.value);
+        commitIndex(activeIndex, true);
     }
 
     function moveActive(delta) {
@@ -5742,7 +5748,7 @@ function hennSelectorInput(owner, path, value, defaultValue, options = [], opt =
             if (rows[i].style.display !== "none") {
                 activeIndex = i;
 
-                if (isCombo) {
+                if (isCombo && input) {
                     input.value = items[i].value;
                 }
 
@@ -5752,9 +5758,57 @@ function hennSelectorInput(owner, path, value, defaultValue, options = [], opt =
         }
     }
 
+    function createComboInput() {
+        const wrap = document.createElement("div");
+        wrap.className = "henn-select-combo-wrap";
+
+        input = document.createElement("input");
+        input.className = "henn-select-combo-input";
+        input.value = currentValue;
+
+        wrap.appendChild(input);
+
+        input.addEventListener("pointerdown", e => {
+            e.stopPropagation();
+            suppressClose = true;
+        });
+
+        input.addEventListener("input", () => {
+            filterRows();
+        });
+
+        input.addEventListener("keydown", e => {
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                moveActive(1);
+                return;
+            }
+
+            if (e.key === "ArrowUp") {
+                e.preventDefault();
+                moveActive(-1);
+                return;
+            }
+
+            if (e.key === "Enter") {
+                e.preventDefault();
+                commitCurrent();
+                return;
+            }
+
+            if (e.key === "Escape") {
+                e.preventDefault();
+                closePopup();
+                preview.focus();
+            }
+        });
+
+        return wrap;
+    }
+
     function createRow(item, i) {
         const row = document.createElement("div");
-        row.className = optionClass;
+        row.className = "henn-select-row";
 
         const label = document.createElement("span");
         label.className = "henn-select-row-label";
@@ -5781,7 +5835,7 @@ function hennSelectorInput(owner, path, value, defaultValue, options = [], opt =
         row.addEventListener("pointerdown", e => {
             e.preventDefault();
             e.stopPropagation();
-            suppressBlur = true;
+            suppressClose = true;
         });
 
         row.addEventListener("click", e => {
@@ -5793,10 +5847,10 @@ function hennSelectorInput(owner, path, value, defaultValue, options = [], opt =
                 activeIndex = i;
                 markActive();
                 input.focus();
-                return;
             }
-
-            commitIndex(i, true);
+            else {
+                commitIndex(i, true);
+            }
         });
 
         row.addEventListener("dblclick", e => {
@@ -5822,13 +5876,17 @@ function hennSelectorInput(owner, path, value, defaultValue, options = [], opt =
         cancel.className = "henn-select-button";
         cancel.textContent = "Cancel";
 
-        for (const btn of [ok, cancel]) {
-            btn.addEventListener("pointerdown", e => {
-                e.preventDefault();
-                e.stopPropagation();
-                suppressBlur = true;
-            });
-        }
+        ok.addEventListener("pointerdown", e => {
+            e.preventDefault();
+            e.stopPropagation();
+            suppressClose = true;
+        });
+
+        cancel.addEventListener("pointerdown", e => {
+            e.preventDefault();
+            e.stopPropagation();
+            suppressClose = true;
+        });
 
         ok.addEventListener("click", e => {
             e.preventDefault();
@@ -5840,7 +5898,7 @@ function hennSelectorInput(owner, path, value, defaultValue, options = [], opt =
             e.preventDefault();
             e.stopPropagation();
             closePopup();
-            input.blur();
+            preview.focus();
         });
 
         buttons.append(ok, cancel);
@@ -5849,16 +5907,14 @@ function hennSelectorInput(owner, path, value, defaultValue, options = [], opt =
 
     function positionPopup() {
         const gap = 6;
-        const r = input.getBoundingClientRect();
+        const r = preview.getBoundingClientRect();
 
         popup.style.position = "fixed";
         popup.style.zIndex = "99999";
         popup.style.visibility = "hidden";
         popup.style.left = "0px";
         popup.style.top = "0px";
-        popup.style.minWidth = `${r.width}px`;
-
-        if (isColor) popup.style.minWidth = "320px";
+        popup.style.minWidth = `${Math.max(r.width, isColor ? 320 : r.width)}px`;
 
         const pr = popup.getBoundingClientRect();
 
@@ -5884,11 +5940,15 @@ function hennSelectorInput(owner, path, value, defaultValue, options = [], opt =
     function openPopup() {
         if (popup) return;
 
-        activeIndex = findIndex(input.value);
+        activeIndex = getIndex(currentValue);
         if (activeIndex < 0) activeIndex = 0;
 
         popup = document.createElement("div");
         popup.className = `${popupClass} henn-selector-${mode}`;
+
+        if (hasInput) {
+            popup.appendChild(createComboInput());
+        }
 
         const list = document.createElement("div");
         list.className = "henn-select-list";
@@ -5901,7 +5961,7 @@ function hennSelectorInput(owner, path, value, defaultValue, options = [], opt =
 
         popup.appendChild(list);
 
-        if (hasTextInput) {
+        if (hasInput) {
             popup.appendChild(createButtons());
         }
 
@@ -5913,7 +5973,14 @@ function hennSelectorInput(owner, path, value, defaultValue, options = [], opt =
 
         host.appendChild(popup);
 
-        filterRows();
+        if (hasInput) {
+            filterRows();
+            requestAnimationFrame(() => {
+                input.focus();
+                input.select();
+            });
+        }
+
         positionPopup();
         requestAnimationFrame(markActive);
     }
@@ -5923,28 +5990,19 @@ function hennSelectorInput(owner, path, value, defaultValue, options = [], opt =
         else openPopup();
     }
 
-    input.addEventListener("pointerdown", e => {
+    preview.addEventListener("pointerdown", e => {
+        e.preventDefault();
         e.stopPropagation();
+        suppressClose = true;
     });
 
-    input.addEventListener("click", e => {
+    preview.addEventListener("click", e => {
         e.preventDefault();
         e.stopPropagation();
         togglePopup();
-
-        if (hasTextInput) {
-            requestAnimationFrame(() => input.select());
-        }
     });
 
-    input.addEventListener("input", () => {
-        if (!hasTextInput) return;
-
-        if (!popup) openPopup();
-        filterRows();
-    });
-
-    input.addEventListener("keydown", e => {
+    preview.addEventListener("keydown", e => {
         if (e.key === "ArrowDown") {
             e.preventDefault();
             moveActive(1);
@@ -5959,50 +6017,33 @@ function hennSelectorInput(owner, path, value, defaultValue, options = [], opt =
 
         if (e.key === "Enter") {
             e.preventDefault();
-            commitCurrent();
+
+            if (popup) commitCurrent();
+            else openPopup();
+
             return;
         }
 
         if (e.key === "Escape") {
             e.preventDefault();
             closePopup();
+        }
+    });
+
+    document.addEventListener("pointerdown", e => {
+        if (!popup) return;
+
+        if (suppressClose) {
+            suppressClose = false;
             return;
         }
 
-        if (e.key === "Tab") {
-            closePopup();
+        if (root.contains(e.target) || popup.contains(e.target)) {
+            return;
         }
-    });
 
-    input.addEventListener("blur", () => {
-        window.setTimeout(() => {
-            if (suppressBlur) {
-                suppressBlur = false;
-                input.focus();
-                return;
-            }
-
-            if (hasTextInput) {
-                fireChange(input.value);
-            }
-
-            closePopup();
-        }, 80);
-    });
-
-    arrow.addEventListener("pointerdown", e => {
-        e.preventDefault();
-        e.stopPropagation();
-        suppressBlur = true;
-    });
-
-    arrow.addEventListener("click", e => {
-        e.preventDefault();
-        e.stopPropagation();
-        input.focus();
-        togglePopup();
+        closePopup();
     });
 
     return root;
 }
-
