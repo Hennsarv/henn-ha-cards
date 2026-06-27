@@ -2818,7 +2818,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         const upperRadius = this._config.upper?.radius ?? 90;
 
         const lowerNumber = hennNumberInput(this, "lower.radius", lowerRadius, 30,
-            { min: 0, max: upperRadius - 10, step: 5, style { display: none; });
+            { min: 0, max: upperRadius - 10, step: 5, style: { display: "none"; });
             // hennCreateDoubleSlider(this, "lower.radius", "upper.radius", "Rööbaste raadiused",
             //     lowerRadius, upperRadius, 0, 100, 5),
 
@@ -2835,7 +2835,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             });
 
         const upperNumber = hennNumberInput(this, "upper.radius", upperRadius, 90,
-            { min: lowerRadius + 10, max: 100, step: 5, style: { display: none; });
+            { min: lowerRadius + 10, max: 100, step: 5, style: { display: "none"; });
 
 
 
