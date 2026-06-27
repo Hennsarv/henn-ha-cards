@@ -2658,6 +2658,12 @@ class HennStonehengeCardEditor extends HTMLElement {
             null, null, "show",
             null, false
         ));
+        table.appendChild(henn.hennMultiRow("Fill!", [
+            hennColorCell(this, "ticks.fill.color", ticks.fill?.color, "white"),
+            hennDiv(), hennDiv(),
+            hennCheckbox(this, "ticks.fill.show", ticks.fill?.show, false)
+        ])
+        );
 
         const fontSize = ticks.font?.size ?? 5;
         const width = ticks.width ?? fontSize * 2;
