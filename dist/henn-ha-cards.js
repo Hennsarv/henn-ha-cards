@@ -2953,7 +2953,8 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         const right = hennDiv()
             .addStyle({ display: "flex", gap: "6px", alignItems: "center" })
-            .appendChilds([
+            .appendChilds(hennIconButton("🗑️",true, () => _this._deleteSeries(index) ),!shown)
+            .appendChilds([],
                 hennIconButton("✓", shown, () => this._seriesValueChanged(index, "show", !shown, true)),
                 hennIconButton(open ? "▾" : "▸", false, () => this._seriesValueChanged(index, "_editor_open", !open))
             ]);
