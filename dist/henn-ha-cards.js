@@ -1164,7 +1164,8 @@ if (!Element.prototype.setHtml) {
 }
 
 if (!Element.prototype.appendChilds) {
-    Element.prototype.appendChilds = function (childs = []) {
+    Element.prototype.appendChilds = function (childs = [], predicate = true) {
+        if (!predicate) return this;
         if (Array.isArray(childs)) {
             for (const child of childs) {
                 if (child) this.appendChild(child); //else this.appendChild(document.createElement('div'));
