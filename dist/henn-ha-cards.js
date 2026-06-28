@@ -2940,26 +2940,30 @@ class HennStonehengeCardEditor extends HTMLElement {
             s.value_entity ||
             `Series ${index + 1}`;
 
+        const header = hennDiv("henn-series-header");
+
+        const reorder = hennDiv().setHtml(`
+        <button class="henn-editor-button" data-action="up">↕</button>
+    `);
+
+        const text = hennDiv().setHtml(`
+        <div>${title}</div>
+        <div class="henn-editor-small">${s.diagram_type || this._config.diagram_type || "gradient"}</div>
+    `);
+
         const right = hennDiv();
         right.style.display = "flex";
         right.style.gap = "6px";
         right.style.alignItems = "center";
 
-        right.appendChild(
-            hennIconButton(
-                "↕",
-                false,
-                () => { }
-            )
-        );
-
-        right.appendChild(
-            hennIconButton(
-                shown ? "👁" : "○",
-                false,
-                () => this._seriesValueChanged(index, "show", !shown, true)
-            )
-        );
+        const show = document.createElement("input");
+        show.type = "checkbox";
+        show.checked = shown;
+        show.className = "henn-editor-checkbox";
+        show.addEventListener("change", ev => {
+            this._seriesValueChanged(index, "show", ev.target.checked, true);
+        });
+        right.appendChild(show);
 
         if (!shown) {
             right.appendChild(
@@ -2979,18 +2983,10 @@ class HennStonehengeCardEditor extends HTMLElement {
             )
         );
 
-        const left = hennDiv().setHtml(`
-        <div>${title}</div>
-        <div class="henn-editor-small">${s.diagram_type || this._config.diagram_type || "gradient"}</div>
-    `);
-
-        const header = hennTitle(left, right)
-            .addClasses("henn-editor-section-title");
-
+        header.append(reorder, text, right);
         wrap.appendChild(header);
 
-        if (!open) return wrap;
-        const body = hennDiv("henn-serie-body").addClasses("henn-editor-muted", !enabled);
+        if (!open) return wrap;        const body = hennDiv("henn-serie-body").addClasses("henn-editor-muted", !enabled);
 
         const owner = this._seriesOwner(index);
 
