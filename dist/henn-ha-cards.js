@@ -2531,7 +2531,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             label: { color: "black", ...(config.label || {}) },
             upper: { color: "black", ...(config.upper || {}) },
             lower: { color: "black", ...(config.lower || {}) },
-            // jne
+            // jne - tehtud for safety
             ...(config || {})
         };
 
