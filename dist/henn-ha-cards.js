@@ -1654,7 +1654,7 @@ class HennStonehengeCard extends HTMLElement {
                 max_color: null,
                 min_color: null,
                 opacity: config.opacity ?? 0.5,
-                ...config.gradient
+                ...(config.gradient || {})
             },
 
             bar: {
@@ -1662,7 +1662,7 @@ class HennStonehengeCard extends HTMLElement {
                 gap: 0,
                 margin_left: 0,
                 margin_right: 0,
-                ...config.bar
+                ...(config.bar || {})
             },
 
             line: {
@@ -1670,14 +1670,14 @@ class HennStonehengeCard extends HTMLElement {
                 color: null,
                 stroke: 2,
                 smooth: false,
-                ...config.line
+                ...(config.line || {})
             },
 
             fill: {
                 show: true,
                 color: null,
                 opacity: null,
-                ...config.fill
+                ...(config.fill || {})
             },
 
             ticks: {
@@ -1687,7 +1687,7 @@ class HennStonehengeCard extends HTMLElement {
                 direction: "vertical",
                 width: null,          // vaikimisi font_size * 2
                 color: null,
-                ...config.ticks,
+                ...(config.ticks || {}),
                 font: {
                     size: null,
                     color: null,
@@ -1731,7 +1731,7 @@ class HennStonehengeCard extends HTMLElement {
                 font_size: 7,
                 color: "white",
                 margin: 12,
-                ...config.label
+                ...(config.label || {})
             },
 
             lower: { show: false, stroke: 1, color: "white", radius: 30, gap: 0, ...(config.lower || {}) },
