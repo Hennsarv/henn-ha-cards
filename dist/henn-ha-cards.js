@@ -2927,44 +2927,69 @@ class HennStonehengeCardEditor extends HTMLElement {
     }
 
     _renderSeries(index, s) {
-        const wrap = hennDiv().addStyle({display: "grid"});
+        const wrap = hennDiv().addStyle({ display: "grid" });
 
         const open = s._editor_open !== false;
         const enabled = s.enabled !== false;
+        const shown = s.show !== false;
 
         const title =
+            s.title ||
             s.name ||
             s.caption ||
             s.value_entity ||
             `Series ${index + 1}`;
 
-        const header = hennDiv("henn-series-header").setHtml ( `
-        <button class="henn-editor-button" data-action="up">↕</button>
-        <div>
-            <div>${title}</div>
-            <div class="henn-editor-small">${s.diagram_type || this._config.diagram_type || "gradient"}</div>
-        </div>
-        <button class="henn-editor-button" data-action="open">${open ? "Close" : "Open"}</button>
-        <input type="checkbox" data-action="enabled" ${enabled ? "checked" : ""}>
-        <button class="henn-editor-button" data-action="delete">×</button>
+        const right = hennDiv();
+        right.style.display = "flex";
+        right.style.gap = "6px";
+        right.style.alignItems = "center";
+
+        right.appendChild(
+            hennIconButton(
+                "↕",
+                false,
+                () => { }
+            )
+        );
+
+        right.appendChild(
+            hennIconButton(
+                shown ? "👁" : "○",
+                false,
+                () => this._seriesValueChanged(index, "show", !shown, true)
+            )
+        );
+
+        if (!shown) {
+            right.appendChild(
+                hennIconButton(
+                    "×",
+                    false,
+                    () => this._deleteSeries(index)
+                )
+            );
+        }
+
+        right.appendChild(
+            hennIconButton(
+                open ? "▾" : "▸",
+                false,
+                () => this._seriesValueChanged(index, "_editor_open", !open)
+            )
+        );
+
+        const left = hennDiv().setHtml(`
+        <div>${title}</div>
+        <div class="henn-editor-small">${s.diagram_type || this._config.diagram_type || "gradient"}</div>
     `);
 
-        header.querySelector('[data-action="open"]').addEventListener("click", () => {
-            this._seriesValueChanged(index, "_editor_open", !open);
-        });
-
-        header.querySelector('[data-action="enabled"]').addEventListener("change", ev => {
-            this._seriesValueChanged(index, "enabled", ev.target.checked, true);
-        });
-
-        header.querySelector('[data-action="delete"]').addEventListener("click", () => {
-            this._deleteSeries(index);
-        });
+        const header = hennTitle(left, right)
+            .addClasses("henn-editor-section-title");
 
         wrap.appendChild(header);
 
         if (!open) return wrap;
-
         const body = hennDiv("henn-serie-body").addClasses("henn-editor-muted", !enabled);
 
         const owner = this._seriesOwner(index);
