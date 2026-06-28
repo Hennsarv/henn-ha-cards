@@ -1617,18 +1617,23 @@ customElements.define("henn-windrose-card-editor", HennWindRoseCardEditor);
 
 class HennStonehengeCard extends HTMLElement {
     setConfig(config) {
-        if (!config.value_entity && !config.series?.some(s => s.value_entity)) {
-            throw new Error("value_entity or series with value_entity is required");
-        }
+        // if (!config.value_entity && !config.series?.some(s => s.value_entity)) {
+        //     throw new Error("value_entity or series with value_entity is required");
+        // }
 
-        this.series = [
-            ...(config.value_entity ? [{ value_entity: config.value_entity }] : []),
-            ...(config.series || [])
-        ];
+        // this.series = [
+        //     ...(config.value_entity ? [{ value_entity: config.value_entity }] : []),
+        //     ...(config.series || [])
+        // ];
+
+        this.series = (config.series || [])
+            .filter(s => s
+                && s.show !== false
+                // && s._deleted !== true
+            );
 
         this.config = {
-            value_entity: null,
-
+            
             bucketing: "day",
             bucket_size: "1h",
             history_period: "1d",
