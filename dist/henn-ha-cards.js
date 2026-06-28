@@ -2951,38 +2951,12 @@ class HennStonehengeCardEditor extends HTMLElement {
         <div class="henn-editor-small">${s.diagram_type || this._config.diagram_type || "gradient"}</div>
     `);
 
-        const right = hennDiv();
-        right.style.display = "flex";
-        right.style.gap = "6px";
-        right.style.alignItems = "center";
-
-        const show = document.createElement("input");
-        show.type = "checkbox";
-        show.checked = shown;
-        show.className = "henn-editor-checkbox";
-        show.addEventListener("change", ev => {
-            this._seriesValueChanged(index, "show", ev.target.checked, true);
-        });
-        right.appendChild(show);
-
-        if (!shown) {
-            right.appendChild(
-                hennIconButton(
-                    "×",
-                    false,
-                    () => this._deleteSeries(index)
-                )
-            );
-        }
-
-        right.appendChild(
-            hennIconButton(
-                open ? "▾" : "▸",
-                false,
-                () => this._seriesValueChanged(index, "_editor_open", !open)
-            )
-        );
-
+        const right = hennDiv()
+            .addStyle({ display: "flex", gap: "6px", alignItems: "center" })
+            .appendChilds([
+                hennIconButton("✓", shown, () => this._seriesValueChanged(index, "show", !shown, true)),
+                hennIconButton(open ? "▾" : "▸", false, () => this._seriesValueChanged(index, "_editor_open", !open))
+            ]);
         header.append(reorder, text, right);
         wrap.appendChild(header);
 
