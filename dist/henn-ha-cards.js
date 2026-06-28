@@ -2524,6 +2524,14 @@ class HennStonehengeCardEditor extends HTMLElement {
 
     setConfig(config) {
         this._config = {
+            ticks: { color: "black", ...(config.ticks || {}) },
+            line: { color: "black", ...(config.line || {}) },
+            fill: { color: "white", ...(config.fill || {}) },
+            gradient: { color: "green", ...(config.gradient || {}) },
+            label: { color: "black", ...(config.label || {}) },
+            upper: { color: "black", ...(config.upper || {}) },
+            lower: { color: "black", ...(config.lower || {}) },
+            // jne
             ...(config || {})
         };
 
