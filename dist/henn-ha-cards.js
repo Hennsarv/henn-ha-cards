@@ -1629,6 +1629,7 @@ class HennStonehengeCard extends HTMLElement {
         this.series = (config.series || [])
             .filter(s => s
                 && s.show !== false
+                && s.enabled !== false
                 // && s._deleted !== true
             );
 
@@ -1872,6 +1873,9 @@ class HennStonehengeCard extends HTMLElement {
     }
 
     async loadHistory(c) {
+        if (!c.value_entity) {
+            return this.calculateBuckets(c, []);
+        }
         const end = new Date();
         const start = this.periodStart(end, c.history_period);
 
