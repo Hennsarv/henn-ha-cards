@@ -2994,6 +2994,29 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         body.appendChild(hennTextRow(owner, "name", "Name", s.name ?? "", ""));
 
+
+        body.appendChild(createSeparator());
+
+        body.appendChild(
+            hennSegmentRow(
+                this._locPath("aggregate", index),
+                this._locValue("aggregate", "aggregate", "avg", index),
+                [
+                    ["avg", "Average"],
+                    ["sum", "Sum"],
+                    ["count", "Count"],
+                    ["max", "Max"],
+                    ["min", "Min"],
+                    ["distinct", "Distinct"]
+                ],
+                this._locDefault("aggregate", "avg")
+                , (v, def) => hennValueChangedOrDefault(this, this._locPath("aggregate", index), v, def)
+            )
+        );
+        body.appendChild(createSeparator());
+
+
+
         body.appendChild(this._selectRowFor(owner, "diagram_type", "Type", s.diagram_type ?? this._config.diagram_type ?? "gradient", [
             ["gradient", "Gradient"],
             ["bar", "Bar"],
@@ -3417,6 +3440,18 @@ class HennStonehengeCardEditor extends HTMLElement {
         row.appendChild(right);
 
         return row;
+    }
+
+    _locPath(path, index = null) {
+        return hennPath(path, index);
+    }
+
+    _locDefault(defaultPath = null, defaultValue = null) {
+        return hennDefault(this, defaultPath, defaultValue);
+    }
+
+    _locValue(path, defaultPath = null, defaultValue = null, index = null) {
+        return hennValue(this, path, defaultPath, defaultValue, index);
     }
 
 }
@@ -6526,4 +6561,26 @@ function hennDoubleSliderCore(value1, value2, min = 0, max = 100, step = 1, opt 
     draw();
 
     return root;
+}
+
+function hennPath(path, index = null) {
+    if (index === null || index === undefined) return path;
+    return `series.${index}.${path}`;
+}
+
+function hennDefault(owner, defaultPath = null, defaultValue = null) {
+    if (!defaultPath) return defaultValue;
+
+    const value = hennGetPath(owner._defConfig, defaultPath);
+    return value ?? defaultValue;
+}
+
+function hennValue(owner, path, defaultPath = null, defaultValue = null, index = null) {
+    const value = hennGetPath(owner._config, hennPath(path, index));
+
+    if (value !== undefined && value !== null) {
+        return value;
+    }
+
+    return hennDefault(owner, defaultPath, defaultValue);
 }
