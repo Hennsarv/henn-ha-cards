@@ -3051,6 +3051,10 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         customElements.whenDefined("ha-selector").then(() => {
             this._addEntityPickerTo(`#series-entity-${index}`, s.value_entity || "", value => {
+
+                console.log("VALUE:", value);
+                console.log("HASS:", this._hass?.states?.[value]);
+
                 const friendlyName =
                     this.hass?.states?.[value]?.attributes?.friendly_name
                     ?? value
