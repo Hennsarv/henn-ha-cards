@@ -2885,7 +2885,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         //     "gradient", "Gradient\nColor", this._config.gradient,
         //     null, null, "opacity_or_color",
         //     this._config.gradient.color, true
-        // ));
+        // )); // läheb tagasi uuena
 
         body.appendChild(gradientTable)
         body.appendChild(createSeparator());
