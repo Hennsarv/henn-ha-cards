@@ -2876,7 +2876,12 @@ class HennStonehengeCardEditor extends HTMLElement {
         gradientTable.appendChild(hennMultiRow("Gradient\ncolor", [
             hennColorCell(this, "gradient.color", defaults.gradient?.color ?? "orange", "orange"),
             //hennDiv(), hennDiv(), hennDiv(),
-            hennSegmentButtonCell(this, "gradient.mode", defaults.gradient?.mode ?? "opacity", "opacity")
+            hennSegmentButtonCell(this, "gradient.mode", defaults.gradient?.mode ?? "opacity", "opacity",
+                [
+                    ["opacity", "Opacity"],
+                    ["color", "Color"]
+                ]
+            )
                 .addStyle({ gridColumn: "3 / 6" })
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
