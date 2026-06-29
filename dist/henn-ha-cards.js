@@ -2896,8 +2896,8 @@ class HennStonehengeCardEditor extends HTMLElement {
 
 
 
-        gradientTable2.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`));
-        // kolmas katse
+        //gradientTable2.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`));
+
         const minOpacityNumber = hennNumberInput(this, "gradient.min_opacity", minOpacity, 0,
             { min: 0, max: 0.5, step: 0.05, style: { display: "none" } });
 
@@ -2919,7 +2919,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
 
         gradientTable2.appendChild(hennMultiBox([minOpacityNumber, doubleSliderOpacity, maxOpacityNumber]));
-        gradientTable2.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`));
+        gradientTable2.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`).addStyle({aligneContent: "center"}));
 
 
         body.appendChild(gradientTable);
