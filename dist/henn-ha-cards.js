@@ -4989,16 +4989,21 @@ function hennSetPath(obj, path, value) {
 }
 function hennDeletePath(obj, path) {
     const parts = String(path).split(".");
-    const root = { ...(obj || {}) };
+    const root = Array.isArray(obj) ? [...obj] : { ...(obj || {}) };
 
     let cur = root;
 
     for (let i = 0; i < parts.length - 1; i++) {
         const p = parts[i];
 
-        if (!cur[p]) return root;
+        if (cur[p] === undefined || cur[p] === null) {
+            return root;
+        }
 
-        cur[p] = { ...cur[p] };
+        cur[p] = Array.isArray(cur[p])
+            ? [...cur[p]]
+            : { ...cur[p] };
+
         cur = cur[p];
     }
 
@@ -5006,7 +5011,6 @@ function hennDeletePath(obj, path) {
 
     return root;
 }
-
 function hennDeepEqual(a, b) {
     return JSON.stringify(a) === JSON.stringify(b);
 }
