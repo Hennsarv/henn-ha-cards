@@ -2888,13 +2888,13 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         gradientTable.appendChild(hennMultiRow("Gradient\nmincolor", [
             hennColorCell(this, "gradient.color", defaults.gradient?.min_color ?? "white", "white"),
-            hennDiv(), hennDiv(), hennDiv()
+ //           hennDiv(), hennDiv(), hennDiv()
             //            hennCheckbox(this, "fill.show", defaults.fill?.show ?? false, false, { classList: "henn-editor-pill-check" }) // siia ka klass
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
         gradientTable.appendChild(hennMultiRow("Gradient\nmaxcolor", [
             hennColorCell(this, "gradient.color", defaults.gradient?.max_color ?? "black", "black"),
-            hennDiv(), hennDiv(), hennDiv()
+   //         hennDiv(), hennDiv(), hennDiv()
             //            hennCheckbox(this, "fill.show", defaults.fill?.show ?? false, false, { classList: "henn-editor-pill-check" }) // siia ka klass
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
