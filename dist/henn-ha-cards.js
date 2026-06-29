@@ -2889,7 +2889,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                 hennColorCell(this, "gradient.min_color", defaults.gradient?.min_color ?? "white", "white"),
                 hennLabel("Gradient\nmaxcolor", "henn-editor-tick-row-label"),
                 hennColorCell(this, "gradient.max_color", defaults.gradient?.max_color ?? "black", "black"),
-            ], { boxClassName: "henn-editor-tick-table" }));
+            ], { boxClassName: "henn-editor-tick-table" }));  // jälle 2nd shot
 
         const minOpacity = defaults.gradient?.min_opacity ?? 0
         const maxOpacity = defaults.gradient?.max_opacity ?? 1
