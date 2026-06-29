@@ -2821,7 +2821,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         //     "upper", "Upper\nrail", this._config.upper,
         //     "stroke", "gap", "show",
         //     this._config.upper.color, true
-        // ));
+        // )); // pane palun mu colorid tagasi
 
         lineTable.appendChild(hennMultiRow("Upper\nrail", [
             hennColorCell(this, "upper.color", defaults.upper?.color ?? "black", "black"),
