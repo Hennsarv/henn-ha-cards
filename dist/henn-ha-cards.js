@@ -2799,7 +2799,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         // )); // kumba pidi peab olema
 
         lineTable.appendChild(hennMultiRow("Line", [
-//            hennColorCell(this, "line.color", defaults.line?.color ?? "black", "black"),
+            hennColorCell(this, "line.color", defaults.line?.color ?? "black", "black"),
             hennNumberInput(this, "line.stroke", defaults.line?.stroke ?? 1, 1),
             hennDiv(),
             hennCheckbox(this, "line.smooth", defaults.line?.smooth ?? false, false, { classList: "henn-editor-pill-check" }) // siia ka klass
