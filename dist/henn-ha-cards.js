@@ -2873,23 +2873,48 @@ class HennStonehengeCardEditor extends HTMLElement {
         //     this._config.gradient.color, true
         // )); // läheb tagasi uuena
 
-        lineTable.appendChild(hennMultiRow("Gradient\ncolor", [
+        gradientTable.appendChild(hennMultiRow("Gradient\ncolor", [
             hennColorCell(this, "gradient.color", defaults.gradient?.color ?? "orange", "orange"),
             hennDiv(), hennDiv(), hennDiv()
 //            hennCheckbox(this, "fill.show", defaults.fill?.show ?? false, false, { classList: "henn-editor-pill-check" }) // siia ka klass
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
-        lineTable.appendChild(hennMultiRow("Gradient\nmincolor", [
+        gradientTable.appendChild(hennMultiRow("Gradient\nmincolor", [
             hennColorCell(this, "gradient.color", defaults.gradient?.min_color ?? "white", "white"),
             hennDiv(), hennDiv(), hennDiv()
             //            hennCheckbox(this, "fill.show", defaults.fill?.show ?? false, false, { classList: "henn-editor-pill-check" }) // siia ka klass
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
-        lineTable.appendChild(hennMultiRow("Gradient\nmaxcolor", [
+        gradientTable.appendChild(hennMultiRow("Gradient\nmaxcolor", [
             hennColorCell(this, "gradient.color", defaults.gradient?.max_color ?? "black", "black"),
             hennDiv(), hennDiv(), hennDiv()
             //            hennCheckbox(this, "fill.show", defaults.fill?.show ?? false, false, { classList: "henn-editor-pill-check" }) // siia ka klass
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
+
+        const minOpacity = defaults.gradient?.min_opacity ?? 0
+        const maxOpacity = defaults.gradient?.max_opacity ?? 1
+
+        const minOpacityNumber = hennNumberInput(this, "gradient.min_opacity", minOpacity, 0,
+            { min: 0, max: 0.5, step: 0.5, style: { display: "none" } });
+
+        const doubleSliderOpacity = hennDoubleSliderCore(minOpacity, maxOpacity, 0, 1, 0.05, {
+            minGap: 10,
+            value1OnChange: v => {
+                minOpacityNumber.value = v;
+                minOpacityNumber.dispatchEvent(new Event("change", { bubbles: true }));
+            },
+            value2OnChange: v => {
+                maxOpacityNumber.value = v;
+                maxOpacityNumber.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+        });
+
+        const maxOpacityNumber = hennNumberInput(this, "gradient.max_opacity", maxOpacity, 1,
+            { min: 0.5, max: 1, step: 0.5, style: { display: "none" } });
+
+
+
+        gradientTable.appendChild(hennMultiBox([minOpacityNumber, doubleSliderOpacity, maxOpacityNumber]));
 
 
         body.appendChild(gradientTable)
