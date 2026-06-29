@@ -2875,8 +2875,9 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         gradientTable.appendChild(hennMultiRow("Gradient\ncolor", [
             hennColorCell(this, "gradient.color", defaults.gradient?.color ?? "orange", "orange"),
-            hennDiv(), hennDiv(), hennDiv()
-//            hennCheckbox(this, "fill.show", defaults.fill?.show ?? false, false, { classList: "henn-editor-pill-check" }) // siia ka klass
+            //hennDiv(), hennDiv(), hennDiv(),
+            hennSegmentButtonCell(this, "gradient.mode", defaults.gradient?.mode ?? "opacity", "opacity")
+                .addStyle({ gridColumn: "3 / 6" })
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
         gradientTable.appendChild(hennMultiRow("Gradient\nmincolor", [
@@ -5110,6 +5111,95 @@ function hennSegmentRow(label, value, options, defaultValue, onChange, opts = {}
     return wrap;
 }
 
+
+function hennSegmentButtonCell(owner, path, value, defaultValue, options, opt = {}) {
+    const {
+        onChange = null,
+        segmentStyle = null,
+        buttonStyle = null,
+        classList = null
+    } = opt || {};
+
+    const seg = document.createElement("div");
+    seg.className = "henn-editor-segment";
+    seg.addClasses(classList);
+
+    if (segmentStyle) {
+        Object.assign(seg.style, segmentStyle);
+    }
+
+    options.forEach(([v, text]) => {
+        const btn = document.createElement("button")
+            .setType("button")
+            .addClasses("henn-editor-segment-button")
+            .addClasses("selected", String(v) === String(value))
+            .setTextContent(text)
+            .addStyle(buttonStyle);
+
+        btn.addEventListener("click", e => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            [...seg.querySelectorAll(".henn-editor-segment-button")]
+                .forEach(b => b.classList.remove("selected"));
+
+            btn.classList.add("selected");
+
+            if (typeof onChange === "function") {
+                onChange(path, v, defaultValue, owner);
+            }
+            else {
+                owner._config = hennSetOrDeleteDefault(
+                    owner._config,
+                    path,
+                    v,
+                    defaultValue
+                );
+
+                hennFireConfigChanged(owner);
+            }
+        });
+
+        seg.appendChild(btn);
+    });
+
+    return seg;
+}
+
+function hennSegmentButtonRow(owner, label, path, value, defaultValue, options, opt = {}) {
+    const {
+        wrapStyle = null,
+        labelStyle = null,
+        rowClassName = "henn-editor-wide-row",
+        labelClassName = "henn-editor-wide-label"
+    } = opt || {};
+
+    const wrap = document.createElement("div").addClasses(rowClassName);
+
+    if (wrapStyle) {
+        Object.assign(wrap.style, wrapStyle);
+    }
+
+    const lab = hennLabel(label, labelClassName);
+
+    if (labelStyle) {
+        Object.assign(lab.style, labelStyle);
+    }
+
+    const cell = hennSegmentButtonCell(
+        owner,
+        path,
+        value,
+        defaultValue,
+        options,
+        opt
+    );
+
+    wrap.appendChild(lab);
+    wrap.appendChild(cell);
+
+    return wrap;
+}
 
 function hennColorRow(owner, path, label, value, defaultValue = null, opt = {}) {
     return hennFieldRow(
