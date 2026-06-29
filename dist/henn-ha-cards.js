@@ -2866,7 +2866,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         body.appendChild(hennSubTitle("Defaul for gradient - by opacity or by color"));
         // const gradientTable = hennTableHeader(["", "Color", "", "Opacity or", "Colors"],
         //     "henn-editor-tick-table henn-editor-tick-table-head");
-        const gradientTable = hennDiv("henn-editor-tick-table henn-editor-tick-table-head");
+        const gradientTable = hennDiv("henn-editor-tick-table-head");
 
         // gradientTable.appendChild(this._universalTableRow(
         //     "gradient", "Gradient\nColor", this._config.gradient,
