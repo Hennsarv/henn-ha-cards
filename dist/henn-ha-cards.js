@@ -2926,7 +2926,8 @@ class HennStonehengeCardEditor extends HTMLElement {
         gradientTable2.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`));
 
 
-        body.appendChild(gradientTable)
+        body.appendChild(gradientTable);
+        body.appendChild(gradientTable2);
         body.appendChild(createSeparator());
 
         body.appendChild(hennSubTitle("Fill"));
