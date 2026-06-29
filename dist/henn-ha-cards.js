@@ -6355,11 +6355,11 @@ function hennDoubleSliderCore(value1, value2, min = 0, max = 100, step = 1, opt 
         v = Number(v);
         if (isNaN(v)) v = min;
         v = Math.max(min, Math.min(max, v));
-        const n = Math.round(v / step) * step;
-        // const snapped = min + n * step;
-        // const decimals = String(step).split(".")[1]?.length ?? 0;
-        // return Number(snapped.toFixed(decimals));
-        return n;
+        const n = Math.round(v / step) // * step;
+        const snapped = min + n * step;
+        const decimals = String(step).split(".")[1]?.length ?? 0;
+        return Number(snapped.toFixed(decimals));
+        //return n;
     }
 
     function clampPair(moved) {
