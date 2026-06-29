@@ -3049,11 +3049,18 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         customElements.whenDefined("ha-selector").then(() => {
             this._addEntityPickerTo(`#series-entity-${index}`, s.value_entity || "", value => {
-                this._seriesValueChanged(index, "value_entity", value);
+                const friendlyName =
+                    this.hass?.states?.[value]?.attributes?.friendly_name
+                    ?? value
+                    ?? "";
+
+                this._seriesPatchChanged(index, {
+                    value_entity: value,
+                    name: friendlyName,
+                    caption: friendlyName
+                });
             });
         });
-
-        return wrap;
     }
 
     _effectiveTicks() {
@@ -3292,6 +3299,21 @@ class HennStonehengeCardEditor extends HTMLElement {
                 editor._seriesValueChangedOrDefault(index, path, value, defaultValue);
             }
         };
+    }
+
+    _seriesPatchChanged(index, patch) {
+        const series = [...(this._config.series || [])];
+        series[index] = {
+            ...(series[index] || {}),
+            ...patch
+        };
+
+        this._config = {
+            ...this._config,
+            series
+        };
+
+        this._valueChanged();
     }
 
     _seriesValueChanged(index, path, value) {
