@@ -2874,21 +2874,22 @@ class HennStonehengeCardEditor extends HTMLElement {
         //     this._config.gradient.color, true
         // )); // läheb tagasi uuena
 
-        gradientTable.appendChild(hennMultiRow("Gradient\ncolor", [
-            hennColorCell(this, "gradient.color", defaults.gradient?.color ?? "orange", "orange"),
-            //hennDiv(), hennDiv(), hennDiv(),
-            hennSegmentButtonCell(this, "gradient.mode", defaults.gradient?.mode ?? "opacity", "opacity",
-                [
-                    ["opacity", "Opacity"],
-                    ["color", "Color"]
-                ], { segmentStyle: {display: "flex", flexDirection: "column"}}
-            )
-                .addStyle({ gridColumn: "3 / 6", gridRow: "1 / 4" }),
-            hennLabel("Gradient\nmincolor", "henn-editor-tick-row-label"),
-            hennColorCell(this, "gradient.min_color", defaults.gradient?.min_color ?? "white", "white"),
-            hennLabel("Gradient\nmaxcolor", "henn-editor-tick-row-label"),
-            hennColorCell(this, "gradient.max_color", defaults.gradient?.max_color ?? "black", "black"),
-            ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
+        gradientTable.appendChild(hennMultiBox("Gradient\ncolor",
+
+            [
+                hennLabel("Gradient\ncolor", "henn-editor-tick-row-label"),
+                hennColorCell(this, "gradient.color", defaults.gradient?.color ?? "orange", "orange"),
+                hennSegmentButtonCell(this, "gradient.mode", defaults.gradient?.mode ?? "opacity", "opacity",
+                    [
+                        ["opacity", "Opacity"],
+                        ["color", "Color"]
+                    ], { segmentStyle: {display: "flex", flexDirection: "column"}}
+                ).addStyle({ gridColumn: "3 / 6", gridRow: "1 / 4" }),
+                hennLabel("Gradient\nmincolor", "henn-editor-tick-row-label"),
+                hennColorCell(this, "gradient.min_color", defaults.gradient?.min_color ?? "white", "white"),
+                hennLabel("Gradient\nmaxcolor", "henn-editor-tick-row-label"),
+                hennColorCell(this, "gradient.max_color", defaults.gradient?.max_color ?? "black", "black"),
+            ], { boxClassName: "henn-editor-tick-table"));
 
         const minOpacity = defaults.gradient?.min_opacity ?? 0
         const maxOpacity = defaults.gradient?.max_opacity ?? 1
