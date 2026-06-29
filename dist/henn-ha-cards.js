@@ -2894,7 +2894,6 @@ class HennStonehengeCardEditor extends HTMLElement {
         const minOpacity = defaults.gradient?.min_opacity ?? 0
         const maxOpacity = defaults.gradient?.max_opacity ?? 1
         gradientTable.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`));
-        // lisasime pealkirja
 
         const minOpacityNumber = hennNumberInput(this, "gradient.min_opacity", minOpacity, 0,
             { min: 0, max: 0.5, step: 0.05, style: { display: "none" } });
