@@ -2874,8 +2874,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         //     this._config.gradient.color, true
         // )); // läheb tagasi uuena
 
-        gradientTable.appendChild(hennMultiBox("Gradient\ncolor",
-
+        gradientTable.appendChild(hennMultiBox(
             [
                 hennLabel("Gradient\ncolor", "henn-editor-tick-row-label"),
                 hennColorCell(this, "gradient.color", defaults.gradient?.color ?? "orange", "orange"),
