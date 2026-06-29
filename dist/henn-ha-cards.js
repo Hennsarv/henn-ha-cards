@@ -1618,14 +1618,6 @@ customElements.define("henn-windrose-card-editor", HennWindRoseCardEditor);
 
 class HennStonehengeCard extends HTMLElement {
     setConfig(config) {
-        // if (!config.value_entity && !config.series?.some(s => s.value_entity)) {
-        //     throw new Error("value_entity or series with value_entity is required");
-        // }
-
-        // this.series = [
-        //     ...(config.value_entity ? [{ value_entity: config.value_entity }] : []),
-        //     ...(config.series || [])
-        // ];
 
         this.series = (config.series || [])
             .filter(s => s
@@ -1667,7 +1659,7 @@ class HennStonehengeCard extends HTMLElement {
 
             line: {
                 show: true,
-                color: null,
+                color: "black",
                 stroke: 2,
                 smooth: false,
                 ...(config.line || {})
@@ -1675,8 +1667,8 @@ class HennStonehengeCard extends HTMLElement {
 
             fill: {
                 show: true,
-                color: null,
-                opacity: null,
+                color: "white",
+                opacity: 0,
                 ...(config.fill || {})
             },
 
@@ -1686,23 +1678,23 @@ class HennStonehengeCard extends HTMLElement {
                 radius: 95,
                 direction: "vertical",
                 width: null,          // vaikimisi font_size * 2
-                color: null,
+                color: "black",
                 ...(config.ticks || {}),
                 font: {
-                    size: null,
+                    size: 5,
                     color: null,
                     ...config.ticks?.font,
                 },
 
                 fill: {
                     show: false,
-                    color: null,
+                    color: "white",
                     ...config.ticks?.fill
                 },
 
                 inner: {
                     show: true,
-                    stroke: 0,
+                    stroke: 1,
                     color: null,
                     radius: null,       // vaikimisi ticks:radius - width/2
                     ...config.ticks?.inner
@@ -1735,9 +1727,7 @@ class HennStonehengeCard extends HTMLElement {
             },
 
             lower: { show: false, stroke: 1, color: "white", radius: 30, gap: 0, ...(config.lower || {}) },
-            upper: { show: false, stroke: 1, color: "white", radius: 90, gap: 0, ...(config.upper || {}) },
-
-            reconf: true
+            upper: { show: false, stroke: 1, color: "white", radius: 90, gap: 0, ...(config.upper || {}) }
         };
 
         const ticks = this.config.ticks;
@@ -1776,6 +1766,7 @@ class HennStonehengeCard extends HTMLElement {
         };
 
         const { value_entity, label, ticks: _ticks, lower, upper, bucketing, ...defConfig } = this.config;
+            
             this.defConfig = defConfig;
     }
 
@@ -2524,15 +2515,15 @@ class HennStonehengeCardEditor extends HTMLElement {
 
     setConfig(config) {
         this._config = {
-            ticks: { color: "black", ...(config.ticks || {}) },
-            line: { color: "black", ...(config.line || {}) },
-            fill: { color: "white", ...(config.fill || {}) },
-            gradient: { color: "green", ...(config.gradient || {}) },
-            label: { color: "black", ...(config.label || {}) },
-            upper: { color: "black", ...(config.upper || {}) },
-            lower: { color: "black", ...(config.lower || {}) },
-            // jne - tehtud for safety
-            ...(config || {})
+            // ticks: { color: "black", ...(config.ticks || {}) },
+            // line: { color: "black", ...(config.line || {}) },
+            // fill: { color: "white", ...(config.fill || {}) },
+            // gradient: { color: "green", ...(config.gradient || {}) },
+            // label: { color: "black", ...(config.label || {}) },
+            // upper: { color: "black", ...(config.upper || {}) },
+            // lower: { color: "black", ...(config.lower || {}) },
+            // // jne - tehtud for safety
+            // ...(config || {})
         };
 
         if (!this._config.series) {
@@ -2560,8 +2551,9 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         this._renderRootSection();
         this._renderTicksSection();
-        this._renderDefaultsSection();
-        this._renderSeriesSection();
+        const defaults = this._effectiveDefaults(this._config);
+        this._renderDefaultsSection(defaults);
+        this._renderSeriesSection(defaults);
     }
 
     _renderRootSection() {
@@ -2618,14 +2610,10 @@ class HennStonehengeCardEditor extends HTMLElement {
         const body = hennDiv("henn-editor-section-body")
             .addClasses("henn-editor-muted", !enabled);
 
-        body.appendChild(hennColorRow(this, "ticks.color", "Color", ticks.color, "black"
+        body.appendChild(hennColorRow(this, "ticks.color", "Color", ticks?.color, "black"
             , { rowClassName: "henn-editor-wide-row", labelClassName: "henn-editor-wide-label" }
         ));
-        // body.appendChild(this._sliderNumberRow("ticks.radius", "Radius", ticks.radius, 95,
-        //     {
-        //         rowClassName: "henn-editor-wide-row", labelClassName: "henn-editor-wide-label",
-        //         min: 25, max: 95, step: 5
-        //     }));
+
         body.appendChild(hennSliderNumberRow(this, "ticks.radius", "Radius", ticks.radius, 95,
             {
                 rowClassName: "henn-editor-wide-row", labelClassName: "henn-editor-wide-label",
@@ -2634,7 +2622,6 @@ class HennStonehengeCardEditor extends HTMLElement {
             }));
 
         const topRow = hennDiv("henn-editor-top-row");
-
 
         topRow.appendChild(
             hennSegmentRow(
@@ -2653,23 +2640,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
  
         const table = hennTableHeader(["", "Color", "Stroke", "Length", "Show"], "henn-editor-tick-table henn-editor-tick-table-head");
-        // table.appendChild(this._universalTableRow(
-        //     "ticks.inner", "Inner", ticks.inner,
-        //     "stroke", null, "show",
-        //     this._effectiveTicks().color, true
-        // ));
-
-        // table.appendChild(this._universalTableRow(
-        //     "ticks.outer", "Outer", ticks.outer,
-        //     "stroke", null, "show",
-        //     this._effectiveTicks().color, true
-        // ));
-
-        // table.appendChild(this._universalTableRow(
-        //     "ticks.minor", "Minor", ticks.minor,
-        //     "stroke", "length", "show",
-        //     this._effectiveTicks().color, true
-        // ));
+        
 
         table.appendChild(hennMultiRow("Inner", [
             hennColorCell(this, "ticks.inner.color", ticks.inner?.color ?? ticks.color ?? "black", ticks.color),
@@ -2821,33 +2792,57 @@ class HennStonehengeCardEditor extends HTMLElement {
             "henn-editor-tick-table henn-editor-tick-table-head"
         );
 
-        lineTable.appendChild(this._universalTableRow( 
-            "line", "Line", this._config.line,
-            "stroke", null, "smooth",
-            this._config.line.color, false
-        )); // kumba pidi peab olema
+        // lineTable.appendChild(this._universalTableRow( 
+        //     "line", "Line", this._config.line,
+        //     "stroke", null, "smooth",
+        //     this._config.line.color, false
+        // )); // kumba pidi peab olema
 
-        
+        table.appendChild(hennMultiRow("Line", [
+            hennColorCell(this, "line.color", defaults.line?.color ?? "black", "black"),
+            hennNumberInput(this, "line.stroke", defaults.line?.stroke ?? 1, 1),
+            hennDiv(),
+            hennCheckbox(this, "line.smooth", line?.smooth ?? false, false, { classList: "henn-editor-pill-check" }) // siia ka klass
+        ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
-        lineTable.appendChild(this._universalTableRow(
-            "fill", "Fill", this._config.fill,
-            null, null, "show",
-            this._config.fill.color, true
-        ));
+        // lineTable.appendChild(this._universalTableRow(
+        //     "fill", "Fill", this._config.fill,
+        //     null, null, "show",
+        //     this._config.fill.color, true
+        // ));
 
+        table.appendChild(hennMultiRow("Fill", [
+            hennColorCell(this, "fill.color", defaults.fill?.color ?? "white", "white"),
+            hennDiv(), hennDiv(),
+            hennCheckbox(this, "fill.show", defaults.fill?.show ?? false, false, { classList: "henn-editor-pill-check" }) // siia ka klass
+        ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
+        // lineTable.appendChild(this._universalTableRow(
+        //     "upper", "Upper\nrail", this._config.upper,
+        //     "stroke", "gap", "show",
+        //     this._config.upper.color, true
+        // ));
 
-        lineTable.appendChild(this._universalTableRow(
-            "upper", "Upper\nrail", this._config.upper,
-            "stroke", "gap", "show",
-            this._config.upper.color, true
-        ));
+        table.appendChild(hennMultiRow("Upper\nrail", [
+            hennColorCell(this, "upper.color", defaults.upper?.color ?? "black", "black"),
+            hennNumberInput(this, "upper.stroke", defaults.upper?.stroke ?? 1, 1),
+            hennNumberInput(this, "upper.gap", defaults.upper?.gap ?? 0, 0),
+            hennCheckbox(this, "upper.show", defaults.upper?.show ?? true, true, { classList: "henn-editor-pill-check" }) // siia ka klass
+        ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
-        lineTable.appendChild(this._universalTableRow(
-            "lower", "Lower\nrail", this._config.lower,
-            "stroke", "gap", "show",
-            this._config.lower.color, true
-        ));
+        // lineTable.appendChild(this._universalTableRow(
+        //     "lower", "Lower\nrail", this._config.lower,
+        //     "stroke", "gap", "show",
+        //     this._config.lower.color, true
+        // ));
+
+        table.appendChild(hennMultiRow("Lower\nrail", [
+            hennColorCell(this, "lower.color", defaults.lower?.color ?? "black", "black"),
+            hennNumberInput(this, "lower.stroke", defaults.lower?.stroke ?? 1, 1),
+            hennNumberInput(this, "lower.gap", defaults.lower?.gap ?? 0, 0),
+            hennCheckbox(this, "lower.show", defaults.lower?.show ?? true, true, { classList: "henn-editor-pill-check" }) // siia ka klass
+        ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
+
         const lowerRadius = this._config.lower?.radius ?? 30; // teine katse
         const upperRadius = this._config.upper?.radius ?? 90;
 
@@ -2885,6 +2880,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         body.appendChild(hennSubTitle("Defaul for gradient - by opacity or by color"));
         const gradientTable = hennTableHeader(["", "Color", "", "Opacity or", "Colors"],
             "henn-editor-tick-table henn-editor-tick-table-head");
+
         gradientTable.appendChild(this._universalTableRow(
             "gradient", "Gradient\nColor", this._config.gradient,
             null, null, "opacity_or_color",
@@ -3085,6 +3081,70 @@ class HennStonehengeCardEditor extends HTMLElement {
             fill: {
                 show: t.fill?.show === true,
                 color: t.fill?.color ?? null
+            }
+        };
+    }
+
+    _effectiveDefaults() {
+        const c = this._config || {};
+
+        return {
+            diagram_type: c.diagram_type ?? "gradient",
+            anchor: c.anchor ?? "lower",
+            aggregate: c.aggregate ?? "avg",
+            bucket_size: c.bucket_size ?? "1h",
+            history_period: c.history_period ?? "1d",
+
+            gradient: {
+                color: "orange",
+                mode: "opacity",
+                min_opacity: 0.15,
+                max_opacity: 0.9,
+                opacity: 0.5,
+                min_color: "white",
+                max_color: "black",
+                ...(c.gradient || {})
+            },
+
+            line: {
+                show: true,
+                color: "black",
+                stroke: 1,
+                smooth: false,
+                ...(c.line || {})
+            },
+
+            fill: {
+                show: true,
+                color: "white",
+                opacity: null,
+                ...(c.fill || {})
+            },
+
+            bar: {
+                cap: null,
+                gap: 0,
+                margin_left: 0,
+                margin_right: 0,
+                ...(c.bar || {})
+            },
+
+            lower: {
+                show: true,
+                stroke: 1,
+                color: "black",
+                radius: 30,
+                gap: 0,
+                ...(c.lower || {})
+            },
+
+            upper: {
+                show: true,
+                stroke: 1,
+                color: "black",
+                radius: 90,
+                gap: 0,
+                ...(c.upper || {})
             }
         };
     }
