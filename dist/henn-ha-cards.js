@@ -2919,7 +2919,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
 
         gradientTable2.appendChild(hennMultiBox([minOpacityNumber, doubleSliderOpacity, maxOpacityNumber]));
-        gradientTable2.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`).addStyle({alignSelf: "center"}));
+        gradientTable2.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`).addStyle({textAlign: "center"}));
 
 
         body.appendChild(gradientTable);
