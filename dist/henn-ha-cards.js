@@ -4964,25 +4964,29 @@ function hennGetPath(obj, path) {
 
 function hennSetPath(obj, path, value) {
     const parts = String(path).split(".");
-    const root = { ...(obj || {}) };
+    const root = Array.isArray(obj) ? [...obj] : { ...(obj || {}) };
 
     let cur = root;
 
     for (let i = 0; i < parts.length - 1; i++) {
         const p = parts[i];
+        const next = parts[i + 1];
+        const nextIsIndex = /^\d+$/.test(next);
 
-        cur[p] = {
-            ...(cur[p] || {})
-        };
+        if (cur[p] === undefined || cur[p] === null) {
+            cur[p] = nextIsIndex ? [] : {};
+        } else {
+            cur[p] = Array.isArray(cur[p])
+                ? [...cur[p]]
+                : { ...cur[p] };
+        }
 
         cur = cur[p];
     }
 
     cur[parts[parts.length - 1]] = value;
-
     return root;
 }
-
 function hennDeletePath(obj, path) {
     const parts = String(path).split(".");
     const root = { ...(obj || {}) };
