@@ -2684,7 +2684,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         host.appendChild(body);
     }
 
-    _renderDefaultsSection() {
+    _renderDefaultsSection(defaults) {
         const host = this.querySelector("#defaults-section");
         host.className = "henn-editor-section";
         host.innerHTML = "";
