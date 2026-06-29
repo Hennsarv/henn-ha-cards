@@ -2898,7 +2898,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             { min: 0, max: 0.5, step: 0.05, style: { display: "none" } });
 
         const doubleSliderOpacity = hennDoubleSliderCore(minOpacity, maxOpacity, 0, 1, 0.05, {
-            minGap: 10,
+            //minGap: 10,
             value1OnChange: v => {
                 minOpacityNumber.value = v;
                 minOpacityNumber.dispatchEvent(new Event("change", { bubbles: true }));
