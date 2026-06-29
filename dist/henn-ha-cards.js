@@ -2802,7 +2802,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             hennColorCell(this, "line.color", defaults.line?.color ?? "black", "black"),
             hennNumberInput(this, "line.stroke", defaults.line?.stroke ?? 1, 1),
             hennDiv(),
-            hennCheckbox(this, "line.smooth", line?.smooth ?? false, false, { classList: "henn-editor-pill-check" }) // siia ka klass
+            hennCheckbox(this, "line.smooth", defaults.line?.smooth ?? false, false, { classList: "henn-editor-pill-check" }) // siia ka klass
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
         // lineTable.appendChild(this._universalTableRow(
