@@ -2982,7 +2982,9 @@ class HennStonehengeCardEditor extends HTMLElement {
         header.append(reorder, text, right);
         wrap.appendChild(header);
 
-        if (!open) return wrap;        const body = hennDiv("henn-serie-body").addClasses("henn-editor-muted", !enabled);
+        if (!open) return wrap;
+
+        const body = hennDiv("henn-serie-body").addClasses("henn-editor-muted", !enabled);
 
         const owner = this._seriesOwner(index);
 
@@ -3061,6 +3063,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                 });
             });
         });
+        return wrap;
     }
 
     _effectiveTicks() {
