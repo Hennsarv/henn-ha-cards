@@ -2640,7 +2640,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
  
         const table = hennTableHeader(["", "Color", "Stroke", "Length", "Show"],
-            "henn-editor-tick-table", "henn-editor-tick-table-head");
+            "henn-editor-tick-table-head", "henn-editor-tick-table");
         
 
         table.appendChild(hennMultiRow("Inner", [
@@ -2790,8 +2790,8 @@ class HennStonehengeCardEditor extends HTMLElement {
 //        body.appendChild(this._subTitle("Line"));
 
         const lineTable = hennTableHeader(["", "Color", "Stroke", "Gap", "Smoth\nShow"],
-            "henn-editor-tick-table",
-            "henn-editor-tick-table-head"
+            "henn-editor-tick-table-head",
+            "henn-editor-tick-table"
         );
 
         // lineTable.appendChild(this._universalTableRow( 
