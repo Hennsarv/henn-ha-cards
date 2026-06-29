@@ -2864,8 +2864,9 @@ class HennStonehengeCardEditor extends HTMLElement {
         body.appendChild(createSeparator());
 
         body.appendChild(hennSubTitle("Defaul for gradient - by opacity or by color"));
-        const gradientTable = hennTableHeader(["", "Color", "", "Opacity or", "Colors"],
-            "henn-editor-tick-table henn-editor-tick-table-head");
+        // const gradientTable = hennTableHeader(["", "Color", "", "Opacity or", "Colors"],
+        //     "henn-editor-tick-table henn-editor-tick-table-head");
+        const gradientTable = hennDiv("henn-editor-tick-table henn-editor-tick-table-head");
 
         // gradientTable.appendChild(this._universalTableRow(
         //     "gradient", "Gradient\nColor", this._config.gradient,
@@ -2880,9 +2881,9 @@ class HennStonehengeCardEditor extends HTMLElement {
                 [
                     ["opacity", "Opacity"],
                     ["color", "Color"]
-                ]
+                ], { segmentStyle: {display: "flex", flexDirection: "column"}}
             )
-                .addStyle({ gridColumn: "3 / 6" })
+                .addStyle({ gridColumn: "3 / 6", gridRow: "1 / 4" })
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
         gradientTable.appendChild(hennMultiRow("Gradient\nmincolor", [
@@ -2922,6 +2923,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
 
         gradientTable.appendChild(hennMultiBox([minOpacityNumber, doubleSliderOpacity, maxOpacityNumber]));
+        gradientTable.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`));
 
 
         body.appendChild(gradientTable)
