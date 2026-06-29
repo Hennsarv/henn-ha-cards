@@ -2789,7 +2789,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 //        body.appendChild(this._subTitle("Line"));
 
         const lineTable = hennTableHeader(["", "Color", "Stroke", "Gap", "Smoth\nShow"],
-            "henn-editor-tick-table henn-editor-tick-table-head"
+            "henn-editor-tick-table-head"
         );
 
         // lineTable.appendChild(this._universalTableRow( 
@@ -3343,69 +3343,6 @@ class HennStonehengeCardEditor extends HTMLElement {
         hennFireConfigChanged(this);
     }
 
-    _universalTableRow(
-        path,
-        label,
-        value,
-        num1Name = "stroke",
-        num2Name = "length",
-        checkName = "show",
-        colorFallback = null,
-        checkDefault = true
-    ) {
-        const row = hennDiv("henn-editor-tick-table");
-
-        if (checkDefault && checkName) {
-            row.classList.toggle("henn-editor-muted", value?.[checkName] === false);
-        }
-
-        const lab = hennLabel(label,"henn-editor-tick-row-label");
-        row.appendChild(lab);
-
-        row.appendChild(
-            hennColorCell(
-                this,
-                `${path}.color`,
-                value?.color,
-                colorFallback
-            )
-        );
-
-        if (num1Name) {
-            row.appendChild(hennNumberInput(this,
-                `${path}.${num1Name}`,
-                value?.[num1Name],
-                value?.[num1Name],
-                { classList: ["henn-editor-mini-number"] }
-            ));
-        } else {
-            row.appendChild(document.createElement('div'));
-        }
-
-        if (num2Name) {
-            row.appendChild(hennNumberInput(this,
-                `${path}.${num2Name}`,
-                value?.[num2Name],
-                value?.[num2Name],
-                { classList: ["henn-editor-mini-number"] }
-            ));
-        } else {
-            row.appendChild(hennDiv());
-        }
-
-        if (checkName) {
-            row.appendChild(hennCheckbox(this,
-                `${path}.${checkName}`,
-                value?.[checkName],
-                true,//?? defaultValue,
-                {classList: "henn-editor-pill-check"}
-            ));
-        } else {
-            row.appendChild(hennDiv());
-        }
-
-        return row;
-    }
 
     _bucketSizeRow(bucketing, value) {
         const map = {
