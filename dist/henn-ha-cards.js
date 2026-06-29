@@ -2523,7 +2523,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             // upper: { color: "black", ...(config.upper || {}) },
             // lower: { color: "black", ...(config.lower || {}) },
             // // jne - tehtud for safety
-            // ...(config || {})
+             ...(config || {})
         };
 
         if (!this._config.series) {
