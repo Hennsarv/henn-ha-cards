@@ -5659,7 +5659,7 @@ function hennSliderNumberRow(owner, path, label, value, defaultValue = 0, opt = 
     // return wrap;
 }
 
-function hennTableHeader(headers, className = null, headerClassNme = null, style = { display: "grid", gap: "6px" }) {
+function hennTableHeader(headers, className = null, headerClassName = null, style = { display: "grid", gap: "6px" }) {
     return (document.createElement('div')
             .addClasses(className)
             .addStyle(style)
