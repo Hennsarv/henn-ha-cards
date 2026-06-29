@@ -2883,7 +2883,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                         ["opacity", "Opacity"],
                         ["color", "Color"]
                     ], { segmentStyle: {display: "flex", flexDirection: "column"}}
-                ).addStyle({ gridColumn: "3 / 6", gridRow: "1 / 4" }),
+                ).addStyle({ gridColumn: "3 / 6", gridRow: "1 / 4", alignSelf: "center", justifySelf: "center" }),
                 hennLabel("Gradient\nmincolor", "henn-editor-tick-row-label"),
                 hennColorCell(this, "gradient.min_color", defaults.gradient?.min_color ?? "white", "white"),
                 hennLabel("Gradient\nmaxcolor", "henn-editor-tick-row-label"),
