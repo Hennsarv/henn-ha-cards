@@ -2799,7 +2799,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         // )); // kumba pidi peab olema
 
         lineTable.appendChild(hennMultiRow("Line", [
-            hennColorCell(this, "line.color", defaults.line?.color ?? "black", "black"),
+//            hennColorCell(this, "line.color", defaults.line?.color ?? "black", "black"),
             hennNumberInput(this, "line.stroke", defaults.line?.stroke ?? 1, 1),
             hennDiv(),
             hennCheckbox(this, "line.smooth", defaults.line?.smooth ?? false, false, { classList: "henn-editor-pill-check" }) // siia ka klass
@@ -2812,7 +2812,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         // ));
 
         lineTable.appendChild(hennMultiRow("Fill", [
-            hennColorCell(this, "fill.color", defaults.fill?.color ?? "white", "white"),
+  //          hennColorCell(this, "fill.color", defaults.fill?.color ?? "white", "white"),
             hennDiv(), hennDiv(),
             hennCheckbox(this, "fill.show", defaults.fill?.show ?? false, false, { classList: "henn-editor-pill-check" }) // siia ka klass
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
@@ -2824,7 +2824,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         // ));
 
         lineTable.appendChild(hennMultiRow("Upper\nrail", [
-            hennColorCell(this, "upper.color", defaults.upper?.color ?? "black", "black"),
+    //        hennColorCell(this, "upper.color", defaults.upper?.color ?? "black", "black"),
             hennNumberInput(this, "upper.stroke", defaults.upper?.stroke ?? 1, 1),
             hennNumberInput(this, "upper.gap", defaults.upper?.gap ?? 0, 0),
             hennCheckbox(this, "upper.show", defaults.upper?.show ?? true, true, { classList: "henn-editor-pill-check" }) // siia ka klass
@@ -2837,7 +2837,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         // ));
 
         lineTable.appendChild(hennMultiRow("Lower\nrail", [
-            hennColorCell(this, "lower.color", defaults.lower?.color ?? "black", "black"),
+      //      hennColorCell(this, "lower.color", defaults.lower?.color ?? "black", "black"),
             hennNumberInput(this, "lower.stroke", defaults.lower?.stroke ?? 1, 1),
             hennNumberInput(this, "lower.gap", defaults.lower?.gap ?? 0, 0),
             hennCheckbox(this, "lower.show", defaults.lower?.show ?? true, true, { classList: "henn-editor-pill-check" }) // siia ka klass
@@ -2881,11 +2881,12 @@ class HennStonehengeCardEditor extends HTMLElement {
         const gradientTable = hennTableHeader(["", "Color", "", "Opacity or", "Colors"],
             "henn-editor-tick-table henn-editor-tick-table-head");
 
-        gradientTable.appendChild(this._universalTableRow(
-            "gradient", "Gradient\nColor", this._config.gradient,
-            null, null, "opacity_or_color",
-            this._config.gradient.color, true
-        ));
+        // gradientTable.appendChild(this._universalTableRow(
+        //     "gradient", "Gradient\nColor", this._config.gradient,
+        //     null, null, "opacity_or_color",
+        //     this._config.gradient.color, true
+        // ));
+
         body.appendChild(gradientTable)
         body.appendChild(createSeparator());
 
