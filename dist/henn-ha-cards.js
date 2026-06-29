@@ -2831,6 +2831,9 @@ class HennStonehengeCardEditor extends HTMLElement {
             hennCheckbox(this, "lower.show", defaults.lower?.show ?? true, true, { classList: "henn-editor-pill-check" }) // siia ka klass
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
+
+        
+
         const lowerRadius = this._config.lower?.radius ?? 30; // teine katse
         const upperRadius = this._config.upper?.radius ?? 90;
 
@@ -2856,7 +2859,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         lineTable.appendChild(hennMultiBox([ lowerNumber, doubleSlider, upperNumber ]));
 
-        lineTable.appendChild(hennCreateDoubleSlider(this, "lower.radius", "upper.radius", "Rööbaste raadiused", lowerRadius, upperRadius, 0, 100, 5))
+        // lineTable.appendChild(hennCreateDoubleSlider(this, "lower.radius", "upper.radius", "Rööbaste raadiused", lowerRadius, upperRadius, 0, 100, 5))
 
 
         body.appendChild(lineTable); 
@@ -2864,15 +2867,8 @@ class HennStonehengeCardEditor extends HTMLElement {
         body.appendChild(createSeparator());
 
         body.appendChild(hennSubTitle("Defaul for gradient - by opacity or by color"));
-        // const gradientTable = hennTableHeader(["", "Color", "", "Opacity or", "Colors"],
-        //     "henn-editor-tick-table henn-editor-tick-table-head");
-        const gradientTable = hennDiv("henn-editor-tick-table-head");
 
-        // gradientTable.appendChild(this._universalTableRow(
-        //     "gradient", "Gradient\nColor", this._config.gradient,
-        //     null, null, "opacity_or_color",
-        //     this._config.gradient.color, true
-        // )); // läheb tagasi uuena
+        const gradientTable = hennDiv("henn-editor-tick-table-head");
 
         gradientTable.appendChild(hennMultiBox(
             [
@@ -2892,7 +2888,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         body.appendChild(createSeparator());
 
-        const gradientTable2 = hennDiv("henn-editor-tick-table henn-editor-tick-table-head");
+        const gradientTable2 = hennDiv("henn-editor-tick-table-head");
 
 
         const minOpacity = defaults.gradient?.min_opacity ?? 0
