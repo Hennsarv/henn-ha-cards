@@ -3303,6 +3303,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
     _seriesPatchChanged(index, patch) {
         const series = [...(this._config.series || [])];
+
         series[index] = {
             ...(series[index] || {}),
             ...patch
@@ -3313,9 +3314,8 @@ class HennStonehengeCardEditor extends HTMLElement {
             series
         };
 
-        this._valueChanged();
+        hennFireConfigChanged(this);
     }
-
     _seriesValueChanged(index, path, value) {
         const series = [...(this._config.series || [])];
         series[index] = hennSetPath(series[index] || {}, path, value);
