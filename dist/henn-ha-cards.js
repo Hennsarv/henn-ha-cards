@@ -2888,11 +2888,19 @@ class HennStonehengeCardEditor extends HTMLElement {
                 hennColorCell(this, "gradient.min_color", defaults.gradient?.min_color ?? "white", "white"),
                 hennLabel("Gradient\nmaxcolor", "henn-editor-tick-row-label"),
                 hennColorCell(this, "gradient.max_color", defaults.gradient?.max_color ?? "black", "black"),
-            ], { boxClassName: "henn-editor-tick-table" }));  // jälle 2nd shot
+            ], { boxClassName: "henn-editor-tick-table" }));  
+
+        body.appendChild(createSeparator());
+
+        const gradientTable2 = hennDiv("henn-editor-tick-table henn-editor-tick-table-head");
+
 
         const minOpacity = defaults.gradient?.min_opacity ?? 0
         const maxOpacity = defaults.gradient?.max_opacity ?? 1
-        gradientTable.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`));
+
+
+
+        gradientTable2.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`));
         // kolmas katse
         const minOpacityNumber = hennNumberInput(this, "gradient.min_opacity", minOpacity, 0,
             { min: 0, max: 0.5, step: 0.05, style: { display: "none" } });
@@ -2914,8 +2922,8 @@ class HennStonehengeCardEditor extends HTMLElement {
 
 
 
-        gradientTable.appendChild(hennMultiBox([minOpacityNumber, doubleSliderOpacity, maxOpacityNumber]));
-        gradientTable.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`));
+        gradientTable2.appendChild(hennMultiBox([minOpacityNumber, doubleSliderOpacity, maxOpacityNumber]));
+        gradientTable2.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`));
 
 
         body.appendChild(gradientTable)
