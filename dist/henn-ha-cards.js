@@ -2639,7 +2639,8 @@ class HennStonehengeCardEditor extends HTMLElement {
         body.appendChild(topRow);
 
  
-        const table = hennTableHeader(["", "Color", "Stroke", "Length", "Show"], "henn-editor-tick-table henn-editor-tick-table-head");
+        const table = hennTableHeader(["", "Color", "Stroke", "Length", "Show"],
+            "henn-editor-tick-table", "henn-editor-tick-table-head");
         
 
         table.appendChild(hennMultiRow("Inner", [
@@ -2789,6 +2790,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 //        body.appendChild(this._subTitle("Line"));
 
         const lineTable = hennTableHeader(["", "Color", "Stroke", "Gap", "Smoth\nShow"],
+            "henn-editor-tick-table",
             "henn-editor-tick-table-head"
         );
 
@@ -2860,6 +2862,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         lineTable.appendChild(hennMultiBox([ lowerNumber, doubleSlider, upperNumber ]));
 
         // lineTable.appendChild(hennCreateDoubleSlider(this, "lower.radius", "upper.radius", "Rööbaste raadiused", lowerRadius, upperRadius, 0, 100, 5))
+        lineTable.appendChild(hennSubTitle(`rööbaste raadiused -  alumine ${lowerRadius} ja ülemine ${upperRadius}`).addStyle({ textAlign: "center" }));
 
 
         body.appendChild(lineTable); 
@@ -5656,11 +5659,12 @@ function hennSliderNumberRow(owner, path, label, value, defaultValue = 0, opt = 
     // return wrap;
 }
 
-function hennTableHeader(headers, className = null, style = { display: "grid", gap: "6px" }) {
-        return (document.createElement('div')
+function hennTableHeader(headers, className = null, headerClassNme = null, style = { display: "grid", gap: "6px" }) {
+    return (document.createElement('div')
+            .addClasses(className)
             .addStyle(style)
             .appendChilds(document.createElement('div')
-                .addClasses(className)
+                .addClasses(headerClassName)
                 .setHtml(headers.map(h => `<div>${h ?? ""}</div>`).join(""))
             )
         );
