@@ -2791,7 +2791,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         const lineTable = hennTableHeader(["", "Color", "Stroke", "Gap", "Smoth\nShow"],
             "henn-editor-tick-table-head",
-            "henn-editor-tick-table"
+            "henn-editor-tick-table" // hiljem teeme ringi
         );
 
         // lineTable.appendChild(this._universalTableRow( 
