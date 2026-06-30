@@ -3190,8 +3190,8 @@ class HennStonehengeCardEditor extends HTMLElement {
          const gradientTable2 = hennDiv("henn-editor-tick-table-head");
 
 
-        const minOpacity = this._locValue("gradient.min_opacity", "gradient.min_opacity", 0, index);
-        const maxOpacity = this._locValue("gradient.max_opacity", "gradient.max_opacity", 1, index);
+        const minOpacity = this._locValue("gradient.min_opacity", "gradient.min_opacity", 0.15, index);
+        const maxOpacity = this._locValue("gradient.max_opacity", "gradient.max_opacity", 0.9, index);
 
         const minOpacityNumber = hennLocal(this,hennNumberInput, "gradient.min_opacity", 0.15, index,
              { min: 0, max: maxOpacity - 0.1, step: 0.05, style: { display: "none" } });
