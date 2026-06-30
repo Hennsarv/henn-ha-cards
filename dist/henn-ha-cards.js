@@ -3135,23 +3135,33 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         const gradientTable = hennDiv("henn-editor-tick-table-head");
 
-        // gradientTable.appendChild(hennMultiBox(
-        //     [
-        //         hennLabel("Gradient\ncolor", "henn-editor-tick-row-label"),
-        //         hennColorCell(this, "gradient.color", defaults.gradient?.color ?? "orange", "orange"),
-        //         hennSegmentButtonCell(this, "gradient.mode", defaults.gradient?.mode ?? "opacity", "opacity",
-        //             [
-        //                 ["opacity", "Opacity"],
-        //                 ["color", "Color"]
-        //             ], { segmentStyle: { display: "flex", flexDirection: "column" } }
-        //         ).addStyle({ gridColumn: "3 / 6", gridRow: "1 / 4", alignSelf: "center", justifySelf: "center" }),
-        //         hennLabel("Gradient\nmincolor", "henn-editor-tick-row-label"),
-        //         hennColorCell(this, "gradient.min_color", defaults.gradient?.min_color ?? "white", "white"),
-        //         hennLabel("Gradient\nmaxcolor", "henn-editor-tick-row-label"),
-        //         hennColorCell(this, "gradient.max_color", defaults.gradient?.max_color ?? "black", "black"),
-        //     ], { boxClassName: "henn-editor-tick-table" }));
+        gradientTable.appendChild(hennMultiBox(
+            [
+                hennLabel("Gradient\ncolor", "henn-editor-tick-row-label"),
+                hennLocal(this, hennColorCell, "gradient.color", "orange", index),
+//                hennColorCell(this, "gradient.color", defaults.gradient?.color ?? "orange", "orange"),
+                hennSegmentButtonCell(this,
+                    this._locPath("gradient.mode", index),
+                    this._locValue("gradient.mode", "gradient.mode", "opacity", index),
+                    this._locDefault("gradient.mode", "opacity"),
+                    [
+                        ["opacity", "Opacity"],
+                        ["color", "Color"]
+                    ], {
+                        segmentStyle: { display: "flex", flexDirection: "column" },
+                        onChange: (v, def) => hennValueChangedOrDefault(this, this._locPath("anchor", index), v, def)
+                }
+                ).addStyle({ gridColumn: "3 / 6", gridRow: "1 / 4", alignSelf: "center", justifySelf: "center" }),
+                hennLabel("Gradient\nmincolor", "henn-editor-tick-row-label"),
+                hennLocal(this, hennColorCell, "gradient.min_color", "white", index),
+                //hennColorCell(this, "gradient.min_color", defaults.gradient?.min_color ?? "white", "white"),
+                hennLabel("Gradient\nmaxcolor", "henn-editor-tick-row-label"),
+                hennLocal(this, hennColorCell, "gradient.min_color", "white", index)
+                //hennColorCell(this, "gradient.max_color", defaults.gradient?.max_color ?? "black", "black"),
+            ], { boxClassName: "henn-editor-tick-table" }));
 
-        // body.appendChild(createSeparator());
+        body.appendChild(gradientTable);
+        body.appendChild(createSeparator());
 
         // const gradientTable2 = hennDiv("henn-editor-tick-table-head");
 
@@ -3181,7 +3191,6 @@ class HennStonehengeCardEditor extends HTMLElement {
         // gradientTable2.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`).addStyle({ textAlign: "center" }));
 
 
-        // body.appendChild(gradientTable);
         // body.appendChild(gradientTable2);
         // body.appendChild(createSeparator());
 
