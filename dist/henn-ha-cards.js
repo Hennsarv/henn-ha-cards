@@ -3013,60 +3013,227 @@ class HennStonehengeCardEditor extends HTMLElement {
         );
         body.appendChild(createSeparator());
 
+        const row = hennDiv();
+
+        row.style.display = "grid";
+        row.style.gridTemplateColumns = "1fr 1fr";
+        row.style.gap = "8px";
+
+        row.appendChild(
+            hennSegmentRow(
+                "Type",
+                 this._locValue("diagram_type", "diagram_type", "gradient", index),//this._config.diagram_type ?? "gradient",
+                [
+                    ["gradient", "Gradient"],
+                    ["bar", "Bar"],
+                    ["line", "Line"]
+                ],
+                 this._locDefault("diagram_type", "gradient"), //"gradient",
+                (v, def) => hennValueChangedOrDefault(this, this._locPath("diagram_type", index), v, def)
+            )
+        );
+
+        row.appendChild(
+            hennSegmentRow(
+                "Anchor",
+                this._locValue("anchor", "anchor", "lower", index), //this._config.anchor ?? "lower",
+                [
+                    ["lower", "Lower"],
+                    ["upper", "Upper"]
+                ],
+                this._locDefault("anchor", "lower"), //"lower",
+                (v, def) => hennValueChangedOrDefault(this, this._locPath("anchor", index), v, def)
+            )
+        );
+
+        body.appendChild(row);
+        body.appendChild(createSeparator());
+
+        const uss = hennSausageRow(
+            this._locValue("history_period", "history_period", "1d", index),
+            HENN_PERIOD_LIST,
+            this._locDefault("history_period", "1d"),
+            (v, def) => hennValueChangedOrDefault(this, this._locPath("history_period", index), v, def)
+        );
+
+        body.appendChild(uss);
+        body.appendChild(createSeparator());
+
+        //        body.appendChild(this._subTitle("Line"));
+
+        const lineTable = hennTableHeader(["", "Color", "Stroke", "Gap", "Smoth\nShow"],
+            "henn-editor-tick-table-head",
+            "henn-editor-tick-table" // hiljem teeme ringi 
+        );
+
+        lineTable.appendChild(hennMultiRow("Line", [
+            hennLocal(this, hennColorCell, "line.color", "black", index),
+//            hennColorCell(this, "line.color", defaults.line?.color ?? "black", "black"),
+            hennLocal(this, hennNumberInput, "line.stroke", 1, index),
+//            hennNumberInput(this, "line.stroke", defaults.line?.stroke ?? 1, 1),
+            hennDiv(),
+            hennLocal(this, hennCheckbox, "line.smooth", false, index, { classList: "henn-editor-pill-check" })
+//            hennCheckbox(this, "line.smooth", defaults.line?.smooth ?? false, false, { classList: "henn-editor-pill-check" }) // siia ka klass
+        ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
+
+        // lineTable.appendChild(hennMultiRow("Fill", [
+        //     hennColorCell(this, "fill.color", defaults.fill?.color ?? "white", "white"),
+        //     hennDiv(), hennDiv(),
+        //     hennCheckbox(this, "fill.show", defaults.fill?.show ?? false, false, { classList: "henn-editor-pill-check" }) // siia ka klass
+        // ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
+
+        // lineTable.appendChild(hennMultiRow("Upper\nrail", [
+        //     hennColorCell(this, "upper.color", defaults.upper?.color ?? "black", "black"),
+        //     hennNumberInput(this, "upper.stroke", defaults.upper?.stroke ?? 1, 1),
+        //     hennNumberInput(this, "upper.gap", defaults.upper?.gap ?? 0, 0),
+        //     hennCheckbox(this, "upper.show", defaults.upper?.show ?? true, true, { classList: "henn-editor-pill-check" }) // siia ka klass
+        // ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
+
+        // lineTable.appendChild(hennMultiRow("Lower\nrail", [
+        //     hennColorCell(this, "lower.color", defaults.lower?.color ?? "black", "black"),
+        //     hennNumberInput(this, "lower.stroke", defaults.lower?.stroke ?? 1, 1),
+        //     hennNumberInput(this, "lower.gap", defaults.lower?.gap ?? 0, 0),
+        //     hennCheckbox(this, "lower.show", defaults.lower?.show ?? true, true, { classList: "henn-editor-pill-check" }) // siia ka klass
+        // ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
 
-        body.appendChild(this._selectRowFor(owner, "diagram_type", "Type", s.diagram_type ?? this._config.diagram_type ?? "gradient", [
-            ["gradient", "Gradient"],
-            ["bar", "Bar"],
-            ["line", "Line"]
-        ], this._config.diagram_type ?? "gradient"));
+        // const lowerRadius = this._config.lower?.radius ?? 30;
+        // const upperRadius = this._config.upper?.radius ?? 90;
 
-        body.appendChild(hennTextRow(owner, "history_period", "History", s.history_period ?? this._config.history_period ?? "1d", this._config.history_period ?? "1d"));
-        body.appendChild(hennTextRow(owner, "bucket_size", "Bucket size", s.bucket_size ?? this._config.bucket_size ?? "1h", this._config.bucket_size ?? "1h"));
+        // const lowerNumber = hennNumberInput(this, "lower.radius", lowerRadius, 30,
+        //     { min: 0, max: upperRadius - 10, step: 5, style: { display: "none" } });
 
-        body.appendChild(this._selectRowFor(owner, "aggregate", "Aggregate", s.aggregate ?? this._config.aggregate ?? "avg", [
-            ["avg", "Average"],
-            ["sum", "Sum"],
-            ["count", "Count"],
-            ["max", "Max"],
-            ["min", "Min"],
-            ["distinct", "Distinct"]
-        ], this._config.aggregate ?? "avg"));
+        // const doubleSlider = hennDoubleSliderCore(lowerRadius, upperRadius, 0, 100, 5, {
+        //     minGap: 10,
+        //     value1OnChange: v => {
+        //         lowerNumber.value = v;
+        //         lowerNumber.dispatchEvent(new Event("change", { bubbles: true }));
+        //     },
+        //     value2OnChange: v => {
+        //         upperNumber.value = v;
+        //         upperNumber.dispatchEvent(new Event("change", { bubbles: true }));
+        //     }
+        // });
 
-        body.appendChild(this._selectRowFor(owner, "anchor", "Anchor", s.anchor ?? this._config.anchor ?? "lower", [
-            ["lower", "Lower"],
-            ["upper", "Upper"]
-        ], this._config.anchor ?? "lower"));
+        // const upperNumber = hennNumberInput(this, "upper.radius", upperRadius, 90,
+        //     { min: lowerRadius + 10, max: 100, step: 5, style: { display: "none" } });
 
-        body.appendChild(hennSubTitle("Raadiused"));
-        body.appendChild(hennNumberRow(owner, "lower.radius", "Lower radius", hennGetPath(s, "lower.radius") ?? hennGetPath(this._config, "lower.radius") ?? 30, hennGetPath(this._config, "lower.radius") ?? 30));
-        body.appendChild(hennNumberRow(owner, "upper.radius", "Upper radius", hennGetPath(s, "upper.radius") ?? hennGetPath(this._config, "upper.radius") ?? 90, hennGetPath(this._config, "upper.radius") ?? 90));
+        // lineTable.appendChild(hennMultiBox([lowerNumber, doubleSlider, upperNumber]));
 
-        const type = s.diagram_type || this._config.diagram_type || "gradient";
+        // lineTable.appendChild(hennSubTitle(`rööbaste raadiused -  alumine ${lowerRadius} ja ülemine ${upperRadius}`).addStyle({ textAlign: "center" }));
 
-        if (type === "line") {
-            body.appendChild(hennSubTitle("Line"));
-            body.appendChild(hennColorRow(owner, "line.color", "Color", hennGetPath(s, "line.color") ?? hennGetPath(this._config, "line.color"), hennGetPath(this._config, "line.color") ?? null));
-            body.appendChild(hennNumberRow(owner, "line.stroke", "Stroke", hennGetPath(s, "line.stroke") ?? hennGetPath(this._config, "line.stroke") ?? 2, hennGetPath(this._config, "line.stroke") ?? 2));
-            body.appendChild(hennCheckboxRow(owner, "line.smooth", "Smooth", hennGetPath(s, "line.smooth") === true, hennGetPath(this._config, "line.smooth") === true));
-        }
+        body.appendChild(lineTable);
 
-        if (type === "bar") {
-            body.appendChild(hennSubTitle("Bar"));
-            body.appendChild(hennColorRow(owner, "fill.color", "Color", hennGetPath(s, "fill.color") ?? hennGetPath(this._config, "fill.color"), hennGetPath(this._config, "fill.color") ?? null));
-            body.appendChild(hennTextRow(owner, "bar.cap", "Cap", hennGetPath(s, "bar.cap") ?? "", ""));
-        }
+        body.appendChild(createSeparator());
 
-        if (type === "gradient") {
-            body.appendChild(hennSubTitle("Gradient"));
-            body.appendChild(hennColorRow(owner, "gradient.color", "Color", hennGetPath(s, "gradient.color") ?? hennGetPath(this._config, "gradient.color") ?? "orange", hennGetPath(this._config, "gradient.color") ?? "orange"));
-            body.appendChild(hennNumberRow(owner, "gradient.min_opacity", "Min opacity", hennGetPath(s, "gradient.min_opacity") ?? hennGetPath(this._config, "gradient.min_opacity") ?? 0.15, hennGetPath(this._config, "gradient.min_opacity") ?? 0.15, { step: 0.05 }));
-            body.appendChild(hennNumberRow(owner, "gradient.max_opacity", "Max opacity", hennGetPath(s, "gradient.max_opacity") ?? hennGetPath(this._config, "gradient.max_opacity") ?? 0.9, hennGetPath(this._config, "gradient.max_opacity") ?? 0.9, { step: 0.05 }));
-        }
 
-        body.appendChild(hennSubTitle("Seeria rööpad"));
-        body.appendChild(this._railRowFor(owner, "lower", "Lower", s.lower || {}, this._config.lower || {}));
-        body.appendChild(this._railRowFor(owner, "upper", "Upper", s.upper || {}, this._config.upper || {}));
+        // const gradientTable = hennDiv("henn-editor-tick-table-head");
+
+        // gradientTable.appendChild(hennMultiBox(
+        //     [
+        //         hennLabel("Gradient\ncolor", "henn-editor-tick-row-label"),
+        //         hennColorCell(this, "gradient.color", defaults.gradient?.color ?? "orange", "orange"),
+        //         hennSegmentButtonCell(this, "gradient.mode", defaults.gradient?.mode ?? "opacity", "opacity",
+        //             [
+        //                 ["opacity", "Opacity"],
+        //                 ["color", "Color"]
+        //             ], { segmentStyle: { display: "flex", flexDirection: "column" } }
+        //         ).addStyle({ gridColumn: "3 / 6", gridRow: "1 / 4", alignSelf: "center", justifySelf: "center" }),
+        //         hennLabel("Gradient\nmincolor", "henn-editor-tick-row-label"),
+        //         hennColorCell(this, "gradient.min_color", defaults.gradient?.min_color ?? "white", "white"),
+        //         hennLabel("Gradient\nmaxcolor", "henn-editor-tick-row-label"),
+        //         hennColorCell(this, "gradient.max_color", defaults.gradient?.max_color ?? "black", "black"),
+        //     ], { boxClassName: "henn-editor-tick-table" }));
+
+        // body.appendChild(createSeparator());
+
+        // const gradientTable2 = hennDiv("henn-editor-tick-table-head");
+
+
+        // const minOpacity = defaults.gradient?.min_opacity ?? 0
+        // const maxOpacity = defaults.gradient?.max_opacity ?? 1
+
+        // const minOpacityNumber = hennNumberInput(this, "gradient.min_opacity", minOpacity, 0,
+        //     { min: 0, max: 0.5, step: 0.05, style: { display: "none" } });
+
+        // const doubleSliderOpacity = hennDoubleSliderCore(minOpacity, maxOpacity, 0, 1, 0.05, {
+        //     //minGap: 10,
+        //     value1OnChange: v => {
+        //         minOpacityNumber.value = v;
+        //         minOpacityNumber.dispatchEvent(new Event("change", { bubbles: true }));
+        //     },
+        //     value2OnChange: v => {
+        //         maxOpacityNumber.value = v;
+        //         maxOpacityNumber.dispatchEvent(new Event("change", { bubbles: true }));
+        //     }
+        // });
+
+        // const maxOpacityNumber = hennNumberInput(this, "gradient.max_opacity", maxOpacity, 1,
+        //     { min: 0.5, max: 1, step: 0.05, style: { display: "none" } });
+
+        // gradientTable2.appendChild(hennMultiBox([minOpacityNumber, doubleSliderOpacity, maxOpacityNumber]));
+        // gradientTable2.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`).addStyle({ textAlign: "center" }));
+
+
+        // body.appendChild(gradientTable);
+        // body.appendChild(gradientTable2);
+        // body.appendChild(createSeparator());
+
+
+
+
+        // body.appendChild(this._selectRowFor(owner, "diagram_type", "Type", s.diagram_type ?? this._config.diagram_type ?? "gradient", [
+        //     ["gradient", "Gradient"],
+        //     ["bar", "Bar"],
+        //     ["line", "Line"]
+        // ], this._config.diagram_type ?? "gradient"));
+
+        // body.appendChild(hennTextRow(owner, "history_period", "History", s.history_period ?? this._config.history_period ?? "1d", this._config.history_period ?? "1d"));
+        // body.appendChild(hennTextRow(owner, "bucket_size", "Bucket size", s.bucket_size ?? this._config.bucket_size ?? "1h", this._config.bucket_size ?? "1h"));
+
+        // body.appendChild(this._selectRowFor(owner, "aggregate", "Aggregate", s.aggregate ?? this._config.aggregate ?? "avg", [
+        //     ["avg", "Average"],
+        //     ["sum", "Sum"],
+        //     ["count", "Count"],
+        //     ["max", "Max"],
+        //     ["min", "Min"],
+        //     ["distinct", "Distinct"]
+        // ], this._config.aggregate ?? "avg"));
+
+        // body.appendChild(this._selectRowFor(owner, "anchor", "Anchor", s.anchor ?? this._config.anchor ?? "lower", [
+        //     ["lower", "Lower"],
+        //     ["upper", "Upper"]
+        // ], this._config.anchor ?? "lower"));
+
+        // body.appendChild(hennSubTitle("Raadiused"));
+        // body.appendChild(hennNumberRow(owner, "lower.radius", "Lower radius", hennGetPath(s, "lower.radius") ?? hennGetPath(this._config, "lower.radius") ?? 30, hennGetPath(this._config, "lower.radius") ?? 30));
+        // body.appendChild(hennNumberRow(owner, "upper.radius", "Upper radius", hennGetPath(s, "upper.radius") ?? hennGetPath(this._config, "upper.radius") ?? 90, hennGetPath(this._config, "upper.radius") ?? 90));
+
+        // const type = s.diagram_type || this._config.diagram_type || "gradient";
+
+        // if (type === "line") {
+        //     body.appendChild(hennSubTitle("Line"));
+        //     body.appendChild(hennColorRow(owner, "line.color", "Color", hennGetPath(s, "line.color") ?? hennGetPath(this._config, "line.color"), hennGetPath(this._config, "line.color") ?? null));
+        //     body.appendChild(hennNumberRow(owner, "line.stroke", "Stroke", hennGetPath(s, "line.stroke") ?? hennGetPath(this._config, "line.stroke") ?? 2, hennGetPath(this._config, "line.stroke") ?? 2));
+        //     body.appendChild(hennCheckboxRow(owner, "line.smooth", "Smooth", hennGetPath(s, "line.smooth") === true, hennGetPath(this._config, "line.smooth") === true));
+        // }
+
+        // if (type === "bar") {
+        //     body.appendChild(hennSubTitle("Bar"));
+        //     body.appendChild(hennColorRow(owner, "fill.color", "Color", hennGetPath(s, "fill.color") ?? hennGetPath(this._config, "fill.color"), hennGetPath(this._config, "fill.color") ?? null));
+        //     body.appendChild(hennTextRow(owner, "bar.cap", "Cap", hennGetPath(s, "bar.cap") ?? "", ""));
+        // }
+
+        // if (type === "gradient") {
+        //     body.appendChild(hennSubTitle("Gradient"));
+        //     body.appendChild(hennColorRow(owner, "gradient.color", "Color", hennGetPath(s, "gradient.color") ?? hennGetPath(this._config, "gradient.color") ?? "orange", hennGetPath(this._config, "gradient.color") ?? "orange"));
+        //     body.appendChild(hennNumberRow(owner, "gradient.min_opacity", "Min opacity", hennGetPath(s, "gradient.min_opacity") ?? hennGetPath(this._config, "gradient.min_opacity") ?? 0.15, hennGetPath(this._config, "gradient.min_opacity") ?? 0.15, { step: 0.05 }));
+        //     body.appendChild(hennNumberRow(owner, "gradient.max_opacity", "Max opacity", hennGetPath(s, "gradient.max_opacity") ?? hennGetPath(this._config, "gradient.max_opacity") ?? 0.9, hennGetPath(this._config, "gradient.max_opacity") ?? 0.9, { step: 0.05 }));
+        // }
+
+        // body.appendChild(hennSubTitle("Seeria rööpad"));
+        // body.appendChild(this._railRowFor(owner, "lower", "Lower", s.lower || {}, this._config.lower || {}));
+        // body.appendChild(this._railRowFor(owner, "upper", "Upper", s.upper || {}, this._config.upper || {}));
 
         wrap.appendChild(body);
 
@@ -6589,4 +6756,14 @@ function hennValue(owner, path, defaultPath = null, defaultValue = null, index =
     }
 
     return hennDefault(owner, defaultPath, defaultValue);
+}
+
+function hennLocal(owner, func, path, def, index, opt = {}) {
+    return func(
+        owner,
+        owner._locPath(path, index),
+        owner._locValue(path, path, def, index),
+        owner._locDefault(path, def),
+        opt
+    );
 }
