@@ -747,7 +747,8 @@ const HENN_STONE_STYLE = `
 
     .henn-debug-stamp {
         position: absolute;
-        left: 4px;
+        right: 6px;
+        left: auto;
         top: 4px;
         z-index: 9999;
         font-size: 10px;
