@@ -3149,50 +3149,52 @@ class HennStonehengeCardEditor extends HTMLElement {
                         ["color", "Color"]
                     ], {
                         segmentStyle: { display: "flex", flexDirection: "column" },
-                        onChange: (v, def) => hennValueChangedOrDefault(this, this._locPath("anchor", index), v, def)
+                        onChange: (v, def) => hennValueChangedOrDefault(this, this._locPath("anchor", index, index), v, def)
                 }
                 ).addStyle({ gridColumn: "3 / 6", gridRow: "1 / 4", alignSelf: "center", justifySelf: "center" }),
                 hennLabel("Gradient\nmincolor", "henn-editor-tick-row-label"),
                 hennLocal(this, hennColorCell, "gradient.min_color", "white", index),
                 //hennColorCell(this, "gradient.min_color", defaults.gradient?.min_color ?? "white", "white"),
                 hennLabel("Gradient\nmaxcolor", "henn-editor-tick-row-label"),
-                hennLocal(this, hennColorCell, "gradient.min_color", "white", index)
+                hennLocal(this, hennColorCell, "gradient.max_color", "black", index)
                 //hennColorCell(this, "gradient.max_color", defaults.gradient?.max_color ?? "black", "black"),
             ], { boxClassName: "henn-editor-tick-table" }));
 
         body.appendChild(gradientTable);
         body.appendChild(createSeparator());
 
-        // const gradientTable2 = hennDiv("henn-editor-tick-table-head");
+         const gradientTable2 = hennDiv("henn-editor-tick-table-head");
 
 
-        // const minOpacity = defaults.gradient?.min_opacity ?? 0
-        // const maxOpacity = defaults.gradient?.max_opacity ?? 1
+        const minOpacity = this._locValue("gradient.min_opacity", "gradient.min_opacity", 0, index);
+        const maxOpacity = this._locValue("gradient.max_opacity", "gradient.max_opacity", 1, index);
 
-        // const minOpacityNumber = hennNumberInput(this, "gradient.min_opacity", minOpacity, 0,
-        //     { min: 0, max: 0.5, step: 0.05, style: { display: "none" } });
+        const minOpacityNumber = hennLocal(this,hennNumberInput, "gradient.min_opacity", 0, index,
+             { min: 0, max: maxOpacity - 0.1, step: 0.05, style: { display: "none" } });
 
-        // const doubleSliderOpacity = hennDoubleSliderCore(minOpacity, maxOpacity, 0, 1, 0.05, {
-        //     //minGap: 10,
-        //     value1OnChange: v => {
-        //         minOpacityNumber.value = v;
-        //         minOpacityNumber.dispatchEvent(new Event("change", { bubbles: true }));
-        //     },
-        //     value2OnChange: v => {
-        //         maxOpacityNumber.value = v;
-        //         maxOpacityNumber.dispatchEvent(new Event("change", { bubbles: true }));
-        //     }
-        // });
+        const doubleSliderOpacity = hennDoubleSliderCore(minOpacity, maxOpacity, 0, 1, 0.05, {
+            //minGap: 10,
+            value1OnChange: v => {
+                minOpacityNumber.value = v;
+                minOpacityNumber.dispatchEvent(new Event("change", { bubbles: true }));
+            },
+            value2OnChange: v => {
+                maxOpacityNumber.value = v;
+                maxOpacityNumber.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+        });
 
-        // const maxOpacityNumber = hennNumberInput(this, "gradient.max_opacity", maxOpacity, 1,
-        //     { min: 0.5, max: 1, step: 0.05, style: { display: "none" } });
-
-        // gradientTable2.appendChild(hennMultiBox([minOpacityNumber, doubleSliderOpacity, maxOpacityNumber]));
-        // gradientTable2.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`).addStyle({ textAlign: "center" }));
+        const maxOpacityNumber = hennLocal(this, hennNumberInput, "gradient.max_opacity", 0, index,
+            { min: minOpacity + 0.1, max: 1, step: 0.05, style: { display: "none" } });
 
 
-        // body.appendChild(gradientTable2);
-        // body.appendChild(createSeparator());
+
+        gradientTable2.appendChild(hennMultiBox([minOpacityNumber, doubleSliderOpacity, maxOpacityNumber]));
+        gradientTable2.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`).addStyle({ textAlign: "center" }));
+
+
+        body.appendChild(gradientTable2);
+        body.appendChild(createSeparator());
 
 
 
