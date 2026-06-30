@@ -2823,7 +2823,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         lineTable.appendChild(hennMultiRow("Fill", [
             hennColorCell(this, "fill.color", defaults.fill?.color ?? "white", "white"),
-            hennNumberInput(this, "fill.opacity", defaults.fill?.opacity ?? 0, 0)
+            hennNumberInput(this, "fill.opacity", defaults.fill?.opacity ?? 0, 0, {min:0, max: 1, step: 0.05})
                 .addStyle({ gridColumn: "3 / 5"}),
             hennCheckbox(this, "fill.show", defaults.fill?.show ?? true, true, { classList: "henn-editor-pill-check" }) // siia ka klass
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
@@ -3099,12 +3099,12 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         lineTable.appendChild(hennMultiRow("Fill", [
             hennLocal(this, hennColorCell, "fill.color", "white", index),
-            hennLocal(this, hennNumberInput, "fill.opacity", 0, index).addStyle({ gridColumn: "3 / 5"}),
+            hennLocal(this, hennNumberInput, "fill.opacity", 0, index, {min: 0, max: 1, step: 0.05}).addStyle({ gridColumn: "3 / 5"}),
             hennLocal(this, hennCheckbox, "fill.show", true, index, { classList: "henn-editor-pill-check" })
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
         lineTable.appendChild(hennMultiRow("Upper\nrail", [
-            hennLocal(this, hennColorCell, "upper.color", "black", index),
+            hennLocal(this, hennColorCell, "upper.color", "white", index),
             hennLocal(this, hennNumberInput, "upper.stroke", 1, index),
             hennLocal(this, hennNumberInput, "upper.gap", 0, index),
             hennCheckbox(this, this._locPath("upper.show", index), this._locValue("upper.show", null, false, index), false,
@@ -3112,7 +3112,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
         lineTable.appendChild(hennMultiRow("Lower\nrail", [
-            hennLocal(this, hennColorCell, "lower.color", "black", index),
+            hennLocal(this, hennColorCell, "lower.color", "white", index),
             hennLocal(this, hennNumberInput, "lower.stroke", 1, index),
             hennLocal(this, hennNumberInput, "lower.gap", 0, index),
             hennCheckbox(this, this._locPath("lower.show", index), this._locValue("lower.show", null, false, index), false,
