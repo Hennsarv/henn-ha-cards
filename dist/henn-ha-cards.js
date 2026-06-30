@@ -3068,66 +3068,72 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         lineTable.appendChild(hennMultiRow("Line", [
             hennLocal(this, hennColorCell, "line.color", "black", index),
-//            hennColorCell(this, "line.color", defaults.line?.color ?? "black", "black"),
             hennLocal(this, hennNumberInput, "line.stroke", 1, index),
-//            hennNumberInput(this, "line.stroke", defaults.line?.stroke ?? 1, 1),
             hennDiv(),
             hennLocal(this, hennCheckbox, "line.smooth", false, index, { classList: "henn-editor-pill-check" })
-//            hennCheckbox(this, "line.smooth", defaults.line?.smooth ?? false, false, { classList: "henn-editor-pill-check" }) // siia ka klass
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
-        // lineTable.appendChild(hennMultiRow("Fill", [
-        //     hennColorCell(this, "fill.color", defaults.fill?.color ?? "white", "white"),
-        //     hennDiv(), hennDiv(),
-        //     hennCheckbox(this, "fill.show", defaults.fill?.show ?? false, false, { classList: "henn-editor-pill-check" }) // siia ka klass
-        // ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
+        lineTable.appendChild(hennMultiRow("Fill", [
+            hennLocal(this, hennColorCell, "fill.color", "white", index),
+            hennDiv(), hennDiv(),
+            hennLocal(this, hennCheckbox, "fill.show", false, index, { classList: "henn-editor-pill-check" })
+        ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
-        // lineTable.appendChild(hennMultiRow("Upper\nrail", [
-        //     hennColorCell(this, "upper.color", defaults.upper?.color ?? "black", "black"),
-        //     hennNumberInput(this, "upper.stroke", defaults.upper?.stroke ?? 1, 1),
-        //     hennNumberInput(this, "upper.gap", defaults.upper?.gap ?? 0, 0),
-        //     hennCheckbox(this, "upper.show", defaults.upper?.show ?? true, true, { classList: "henn-editor-pill-check" }) // siia ka klass
-        // ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
+        lineTable.appendChild(hennMultiRow("Upper\nrail", [
+            hennLocal(this, hennColorCell, "upper.color", "black", index),
+            hennLocal(this, hennNumberInput, "upper.stroke", 1, index),
+            hennLocal(this, hennNumberInput, "upper.gap", 0, index),
+            hennLocal(this, hennCheckbox, "line.show", false, index, { classList: "henn-editor-pill-check" })
+        ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
-        // lineTable.appendChild(hennMultiRow("Lower\nrail", [
-        //     hennColorCell(this, "lower.color", defaults.lower?.color ?? "black", "black"),
-        //     hennNumberInput(this, "lower.stroke", defaults.lower?.stroke ?? 1, 1),
-        //     hennNumberInput(this, "lower.gap", defaults.lower?.gap ?? 0, 0),
-        //     hennCheckbox(this, "lower.show", defaults.lower?.show ?? true, true, { classList: "henn-editor-pill-check" }) // siia ka klass
-        // ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
+        lineTable.appendChild(hennMultiRow("Lower\nrail", [
+            hennLocal(this, hennColorCell, "lower.color", "black", index),
+            hennLocal(this, hennNumberInput, "lower.stroke", 1, index),
+            hennLocal(this, hennNumberInput, "lower.gap", 0, index),
+            hennLocal(this, hennCheckbox, "line.show", false, index, { classList: "henn-editor-pill-check" })
+        ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
 
-        // const lowerRadius = this._config.lower?.radius ?? 30;
-        // const upperRadius = this._config.upper?.radius ?? 90;
+
+        const lowerRadius = this._locValue("lower.radius", "lower.radius", 30, index);  //_config.lower?.radius ?? 30;
+        const upperRadius = this._locValue("upper.radius", "upper.radius", 90, index); //_config.upper?.radius ?? 90;
 
         // const lowerNumber = hennNumberInput(this, "lower.radius", lowerRadius, 30,
         //     { min: 0, max: upperRadius - 10, step: 5, style: { display: "none" } });
+        const lowerNumber = hennLocal(this, hennNumberInput, "lower.radius", 30, index,
+            { min: 0, max: upperRadius - 10, step: 5, style: { display: "none" } }
+        );
 
-        // const doubleSlider = hennDoubleSliderCore(lowerRadius, upperRadius, 0, 100, 5, {
-        //     minGap: 10,
-        //     value1OnChange: v => {
-        //         lowerNumber.value = v;
-        //         lowerNumber.dispatchEvent(new Event("change", { bubbles: true }));
-        //     },
-        //     value2OnChange: v => {
-        //         upperNumber.value = v;
-        //         upperNumber.dispatchEvent(new Event("change", { bubbles: true }));
-        //     }
-        // });
+        const doubleSlider = hennDoubleSliderCore(lowerRadius, upperRadius, 0, 100, 5, {
+            minGap: 10,
+            value1OnChange: v => {
+                lowerNumber.value = v;
+                lowerNumber.dispatchEvent(new Event("change", { bubbles: true }));
+            },
+            value2OnChange: v => {
+                upperNumber.value = v;
+                upperNumber.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+        });
 
         // const upperNumber = hennNumberInput(this, "upper.radius", upperRadius, 90,
         //     { min: lowerRadius + 10, max: 100, step: 5, style: { display: "none" } });
+        const upperNumber = hennLocal(this, hennNumberInput, "upper.radius", 90, index,
+            { min: lowerRadius + 10, max: 100, step: 5, style: { display: "none" } }
+        );
 
-        // lineTable.appendChild(hennMultiBox([lowerNumber, doubleSlider, upperNumber]));
 
-        // lineTable.appendChild(hennSubTitle(`rööbaste raadiused -  alumine ${lowerRadius} ja ülemine ${upperRadius}`).addStyle({ textAlign: "center" }));
+
+        lineTable.appendChild(hennMultiBox([lowerNumber, doubleSlider, upperNumber]));
+
+        lineTable.appendChild(hennSubTitle(`rööbaste raadiused -  alumine ${lowerRadius} ja ülemine ${upperRadius}`).addStyle({ textAlign: "center" }));
 
         body.appendChild(lineTable);
 
         body.appendChild(createSeparator());
 
 
-        // const gradientTable = hennDiv("henn-editor-tick-table-head");
+        const gradientTable = hennDiv("henn-editor-tick-table-head");
 
         // gradientTable.appendChild(hennMultiBox(
         //     [
