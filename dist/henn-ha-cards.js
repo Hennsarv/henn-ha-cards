@@ -3167,7 +3167,6 @@ class HennStonehengeCardEditor extends HTMLElement {
             [
                 hennLabel("Gradient\ncolor", "henn-editor-tick-row-label"),
                 hennLocal(this, hennColorCell, "gradient.color", "orange", index),
-//                hennColorCell(this, "gradient.color", defaults.gradient?.color ?? "orange", "orange"),
                 hennSegmentButtonCell(this,
                     this._locPath("gradient.mode", index),
                     this._locValue("gradient.mode", "gradient.mode", "opacity", index),
