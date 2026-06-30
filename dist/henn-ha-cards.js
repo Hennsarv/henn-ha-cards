@@ -2907,7 +2907,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             { min: 0, max: 0.5, step: 0.05, style: { display: "none" } });
 
         const doubleSliderOpacity = hennDoubleSliderCore(minOpacity, maxOpacity, 0.15, 0.9, 0.05, {
-            //minGap: 10,
+            minGap: 0.1,
             value1OnChange: v => {
                 minOpacityNumber.value = v;
                 minOpacityNumber.dispatchEvent(new Event("change", { bubbles: true }));
@@ -3054,8 +3054,8 @@ class HennStonehengeCardEditor extends HTMLElement {
                     ["bar", "Bar"],
                     ["line", "Line"]
                 ],
-                 this._locDefault("diagram_type", "gradient") 
-                //(v, def) => hennValueChangedOrDefault(this, this._locPath("diagram_type", index), v, def)
+                 this._locDefault("diagram_type", "gradient"), 
+                (v, def) => hennValueChangedOrDefault(this, this._locPath("diagram_type", index), v, def)
             )
         );
 
@@ -3067,8 +3067,8 @@ class HennStonehengeCardEditor extends HTMLElement {
                     ["lower", "Lower"],
                     ["upper", "Upper"]
                 ],
-                this._locDefault("anchor", "lower")
-                //(v, def) => hennValueChangedOrDefault(this, this._locPath("anchor", index), v, def)
+                this._locDefault("anchor", "lower"),
+                (v, def) => hennValueChangedOrDefault(this, this._locPath("anchor", index), v, def)
             )
         );
 
@@ -3078,8 +3078,8 @@ class HennStonehengeCardEditor extends HTMLElement {
         const uss = hennSausageRow(
             this._locValue("history_period", "history_period", "1d", index),
             HENN_PERIOD_LIST,
-            this._locDefault("history_period", "1d")
-            //(v, def) => hennValueChangedOrDefault(this, this._locPath("history_period", index), v, def)
+            this._locDefault("history_period", "1d"),
+            (v, def) => hennValueChangedOrDefault(this, this._locPath("history_period", index), v, def)
         );
 
         body.appendChild(uss);
@@ -3168,9 +3168,9 @@ class HennStonehengeCardEditor extends HTMLElement {
                         ["color", "Color"]
                     ],
                     {
-                        segmentStyle: { display: "flex", flexDirection: "column" }
-                        //onChange: (v, def) => hennValueChangedOrDefault(this, this._locPath("gradient.mode", index), v, def)
-                }       // katsetame ilma onchangedeta   
+                        segmentStyle: { display: "flex", flexDirection: "column" },
+                        onChange: (v, def) => hennValueChangedOrDefault(this, this._locPath("gradient.mode", index), v, def)
+                }          
                 ).addStyle({ gridColumn: "3 / 6", gridRow: "1 / 3", alignSelf: "center", justifySelf: "center" }),
                 hennLabel("Gradient\nmincolor", "henn-editor-tick-row-label"),
                 hennLocal(this, hennColorCell, "gradient.min_color", "white", index),
