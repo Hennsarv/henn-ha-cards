@@ -3083,14 +3083,14 @@ class HennStonehengeCardEditor extends HTMLElement {
             hennLocal(this, hennColorCell, "upper.color", "black", index),
             hennLocal(this, hennNumberInput, "upper.stroke", 1, index),
             hennLocal(this, hennNumberInput, "upper.gap", 0, index),
-            hennLocal(this, hennCheckbox, "line.show", false, index, { classList: "henn-editor-pill-check" })
+            hennLocal(this, hennCheckbox, "upper.show", false, index, { classList: "henn-editor-pill-check" })
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
         lineTable.appendChild(hennMultiRow("Lower\nrail", [
             hennLocal(this, hennColorCell, "lower.color", "black", index),
             hennLocal(this, hennNumberInput, "lower.stroke", 1, index),
             hennLocal(this, hennNumberInput, "lower.gap", 0, index),
-            hennLocal(this, hennCheckbox, "line.show", false, index, { classList: "henn-editor-pill-check" })
+            hennLocal(this, hennCheckbox, "lower.show", false, index, { classList: "henn-editor-pill-check" })
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
 
