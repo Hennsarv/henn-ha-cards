@@ -6787,7 +6787,7 @@ function hennPath(path, index = null) {
 function hennDefault(owner, defaultPath = null, defaultValue = null) {
     if (!defaultPath) return defaultValue;
 
-    const value = hennGetPath(owner._defConfig, defaultPath);
+    const value = hennGetPath(owner._config, defaultPath);
     return value ?? defaultValue;
 }
 
