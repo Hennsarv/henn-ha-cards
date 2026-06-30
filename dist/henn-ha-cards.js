@@ -2872,7 +2872,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         body.appendChild(createSeparator());
 
-        body.appendChild(hennSubTitle("Defaul for gradient - by opacity or by color"));
+        //body.appendChild(hennSubTitle("Defaul for gradient - by opacity or by color"));
 
         const gradientTable = hennDiv("henn-editor-tick-table-head");
 
@@ -2897,7 +2897,11 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         body.appendChild(createSeparator());
 
-        const gradientTable2 = hennDiv("henn-editor-tick-table-head");
+        const gradientTable2 = hennTableHeader(["",""],
+            "henn-editor-tick-table-head",
+            "henn-editor-tick-table" // hiljem teeme ringi 
+
+        );
 
 
         const minOpacity = defaults.gradient?.min_opacity ?? 0.15;
