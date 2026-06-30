@@ -2713,9 +2713,8 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         const body = hennDiv("henn-editor-section-body"); // 
 
-        body.appendChild(hennTextRow(this, "history_period", "History", this._config.history_period ?? "1d", "1d"));
-
-        body.appendChild(createSeparator());
+        // body.appendChild(hennTextRow(this, "history_period", "History", this._config.history_period ?? "1d", "1d"));
+        // body.appendChild(createSeparator());
 
         body.appendChild(
             this._bucketSizeRow(
@@ -2905,18 +2904,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         body.appendChild(gradientTable2);
         body.appendChild(createSeparator());
 
-        // body.appendChild(hennSubTitle("Fill"));
-        // body.appendChild(hennCheckboxRow(this, "fill.show", "Enabled", hennGetPath(this._config, "fill.show") !== false, true));
-        // body.appendChild(hennColorRow(this, "fill.color", "Color", hennGetPath(this._config, "fill.color"), null));
 
-        // body.appendChild(createSeparator());
-
-        // body.appendChild(hennSubTitle("Gradient"));
-        // body.appendChild(hennColorRow(this, "gradient.color", "Color", hennGetPath(this._config, "gradient.color") ?? "orange", "orange"));
-        // body.appendChild(hennNumberRow(this, "gradient.min_opacity", "Min opacity", hennGetPath(this._config, "gradient.min_opacity") ?? 0.15, 0.15, { step: 0.05 }));
-        // body.appendChild(hennNumberRow(this, "gradient.max_opacity", "Max opacity", hennGetPath(this._config, "gradient.max_opacity") ?? 0.9, 0.9, { step: 0.05 }));
-        // body.appendChild(hennColorRow(this, "gradient.min_color", "Min color", hennGetPath(this._config, "gradient.min_color"), null));
-        // body.appendChild(hennColorRow(this, "gradient.max_color", "Max color", hennGetPath(this._config, "gradient.max_color"), null));
         host.append(body);
     }
 
@@ -2999,7 +2987,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         body.appendChild(
             hennSegmentRow(
-                this._locPath("aggregate", index),
+                "Aggregation",
                 this._locValue("aggregate", "aggregate", "avg", index),
                 [
                     ["avg", "Average"],
@@ -3010,7 +2998,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                     ["distinct", "Distinct"]
                 ],
                 this._locDefault("aggregate", "avg")
-                , (v, def) => hennValueChangedOrDefault(this, this._locPath("aggregate", index), v, def)
+                //, (v, def) => hennValueChangedOrDefault(this, this._locPath("aggregate", index), v, def)
             )
         );
         body.appendChild(createSeparator());
