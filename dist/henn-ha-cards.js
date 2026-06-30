@@ -3309,7 +3309,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             line: {
                 show: true,
                 color: "black",
-                stroke: 1,
+                stroke: 2,
                 smooth: false,
                 ...(c.line || {})
             },
@@ -3317,12 +3317,11 @@ class HennStonehengeCardEditor extends HTMLElement {
             fill: {
                 show: true,
                 color: "white",
-                opacity: null,
+                opacity: 0,
                 ...(c.fill || {})
             },
 
             bar: {
-                cap: null,
                 gap: 0,
                 margin_left: 0,
                 margin_right: 0,
@@ -3332,7 +3331,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             lower: {
                 show: true,
                 stroke: 1,
-                color: "black",
+                color: "white",
                 radius: 30,
                 gap: 0,
                 ...(c.lower || {})
@@ -3341,7 +3340,7 @@ class HennStonehengeCardEditor extends HTMLElement {
             upper: {
                 show: true,
                 stroke: 1,
-                color: "black",
+                color: "white",
                 radius: 90,
                 gap: 0,
                 ...(c.upper || {})
