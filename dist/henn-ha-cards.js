@@ -3175,7 +3175,8 @@ class HennStonehengeCardEditor extends HTMLElement {
                     [
                         ["opacity", "Opacity"],
                         ["color", "Color"]
-                    ], {
+                    ],
+                    {
                         segmentStyle: { display: "flex", flexDirection: "column" },
                         onChange: (v, def) => hennValueChangedOrDefault(this, this._locPath("gradient.mode", index), v, def)
                 }
