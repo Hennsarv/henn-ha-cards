@@ -2713,8 +2713,6 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         const body = hennDiv("henn-editor-section-body"); // 
 
-        // body.appendChild(hennTextRow(this, "history_period", "History", this._config.history_period ?? "1d", "1d"));
-        // body.appendChild(createSeparator());
 
         body.appendChild(
             this._bucketSizeRow(
@@ -2985,6 +2983,17 @@ class HennStonehengeCardEditor extends HTMLElement {
 
 
         body.appendChild(createSeparator());
+
+        body.appendChild(
+            this._bucketSizeRow(
+                this._config.bucketing ?? "day",
+                this._locValue("bucket_size",null,"10m", index),
+                this._locPath( "bucket_size", index)
+            )
+        );
+
+        body.appendChild(createSeparator());
+
 
         body.appendChild(
             hennSegmentRow(
