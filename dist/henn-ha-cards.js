@@ -2897,40 +2897,40 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         body.appendChild(createSeparator());
 
-        const gradientTable2 = hennTableHeader(["",""],
+        const gradientTable2 = hennTableHeader(["","", "", "", ""],
             "henn-editor-tick-table-head",
             "henn-editor-tick-table" // hiljem teeme ringi 
 
         );
 
 
-        const minOpacity = defaults.gradient?.min_opacity ?? 0.15;
-        const maxOpacity = defaults.gradient?.max_opacity ?? 0.9;
+            const minOpacity = defaults.gradient?.min_opacity ?? 0.15;
+            const maxOpacity = defaults.gradient?.max_opacity ?? 0.9;
 
-        const minOpacityNumber = hennNumberInput(this, "gradient.min_opacity", minOpacity, 0.15,
-            { min: 0, max: 0.5, step: 0.05, style: { display: "none" } });
+            const minOpacityNumber = hennNumberInput(this, "gradient.min_opacity", minOpacity, 0.15,
+                { min: 0, max: 0.5, step: 0.05, style: { display: "none" } });
 
-        const doubleSliderOpacity = hennDoubleSliderCore(minOpacity, maxOpacity, 0.15, 0.9, 0.05, {
-            minGap: 0.1,
-            value1OnChange: v => {
-                minOpacityNumber.value = v;
-                minOpacityNumber.dispatchEvent(new Event("change", { bubbles: true }));
-            },
-            value2OnChange: v => {
-                maxOpacityNumber.value = v;
-                maxOpacityNumber.dispatchEvent(new Event("change", { bubbles: true }));
-            }
-        });
+            const doubleSliderOpacity = hennDoubleSliderCore(minOpacity, maxOpacity, 0, 1, 0.05, {
+                minGap: 0.1,
+                value1OnChange: v => {
+                    minOpacityNumber.value = v;
+                    minOpacityNumber.dispatchEvent(new Event("change", { bubbles: true }));
+                },
+                value2OnChange: v => {
+                    maxOpacityNumber.value = v;
+                    maxOpacityNumber.dispatchEvent(new Event("change", { bubbles: true }));
+                }
+            });
 
-        const maxOpacityNumber = hennNumberInput(this, "gradient.max_opacity", maxOpacity, 0.9,
-            { min: 0.5, max: 1, step: 0.05, style: { display: "none" } });
+            const maxOpacityNumber = hennNumberInput(this, "gradient.max_opacity", maxOpacity, 0.9,
+                { min: 0.5, max: 1, step: 0.05, style: { display: "none" } });
 
-        gradientTable2.appendChild(hennMultiBox([minOpacityNumber, doubleSliderOpacity, maxOpacityNumber]));
-        gradientTable2.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`).addStyle({textAlign: "center"}));
+            gradientTable2.appendChild(hennMultiBox([minOpacityNumber, doubleSliderOpacity, maxOpacityNumber]));
+            gradientTable2.appendChild(hennSubTitle(`Gradient opacity ${minOpacity}-${maxOpacity}`).addStyle({textAlign: "center"}));
 
 
-        body.appendChild(gradientTable);
-        body.appendChild(gradientTable2);
+            body.appendChild(gradientTable);
+            body.appendChild(gradientTable2);
         body.appendChild(createSeparator());
 
 
