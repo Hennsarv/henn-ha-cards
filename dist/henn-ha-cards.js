@@ -3177,7 +3177,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                         ["color", "Color"]
                     ], {
                         segmentStyle: { display: "flex", flexDirection: "column" },
-                        onChange: (v, def) => hennValueChangedOrDefault(this, this._locPath("anchor", index, index), v, def)
+                        onChange: (v, def) => hennValueChangedOrDefault(this, this._locPath("gradient.mode", index, index), v, def)
                 }
                 ).addStyle({ gridColumn: "3 / 6", gridRow: "1 / 4", alignSelf: "center", justifySelf: "center" }),
                 hennLabel("Gradient\nmincolor", "henn-editor-tick-row-label"),
