@@ -742,6 +742,22 @@ const HENN_STONE_STYLE = `
     .henn-editor-root {
         display: grid;
         gap: 14px;
+        position: relative;
+    }
+
+    .henn-debug-stamp {
+        position: absolute;
+        left: 4px;
+        top: 4px;
+        z-index: 9999;
+        font-size: 10px;
+        line-height: 1;
+        opacity: .65;
+        color: var(--secondary-text-color);
+        background: var(--card-background-color);
+        padding: 2px 4px;
+        border-radius: 4px;
+        pointer-events: none;
     }
 
     .henn-editor-section {
@@ -2057,6 +2073,10 @@ class HennStonehengeCard extends HTMLElement {
     }
 
     render(seriesBody) {
+        this._renderCount = (this._renderCount ?? 0) + 1;
+        const debug = this.config?.debug === true;
+        const stamp = new Date().toLocaleTimeString("et-EE");
+
         const lower = Number(this.rootConfig.lower.radius);
         const upper = Number(this.rootConfig.upper.radius);
 
@@ -2066,6 +2086,7 @@ class HennStonehengeCard extends HTMLElement {
 
         this.innerHTML = `
       <ha-card style="background:transparent;box-shadow:none;border:none;margin:0;padding:0;">
+      ${debug ? `<div class="henn-debug-stamp">P #${this._renderCount} ${stamp}</div>` : ""}
         <svg viewBox="-50 -50 200 200"
              style="width:100%;height:100%;display:block;overflow:visible;">
           ${seriesBody || ""}
@@ -2536,12 +2557,18 @@ class HennStonehengeCardEditor extends HTMLElement {
 
     render() {
         if (!this._config) return;
+        this._renderCount = (this._renderCount ?? 0) + 1;
+
+        const debug = this._config.debug === true;
+        const stamp = new Date().toLocaleTimeString("et-EE");
+
 
         this.innerHTML = `
         <!-- Stonehenge editor ${HENN_CARDS_VERSION} -->
         ${HENN_EDITOR_STYLE}
         ${HENN_STONE_STYLE}
         <div class="henn-editor-root">
+         ${debug ? `<div class="henn-debug-stamp">E #${this._renderCount} ${stamp}</div>` : ""}
             <div id="root-section"></div>
             <div id="ticks-section"></div>
             <div id="defaults-section"></div>
