@@ -2719,7 +2719,8 @@ class HennStonehengeCardEditor extends HTMLElement {
         body.appendChild(
             this._bucketSizeRow(
                 this._config.bucketing ?? "day",
-                this._config.bucket_size ?? "10m" 
+                this._config.bucket_size ?? "10m",
+                "bucket_size"
             )
         ); 
 
@@ -2998,7 +2999,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                     ["distinct", "Distinct"]
                 ],
                 this._locDefault("aggregate", "avg")
-                //, (v, def) => hennValueChangedOrDefault(this, this._locPath("aggregate", index), v, def)
+                , (v, def) => hennValueChangedOrDefault(this, this._locPath("aggregate", index), v, def)
             )
         );
         body.appendChild(createSeparator());
@@ -3356,7 +3357,7 @@ class HennStonehengeCardEditor extends HTMLElement {
     }
 
 
-    _bucketSizeRow(bucketing, value) {
+    _bucketSizeRow(bucketing, value, path) {
         const map = {
             day: {
                 unit: "m",
@@ -3386,7 +3387,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                 value,
                 cfg.values.map(v => [`${v}${cfg.unit}`, `${v}`]),
                 null,
-                v => hennValueChanged(this, "bucket_size", v),
+                v => hennValueChanged(this, path, v),
                 {
                     wrapStyle: {
                         display: "contents"
@@ -3412,7 +3413,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         input.addEventListener("change", () => {
             hennValueChanged(this,
-                "bucket_size",
+                path,
                 `${input.value}${cfg.unit}`
             );
         });
