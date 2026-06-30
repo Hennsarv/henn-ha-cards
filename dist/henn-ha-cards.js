@@ -2095,7 +2095,7 @@ class HennStonehengeCard extends HTMLElement {
           ${label}
         </svg>
       </ha-card>
-    `;
+    `; // teine katse
     }
 
     norm(v, min, span) {
