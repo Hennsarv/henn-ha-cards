@@ -2823,19 +2823,20 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         lineTable.appendChild(hennMultiRow("Fill", [
             hennColorCell(this, "fill.color", defaults.fill?.color ?? "white", "white"),
-            hennDiv(), hennDiv(),
+            hennNumberInput(this, "fill.opacity", defaults.fill?.opacity ?? 0, 0)
+                .addStyle({ gridColumn: "3 / 5"}),
             hennCheckbox(this, "fill.show", defaults.fill?.show ?? true, true, { classList: "henn-editor-pill-check" }) // siia ka klass
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
         lineTable.appendChild(hennMultiRow("Upper\nrail", [
-            hennColorCell(this, "upper.color", defaults.upper?.color ?? "black", "black"),
+            hennColorCell(this, "upper.color", defaults.upper?.color ?? "white", "white"),
             hennNumberInput(this, "upper.stroke", defaults.upper?.stroke ?? 1, 1),
             hennNumberInput(this, "upper.gap", defaults.upper?.gap ?? 0, 0),
             hennCheckbox(this, "upper.show", defaults.upper?.show ?? true, true, { classList: "henn-editor-pill-check" }) // siia ka klass
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
         lineTable.appendChild(hennMultiRow("Lower\nrail", [
-            hennColorCell(this, "lower.color", defaults.lower?.color ?? "black", "black"),
+            hennColorCell(this, "lower.color", defaults.lower?.color ?? "white", "white"),
             hennNumberInput(this, "lower.stroke", defaults.lower?.stroke ?? 1, 1),
             hennNumberInput(this, "lower.gap", defaults.lower?.gap ?? 0, 0),
             hennCheckbox(this, "lower.show", defaults.lower?.show ?? true, true, { classList: "henn-editor-pill-check" }) // siia ka klass
@@ -3098,7 +3099,7 @@ class HennStonehengeCardEditor extends HTMLElement {
 
         lineTable.appendChild(hennMultiRow("Fill", [
             hennLocal(this, hennColorCell, "fill.color", "white", index),
-            hennDiv(), hennDiv(),
+            hennLocal(this, hennNumberInput, "fill.opacity", 0, index).addStyle({ gridColumn: "3 / 5"}),
             hennLocal(this, hennCheckbox, "fill.show", true, index, { classList: "henn-editor-pill-check" })
         ], { rowClassName: "henn-editor-tick-table", labelClassName: "henn-editor-tick-row-label" }));
 
