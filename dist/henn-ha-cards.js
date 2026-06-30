@@ -3196,7 +3196,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         const minOpacityNumber = hennLocal(this,hennNumberInput, "gradient.min_opacity", 0.15, index,
              { min: 0, max: maxOpacity - 0.1, step: 0.05, style: { display: "none" } });
 
-        const doubleSliderOpacity = hennDoubleSliderCore(minOpacity, maxOpacity, 0.15, 0.9, 0.05, {
+        const doubleSliderOpacity = hennDoubleSliderCore(minOpacity, maxOpacity, 0, 1, 0.05, {
             minGap: 0.1,
             value1OnChange: v => {
                 minOpacityNumber.value = v;
