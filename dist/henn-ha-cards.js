@@ -2110,7 +2110,7 @@ class HennStonehengeCard extends HTMLElement {
 
     }
 
-    renderCaption(c, buckets, lower, upper) {  // kuues
+    renderCaption(c, buckets, lower, upper) { // seitsmes
         const cap = c.caption || {};
         if (cap.show !== true) return "";
 
@@ -2135,6 +2135,9 @@ class HennStonehengeCard extends HTMLElement {
         if (!isFinite(radius) || radius <= 0) return "";
 
         const angle = this.captionAngle(cap.alignement ?? cap.alignment ?? "S");
+        const a = ((angle % 360) + 360) % 360;
+
+        const south = a > 90 && a < 270;
 
         const font = cap.font || {};
         const size = Number(font.size ?? 5);
@@ -2142,13 +2145,26 @@ class HennStonehengeCard extends HTMLElement {
 
         const id = `caption-path-${this._renderCount || 0}-${Math.random().toString(36).slice(2)}`;
 
-        const p1 = this.polar(50, 50, radius, 0);
-        const p2 = this.polar(50, 50, radius, 359.999);
+        let p0, p180, sweep;
 
-        const path = `M ${p1.x} ${p1.y}
-                  A ${radius} ${radius} 0 1 1 ${p2.x} ${p2.y}`;
+        if (south) {
+            p0 = this.polar(50, 50, radius, 180);
+            p180 = this.polar(50, 50, radius, 0);
+            sweep = 0;
+        }
+        else {
+            p0 = this.polar(50, 50, radius, 0);
+            p180 = this.polar(50, 50, radius, 180);
+            sweep = 1;
+        }
 
-        const offset = ((angle % 360) + 360) % 360 / 360 * 100;
+        const path = `
+        M ${p0.x} ${p0.y}
+        A ${radius} ${radius} 0 1 ${sweep} ${p180.x} ${p180.y}
+        A ${radius} ${radius} 0 1 ${sweep} ${p0.x} ${p0.y}
+    `;
+
+        const offset = a / 360 * 100;
 
         return `
         <path id="${id}" d="${path}" fill="none" stroke="none"></path>
