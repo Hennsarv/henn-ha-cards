@@ -2116,7 +2116,7 @@ class HennStonehengeCard extends HTMLElement {
 
     }
 
-    renderCaption(c, buckets, lower, upper) { // kümnes
+    renderCaption(c, buckets, lower, upper) { // veel paa varianti
         const cap = c.caption || {};
         if (cap.show !== true) return "";
 
