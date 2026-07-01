@@ -2105,7 +2105,7 @@ class HennStonehengeCard extends HTMLElement {
             c.diagram_type === "line" ? this.renderLine(c, buckets, min, span, lower, upper) :
                 this.renderColor(c, buckets, min, span, lower, upper);
         const rails = this.renderRails(c, lower, upper);
-        const caption = this.renderCaption(c, buckets, min, span, lower, upper);
+        const caption = this.renderCaption(c, buckets, lower, upper);
         return seriesBody + rails + caption;
 
     }
