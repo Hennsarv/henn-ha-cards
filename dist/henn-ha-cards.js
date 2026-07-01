@@ -2133,25 +2133,28 @@ class HennStonehengeCard extends HTMLElement {
         }
 
         const angle = this.captionAngle(cap.alignement ?? cap.alignment ?? "S");
+        const span = Number(cap.span ?? 160);
 
         const a = ((angle % 360) + 360) % 360;
         const reverse = a >= 90 && a <= 270;
 
-        const span = Number(cap.span ?? 160);
-
-        let a1 = angle - span / 2;
-        let a2 = angle + span / 2;
+        let a1, a2, sweep;
 
         if (reverse) {
-            [a1, a2] = [a2, a1];
+            a1 = angle + span / 2;
+            a2 = angle - span / 2;
+            sweep = 0;
+        }
+        else {
+            a1 = angle - span / 2;
+            a2 = angle + span / 2;
+            sweep = 1;
         }
 
         const p1 = this.polar(50, 50, radius, a1);
         const p2 = this.polar(50, 50, radius, a2);
 
         const largeArc = span > 180 ? 1 : 0;
-        const sweep = reverse ? 0 : 1;
-
         const path = `M ${p1.x} ${p1.y} A ${radius} ${radius} 0 ${largeArc} ${sweep} ${p2.x} ${p2.y}`;
 
         const font = cap.font || {};
@@ -2161,9 +2164,11 @@ class HennStonehengeCard extends HTMLElement {
         const id = `caption-path-${this._renderCount || 0}-${Math.random().toString(36).slice(2)}`;
 
         return `
-      <defs>
-        <path id="${id}" d="${path}"></path>
-      </defs>
+      <path id="${id}"
+            d="${path}"
+            fill="none"
+            stroke="none"></path>
+
       <text font-size="${size}"
             fill="${color}">
         <textPath href="#${id}"
@@ -2171,6 +2176,7 @@ class HennStonehengeCard extends HTMLElement {
                   text-anchor="middle">${text}</textPath>
       </text>`;
     }
+
     captionAngle(a) { //esimese korraga ei läinud
         if (a === undefined || a === null) return 180;
 
