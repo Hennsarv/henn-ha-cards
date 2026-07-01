@@ -2110,7 +2110,7 @@ class HennStonehengeCard extends HTMLElement {
 
     }
 
-    renderCaption(c, buckets, lower, upper) {
+    renderCaption(c, buckets, lower, upper) {  // kuues
         const cap = c.caption || {};
         if (cap.show !== true) return "";
 
