@@ -306,7 +306,7 @@ const HENN_CSS_COLORS2 = [
     ["#FFFAFA", "snow"],
     ["#FFFFE0", "lightyellow"],
     ["#FFFFF0", "ivory"]
-]
+];
 
 const HENN_EDITOR_STYLE = `
     <style>
@@ -1244,7 +1244,7 @@ class HennWindRoseCard extends HTMLElement {
             outer_radius: 50,
             rotation: 0,
             color: "deepskyblue",
-            min_opacity: 0.05,
+            min_opacity: 0.15,
             max_opacity: 0.9,
             ...config
         };
@@ -1409,7 +1409,7 @@ class HennWindRoseCard extends HTMLElement {
             outer_radius: 50,
             rotation: 0,
             color: "deepskyblue",
-            min_opacity: 0.05,
+            min_opacity: 0.15,
             max_opacity: 0.9
         };
     }
@@ -1488,7 +1488,7 @@ class HennWindRoseCardEditor extends HTMLElement {
                 "min_opacity",
                 "max_opacity",
                 "Opacity",
-                this._config.min_opacity ?? 0.05,
+                this._config.min_opacity ?? 0.15,
                 this._config.max_opacity ?? 0.9,
                 0,
                 1,
