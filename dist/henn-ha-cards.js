@@ -2110,7 +2110,7 @@ class HennStonehengeCard extends HTMLElement {
 
     }
 
-    renderCaption(c, buckets, lower, upper) { // uus versioon
+    renderCaption(c, buckets, lower, upper) {
         const cap = c.caption || {};
         if (cap.show !== true) return "";
 
@@ -2122,40 +2122,19 @@ class HennStonehengeCard extends HTMLElement {
 
         let radius;
 
-        if (pos === "middle") {
-            radius = (lower + upper) / 2;
-        }
-        else if (pos === "down" || pos === "low") {
+        if (pos === "down" || pos === "low") {
             radius = lower + gap;
+        }
+        else if (pos === "middle") {
+            radius = (lower + upper) / 2 - gap;
         }
         else {
             radius = upper - gap;
         }
 
+        if (!isFinite(radius) || radius <= 0) return "";
+
         const angle = this.captionAngle(cap.alignement ?? cap.alignment ?? "S");
-        const span = Number(cap.span ?? 160);
-
-        const a = ((angle % 360) + 360) % 360;
-        const reverse = a >= 90 && a <= 270;
-
-        let a1, a2, sweep;
-
-        if (reverse) {
-            a1 = angle + span / 2;
-            a2 = angle - span / 2;
-            sweep = 0;
-        }
-        else {
-            a1 = angle - span / 2;
-            a2 = angle + span / 2;
-            sweep = 1;
-        }
-
-        const p1 = this.polar(50, 50, radius, a1);
-        const p2 = this.polar(50, 50, radius, a2);
-
-        const largeArc = span > 180 ? 1 : 0;
-        const path = `M ${p1.x} ${p1.y} A ${radius} ${radius} 0 ${largeArc} ${sweep} ${p2.x} ${p2.y}`;
 
         const font = cap.font || {};
         const size = Number(font.size ?? 5);
@@ -2163,18 +2142,21 @@ class HennStonehengeCard extends HTMLElement {
 
         const id = `caption-path-${this._renderCount || 0}-${Math.random().toString(36).slice(2)}`;
 
-        return `
-      <path id="${id}"
-            d="${path}"
-            fill="none"
-            stroke="none"></path>
+        const p1 = this.polar(50, 50, radius, 0);
+        const p2 = this.polar(50, 50, radius, 359.999);
 
-      <text font-size="${size}"
-            fill="${color}">
-        <textPath href="#${id}"
-                  startOffset="50%"
-                  text-anchor="middle">${text}</textPath>
-      </text>`;
+        const path = `M ${p1.x} ${p1.y}
+                  A ${radius} ${radius} 0 1 1 ${p2.x} ${p2.y}`;
+
+        const offset = ((angle % 360) + 360) % 360 / 360 * 100;
+
+        return `
+        <path id="${id}" d="${path}" fill="none" stroke="none"></path>
+        <text font-size="${size}" fill="${color}">
+            <textPath href="#${id}"
+                      startOffset="${offset}%"
+                      text-anchor="middle">${text}</textPath>
+        </text>`;
     }
 
     captionAngle(a) { //esimese korraga ei läinud
