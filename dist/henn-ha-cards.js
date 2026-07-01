@@ -2067,9 +2067,12 @@ class HennStonehengeCard extends HTMLElement {
         let lower = Number(c.lower.radius);
         let upper = Number(c.upper.radius);
 
-        return c.diagram_type === "bar" ? this.renderBars(c, buckets, min, span, lower, upper) :
+        const seriesBody = c.diagram_type === "bar" ? this.renderBars(c, buckets, min, span, lower, upper) :
             c.diagram_type === "line" ? this.renderLine(c, buckets, min, span, lower, upper) :
                 this.renderColor(c, buckets, min, span, lower, upper);
+        const rails = this.renderRails(c, lower, upper);
+        return seriesBody + rails;
+
     }
 
     render(seriesBody) {
@@ -2095,7 +2098,7 @@ class HennStonehengeCard extends HTMLElement {
           ${label}
         </svg>
       </ha-card>
-    `; // teine katse
+    `; 
     }
 
     norm(v, min, span) {
