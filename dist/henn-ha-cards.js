@@ -1803,6 +1803,20 @@ class HennStonehengeCard extends HTMLElement {
             ...this.defConfig,
             ...s,
 
+            caption: {
+                text: "{name}",
+                show: false,
+                position: "up",
+                alignment: "S",
+                gap: 0,
+                ...(s.caption || {}),
+                font: {
+                    size: 5,
+                    color: "black",
+                    ...(this.config.caption?.font || {})
+                }
+            },
+
             gradient: {
                 ...(this.defConfig.gradient || {}),
                 ...(s.gradient || {})
@@ -1835,6 +1849,24 @@ class HennStonehengeCard extends HTMLElement {
                 show: s.upper?.show === true
             }
         };
+    }
+
+    renderCaptionText(text, c, buckets) {
+        return String(text ?? "").replace(/\{([^}]+)\}/g, (match, key) => {
+            key = String(key).trim();
+
+            if (!key) return "";
+
+            // hiljem: tuttavad sõnad
+            // if (key === "max") ...
+            // if (key === "avg") ...
+
+            if (key.startsWith("/")) {
+                return hennGetPath(this.config, key.slice(1)) ?? "";
+            }
+
+            return hennGetPath(c, key) ?? "";
+        });
     }
 
     prepareSeriesConfigs() {
@@ -2073,8 +2105,59 @@ class HennStonehengeCard extends HTMLElement {
             c.diagram_type === "line" ? this.renderLine(c, buckets, min, span, lower, upper) :
                 this.renderColor(c, buckets, min, span, lower, upper);
         const rails = this.renderRails(c, lower, upper);
-        return seriesBody + rails;
+        const caption = this.renderCaption(c, buckets, min, span, lower, upper);
+        return seriesBody + rails + caption;
 
+    }
+
+    renderCaption(c, buckets, lower, upper) {
+        const cap = c.caption || {};
+        if (cap.show !== true) return "";
+
+        const text = this.renderCaptionText(cap.text ?? "{name}", c, buckets);
+        if (!text) return "";
+
+        const pos = String(cap.position || "up").toLowerCase();
+        const gap = Number(cap.gap || 0);
+
+        let radius;
+
+        if (pos === "middle") {
+            radius = (lower + upper) / 2;
+        }
+        else if (pos === "down" || pos === "low") {
+            radius = lower + gap;
+        }
+        else {
+            radius = upper - gap;
+        }
+
+        const angle = this.captionAngle(cap.alignement ?? cap.alignment ?? "S");
+        const p = this.polar(50, 50, radius, angle);
+
+        const font = cap.font || {};
+        const size = Number(font.size ?? 5);
+        const color = font.color || "black";
+
+        return `<text x="${p.x}" y="${p.y}"
+                  text-anchor="middle"
+                  dominant-baseline="middle"
+                  font-size="${size}"
+                  fill="${color}">${text}</text>`;
+    }
+
+    captionAngle(a) {
+        if (a === undefined || a === null) return 180;
+
+        const s = String(a).trim().toUpperCase();
+
+        if (s === "N") return 0;
+        if (s === "E") return 90;
+        if (s === "S") return 180;
+        if (s === "W") return 270;
+
+        const n = Number(s);
+        return isNaN(n) ? 180 : n;
     }
 
     render(seriesBody) {
@@ -2979,7 +3062,7 @@ class HennStonehengeCardEditor extends HTMLElement {
         const title =
             s.title ||
             s.name ||
-            s.caption ||
+            //s.caption ||
             s.value_entity ||
             `Series ${index + 1}`;
 
@@ -3240,8 +3323,8 @@ class HennStonehengeCardEditor extends HTMLElement {
 
                 this._seriesPatchChanged(index, {
                     value_entity: value,
-                    name: friendlyName,
-                    caption: friendlyName
+                    //caption: friendlyName,
+                    name: friendlyName
                 });
             });
         });
