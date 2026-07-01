@@ -2139,22 +2139,31 @@ class HennStonehengeCard extends HTMLElement {
         let path = "";
 
         if (pos === "line") {
-            let points = this.captionLinePoints(c, buckets);
+            const span = Number(cap.span ?? 180);
+            const steps = Math.max(24, Math.round(span / 5));
+
+            let points = [];
+
+            for (let i = 0; i <= steps; i++) {
+                const aa = a - span / 2 + span * i / steps;
+                const idx = Math.round((((aa % 360) + 360) % 360) / 360 * buckets.length) % buckets.length;
+
+                const b = buckets[idx];
+                const v = Number(b.value);
+                if (!isFinite(v)) continue;
+
+                const values = buckets.map(x => Number(x.value)).filter(x => isFinite(x));
+                const min = Math.min(...values);
+                const max = Math.max(...values);
+                const t = (v - min) / ((max - min) || 1);
+
+                const r = lower + (upper - lower) * t + gap;
+                points.push(this.polar(50, 50, r, aa));
+            }
 
             points = this.smoothCaptionPoints(points, cap.smooth);
 
-            if (gap) {
-                points = points.map(p => {
-                    const dx = p.x - 50;
-                    const dy = p.y - 50;
-                    const len = Math.sqrt(dx * dx + dy * dy) || 1;
-
-                    return {
-                        x: p.x + dx / len * gap,
-                        y: p.y + dy / len * gap
-                    };
-                });
-            }
+            if (south) points.reverse();
 
             path = this.captionSmoothPath(points);
             if (!path) return "";
@@ -2261,11 +2270,11 @@ class HennStonehengeCard extends HTMLElement {
 
         let d = `M ${points[0].x} ${points[0].y}`;
 
-        for (let i = 0; i < points.length; i++) {
-            const p0 = points[(i - 1 + points.length) % points.length];
+        for (let i = 0; i < points.length - 1; i++) {
+            const p0 = points[Math.max(0, i - 1)];
             const p1 = points[i];
-            const p2 = points[(i + 1) % points.length];
-            const p3 = points[(i + 2) % points.length];
+            const p2 = points[i + 1];
+            const p3 = points[Math.min(points.length - 1, i + 2)];
 
             const c1 = {
                 x: p1.x + (p2.x - p0.x) / 6,
@@ -2280,7 +2289,6 @@ class HennStonehengeCard extends HTMLElement {
             d += ` C ${c1.x} ${c1.y} ${c2.x} ${c2.y} ${p2.x} ${p2.y}`;
         }
 
-        d += " Z";
         return d;
     }
 
