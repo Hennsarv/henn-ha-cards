@@ -2137,7 +2137,9 @@ class HennStonehengeCard extends HTMLElement {
         const angle = this.captionAngle(cap.alignement ?? cap.alignment ?? "S");
         const a = ((angle % 360) + 360) % 360;
 
-        // lõunapoolkeral on kiri muidu jalad ülespidi
+        const span = Number(cap.span ?? 180);
+        if (!isFinite(span) || span <= 0) return "";
+
         const south = a > 90 && a < 270;
 
         const font = cap.font || {};
@@ -2146,30 +2148,14 @@ class HennStonehengeCard extends HTMLElement {
 
         const id = `caption-path-${this._renderCount || 0}-${Math.random().toString(36).slice(2)}`;
 
-        const p0 = this.polar(50, 50, radius, 0);
-        const p180 = this.polar(50, 50, radius, 180);
-
-        // Geomeetria jääb samaks.
-        // Muutub ainult tee suund.
-        const sweep = south ? 0 : 1;
-
-        const path = `
-        M ${p0.x} ${p0.y}
-        A ${radius} ${radius} 0 1 ${sweep} ${p180.x} ${p180.y}
-        A ${radius} ${radius} 0 1 ${sweep} ${p0.x} ${p0.y}
-    `;
-
-        // Kui tee suund pöördub, peab offset ka pöörduma,
-        // muidu satub tekst vastasküljele.
-        const offset = south
-            ? (360 - a) / 360 * 100
-            : a / 360 * 100;
+        const side = south ? "low" : "up";
+        const path = this.captionArcPath(50, 50, radius, a, span, side);
 
         return `
         <path id="${id}" d="${path}" fill="none" stroke="none"></path>
         <text font-size="${size}" fill="${color}">
             <textPath href="#${id}"
-                      startOffset="${offset}%"
+                      startOffset="50%"
                       text-anchor="middle">${text}</textPath>
         </text>`;
     }
