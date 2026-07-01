@@ -2110,7 +2110,7 @@ class HennStonehengeCard extends HTMLElement {
 
     }
 
-    renderCaption(c, buckets, lower, upper) { // seitsmes
+    renderCaption(c, buckets, lower, upper) { // kaheksas 
         const cap = c.caption || {};
         if (cap.show !== true) return "";
 
@@ -2137,6 +2137,7 @@ class HennStonehengeCard extends HTMLElement {
         const angle = this.captionAngle(cap.alignement ?? cap.alignment ?? "S");
         const a = ((angle % 360) + 360) % 360;
 
+        // lõunapoolkeral on kiri muidu jalad ülespidi
         const south = a > 90 && a < 270;
 
         const font = cap.font || {};
@@ -2145,18 +2146,12 @@ class HennStonehengeCard extends HTMLElement {
 
         const id = `caption-path-${this._renderCount || 0}-${Math.random().toString(36).slice(2)}`;
 
-        let p0, p180, sweep;
+        const p0 = this.polar(50, 50, radius, 0);
+        const p180 = this.polar(50, 50, radius, 180);
 
-        if (south) {
-            p0 = this.polar(50, 50, radius, 180);
-            p180 = this.polar(50, 50, radius, 0);
-            sweep = 0;
-        }
-        else {
-            p0 = this.polar(50, 50, radius, 0);
-            p180 = this.polar(50, 50, radius, 180);
-            sweep = 1;
-        }
+        // Geomeetria jääb samaks.
+        // Muutub ainult tee suund.
+        const sweep = south ? 0 : 1;
 
         const path = `
         M ${p0.x} ${p0.y}
@@ -2164,7 +2159,11 @@ class HennStonehengeCard extends HTMLElement {
         A ${radius} ${radius} 0 1 ${sweep} ${p0.x} ${p0.y}
     `;
 
-        const offset = a / 360 * 100;
+        // Kui tee suund pöördub, peab offset ka pöörduma,
+        // muidu satub tekst vastasküljele.
+        const offset = south
+            ? (360 - a) / 360 * 100
+            : a / 360 * 100;
 
         return `
         <path id="${id}" d="${path}" fill="none" stroke="none"></path>
@@ -2173,39 +2172,6 @@ class HennStonehengeCard extends HTMLElement {
                       startOffset="${offset}%"
                       text-anchor="middle">${text}</textPath>
         </text>`;
-    }
-
-    captionAngle(a) { //esimese korraga ei läinud
-        if (a === undefined || a === null) return 180;
-
-        const s = String(a).trim().toUpperCase();
-
-        if (s === "N") return 0;
-        if (s === "E") return 90;
-        if (s === "S") return 180;
-        if (s === "W") return 270;
-
-        const n = Number(s);
-        return isNaN(n) ? 180 : n;
-    }
-
-    captionArcPath(cx, cy, r, centerAngle, span, side) {
-        let a1 = centerAngle - span / 2;
-        let a2 = centerAngle + span / 2;
-
-        // low/down puhul keerame suuna ümber,
-        // et tekst ei jääks tagurpidi
-        if (side === "low") {
-            [a1, a2] = [a2, a1];
-        }
-
-        const p1 = this.polar(cx, cy, r, a1);
-        const p2 = this.polar(cx, cy, r, a2);
-
-        const largeArc = span > 180 ? 1 : 0;
-        const sweep = side === "low" ? 0 : 1;
-
-        return `M ${p1.x} ${p1.y} A ${r} ${r} 0 ${largeArc} ${sweep} ${p2.x} ${p2.y}`;
     }
 
 
