@@ -2891,7 +2891,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                 hennLabel("Gradient\nmaxcolor", "henn-editor-tick-row-label"),
                 hennColorCell(this, "gradient.max_color", defaults.gradient?.max_color ?? "black", "black"),
                 hennNumberInput(this, "gradient.opacity", defaults.gradient?.opacity ?? 0.5, 0.5, {
-                    min: 0.25, max: 0.85, step: 0.05
+                    min: 0.15, max: 1, step: 0.05
                 }).addStyle({gridColumn: "3 / 6"})
             ], { boxClassName: "henn-editor-tick-table" }));  
 
@@ -3180,7 +3180,7 @@ class HennStonehengeCardEditor extends HTMLElement {
                 hennLocal(this, hennColorCell, "gradient.min_color", "white", index),
                 hennLabel("Gradient\nmaxcolor", "henn-editor-tick-row-label"),
                 hennLocal(this, hennColorCell, "gradient.max_color", "black", index),
-                hennLocal(this, hennNumberInput, "gradient.opacity", 0.5, index)
+                hennLocal(this, hennNumberInput, "gradient.opacity", 0.5, index, {min: 0.15, max: 1, step: 0.05})
                     .addStyle({ gridColumn: "3 / 6"})
             ], { boxClassName: "henn-editor-tick-table" }));
 
