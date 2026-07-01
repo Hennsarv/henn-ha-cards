@@ -2110,7 +2110,7 @@ class HennStonehengeCard extends HTMLElement {
 
     }
 
-    renderCaption(c, buckets, lower, upper) { // kaheksas 
+    renderCaption(c, buckets, lower, upper) { // üheksas
         const cap = c.caption || {};
         if (cap.show !== true) return "";
 
@@ -2172,6 +2172,40 @@ class HennStonehengeCard extends HTMLElement {
                       startOffset="${offset}%"
                       text-anchor="middle">${text}</textPath>
         </text>`;
+    }
+
+
+    captionAngle(a) { //esimese korraga ei läinud
+        if (a === undefined || a === null) return 180;
+
+        const s = String(a).trim().toUpperCase();
+
+        if (s === "N") return 0;
+        if (s === "E") return 90;
+        if (s === "S") return 180;
+        if (s === "W") return 270;
+
+        const n = Number(s);
+        return isNaN(n) ? 180 : n;
+    }
+
+    captionArcPath(cx, cy, r, centerAngle, span, side) {
+        let a1 = centerAngle - span / 2;
+        let a2 = centerAngle + span / 2;
+
+        // low/down puhul keerame suuna ümber,
+        // et tekst ei jääks tagurpidi
+        if (side === "low") {
+            [a1, a2] = [a2, a1];
+        }
+
+        const p1 = this.polar(cx, cy, r, a1);
+        const p2 = this.polar(cx, cy, r, a2);
+
+        const largeArc = span > 180 ? 1 : 0;
+        const sweep = side === "low" ? 0 : 1;
+
+        return `M ${p1.x} ${p1.y} A ${r} ${r} 0 ${largeArc} ${sweep} ${p2.x} ${p2.y}`;
     }
 
 
