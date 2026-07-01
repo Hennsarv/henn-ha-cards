@@ -2140,28 +2140,25 @@ class HennStonehengeCard extends HTMLElement {
 
         if (pos === "line") {
             const span = Number(cap.span ?? 180);
-            const steps = Math.max(24, Math.round(span / 5));
+            if (!isFinite(span) || span <= 0) return "";
 
-            let points = [];
+            let points = this.captionLinePoints(c, buckets);   // kogu graafikujoone punktid
 
-            for (let i = 0; i <= steps; i++) {
-                const aa = a - span / 2 + span * i / steps;
-                const idx = Math.round((((aa % 360) + 360) % 360) / 360 * buckets.length) % buckets.length;
-
-                const b = buckets[idx];
-                const v = Number(b.value);
-                if (!isFinite(v)) continue;
-
-                const values = buckets.map(x => Number(x.value)).filter(x => isFinite(x));
-                const min = Math.min(...values);
-                const max = Math.max(...values);
-                const t = (v - min) / ((max - min) || 1);
-
-                const r = lower + (upper - lower) * t + gap;
-                points.push(this.polar(50, 50, r, aa));
-            }
-
+            points = this.captionSlicePoints(points, a, span); // ainult alignment ± span/2
             points = this.smoothCaptionPoints(points, cap.smooth);
+
+            if (gap) {
+                points = points.map(p => {
+                    const dx = p.x - 50;
+                    const dy = p.y - 50;
+                    const len = Math.sqrt(dx * dx + dy * dy) || 1;
+
+                    return {
+                        x: p.x + dx / len * gap,
+                        y: p.y + dy / len * gap
+                    };
+                });
+            }
 
             if (south) points.reverse();
 
@@ -2197,6 +2194,25 @@ class HennStonehengeCard extends HTMLElement {
                       startOffset="50%"
                       text-anchor="middle">${text}</textPath>
         </text>`;
+    }
+
+    captionSlicePoints(points, centerAngle, span) {
+        if (!points?.length) return [];
+
+        const n = points.length;
+        const a = ((centerAngle % 360) + 360) % 360;
+
+        const center = Math.round(a / 360 * n) % n;
+        const count = Math.max(4, Math.round(span / 360 * n));
+        const half = Math.floor(count / 2);
+
+        const out = [];
+
+        for (let i = -half; i <= half; i++) {
+            out.push(points[(center + i + n) % n]);
+        }
+
+        return out;
     }
 
     captionLinePoints(c, buckets) {
