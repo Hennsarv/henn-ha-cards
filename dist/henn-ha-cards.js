@@ -1825,12 +1825,14 @@ class HennStonehengeCard extends HTMLElement {
 
             lower: {
                 ...(this.rootConfig.lower || {}),
-                ...(s.lower || {})
+                ...(s.lower || {}),
+                show: s.lower?.show === true
             },
 
             upper: {
                 ...(this.rootConfig.upper || {}),
-                ...(s.upper || {})
+                ...(s.upper || {}),
+                show: s.upper?.show === true
             }
         };
     }
