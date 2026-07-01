@@ -2121,29 +2121,42 @@ class HennStonehengeCard extends HTMLElement {
         const gap = Number(cap.gap || 0);
 
         let radius;
+        let side;
 
-        if (pos === "middle") {
-            radius = (lower + upper) / 2;
-        }
-        else if (pos === "down" || pos === "low") {
+        if (pos === "down" || pos === "low") {
             radius = lower + gap;
+            side = "low";
+        }
+        else if (pos === "middle") {
+            radius = (lower + upper) / 2;
+            side = "middle";
         }
         else {
             radius = upper - gap;
+            side = "up";
         }
 
         const angle = this.captionAngle(cap.alignement ?? cap.alignment ?? "S");
-        const p = this.polar(50, 50, radius, angle);
 
         const font = cap.font || {};
         const size = Number(font.size ?? 5);
         const color = font.color || "black";
 
-        return `<text x="${p.x}" y="${p.y}"
-                  text-anchor="middle"
-                  dominant-baseline="middle"
-                  font-size="${size}"
-                  fill="${color}">${text}</text>`;
+        const id = `caption-path-${this._renderCount || 0}-${Math.random().toString(36).slice(2)}`;
+
+        const path = this.captionArcPath(50, 50, radius, angle, 160, side);
+
+        return `
+      <defs>
+        <path id="${id}" d="${path}"></path>
+      </defs>
+      <text font-size="${size}"
+            fill="${color}"
+            dominant-baseline="middle">
+        <textPath href="#${id}"
+                  startOffset="50%"
+                  text-anchor="middle">${text}</textPath>
+      </text>`;
     }
 
     captionAngle(a) { //esimese korraga ei läinud
@@ -2159,6 +2172,26 @@ class HennStonehengeCard extends HTMLElement {
         const n = Number(s);
         return isNaN(n) ? 180 : n;
     }
+
+    captionArcPath(cx, cy, r, centerAngle, span, side) {
+        let a1 = centerAngle - span / 2;
+        let a2 = centerAngle + span / 2;
+
+        // low/down puhul keerame suuna ümber,
+        // et tekst ei jääks tagurpidi
+        if (side === "low") {
+            [a1, a2] = [a2, a1];
+        }
+
+        const p1 = this.polar(cx, cy, r, a1);
+        const p2 = this.polar(cx, cy, r, a2);
+
+        const largeArc = span > 180 ? 1 : 0;
+        const sweep = side === "low" ? 0 : 1;
+
+        return `M ${p1.x} ${p1.y} A ${r} ${r} 0 ${largeArc} ${sweep} ${p2.x} ${p2.y}`;
+    }
+
 
     render(seriesBody) {
         this._renderCount = (this._renderCount ?? 0) + 1;
