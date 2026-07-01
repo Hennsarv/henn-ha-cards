@@ -1813,7 +1813,7 @@ class HennStonehengeCard extends HTMLElement {
                 font: {
                     size: 5,
                     color: "black",
-                    ...(this.config.caption?.font || {})
+                    ...(s.caption?.font || {})
                 }
             },
 
