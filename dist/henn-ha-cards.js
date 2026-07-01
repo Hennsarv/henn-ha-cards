@@ -1813,7 +1813,13 @@ class HennStonehengeCard extends HTMLElement {
                 font: {
                     size: 5,
                     color: "black",
-                    ...(s.caption?.font || {})
+                    ...(s.caption?.font || {}),
+                },
+                smooth: {
+                    iterations: 3,
+                    strength: 0.5,
+                    radius: 2,
+                    ...(s.caption?.smooth || {})
                 }
             },
 
@@ -2110,7 +2116,7 @@ class HennStonehengeCard extends HTMLElement {
 
     }
 
-    renderCaption(c, buckets, lower, upper) { // üheksas
+    renderCaption(c, buckets, lower, upper) { // kümnes
         const cap = c.caption || {};
         if (cap.show !== true) return "";
 
@@ -2120,26 +2126,8 @@ class HennStonehengeCard extends HTMLElement {
         const pos = String(cap.position || "up").toLowerCase();
         const gap = Number(cap.gap || 0);
 
-        let radius;
-
-        if (pos === "down" || pos === "low") {
-            radius = lower + gap;
-        }
-        else if (pos === "middle") {
-            radius = (lower + upper) / 2 - gap;
-        }
-        else {
-            radius = upper - gap;
-        }
-
-        if (!isFinite(radius) || radius <= 0) return "";
-
         const angle = this.captionAngle(cap.alignement ?? cap.alignment ?? "S");
         const a = ((angle % 360) + 360) % 360;
-
-        const span = Number(cap.span ?? 180);
-        if (!isFinite(span) || span <= 0) return "";
-
         const south = a > 90 && a < 270;
 
         const font = cap.font || {};
@@ -2148,8 +2136,50 @@ class HennStonehengeCard extends HTMLElement {
 
         const id = `caption-path-${this._renderCount || 0}-${Math.random().toString(36).slice(2)}`;
 
-        const side = south ? "low" : "up";
-        const path = this.captionArcPath(50, 50, radius, a, span, side);
+        let path = "";
+
+        if (pos === "line") {
+            let points = this.captionLinePoints(c, buckets);
+
+            points = this.smoothCaptionPoints(points, cap.smooth);
+
+            if (gap) {
+                points = points.map(p => {
+                    const dx = p.x - 50;
+                    const dy = p.y - 50;
+                    const len = Math.sqrt(dx * dx + dy * dy) || 1;
+
+                    return {
+                        x: p.x + dx / len * gap,
+                        y: p.y + dy / len * gap
+                    };
+                });
+            }
+
+            path = this.captionSmoothPath(points);
+            if (!path) return "";
+        }
+        else {
+            let radius;
+
+            if (pos === "down" || pos === "low") {
+                radius = lower + gap;
+            }
+            else if (pos === "middle") {
+                radius = (lower + upper) / 2 - gap;
+            }
+            else {
+                radius = upper - gap;
+            }
+
+            if (!isFinite(radius) || radius <= 0) return "";
+
+            const span = Number(cap.span ?? 180);
+            if (!isFinite(span) || span <= 0) return "";
+
+            const side = south ? "low" : "up";
+            path = this.captionArcPath(50, 50, radius, a, span, side);
+        }
 
         return `
         <path id="${id}" d="${path}" fill="none" stroke="none"></path>
@@ -2160,6 +2190,99 @@ class HennStonehengeCard extends HTMLElement {
         </text>`;
     }
 
+    captionLinePoints(c, buckets) {
+        const lower = Number(c.lower?.radius);
+        const upper = Number(c.upper?.radius);
+
+        if (!isFinite(lower) || !isFinite(upper)) return [];
+
+        const values = buckets
+            .map(b => Number(b.value))
+            .filter(v => isFinite(v));
+
+        if (!values.length) return [];
+
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        const span = max - min || 1;
+
+        return buckets
+            .map((b, i) => {
+                const v = Number(b.value);
+                if (!isFinite(v)) return null;
+
+                const t = (v - min) / span;
+                const r = lower + (upper - lower) * t;
+
+                const angle = i / buckets.length * 360;
+
+                return this.polar(50, 50, r, angle);
+            })
+            .filter(p => p);
+    }
+
+    smoothCaptionPoints(points, smooth) {
+        if (!points || points.length < 3) return points || [];
+
+        const iterations = Number(smooth?.iterations ?? 3);
+        const strength = Number(smooth?.strength ?? 0.5);
+        const radius = Number(smooth?.radius ?? 2);
+
+        let result = points;
+
+        for (let it = 0; it < iterations; it++) {
+            result = result.map((p, i) => {
+                let sx = 0;
+                let sy = 0;
+                let n = 0;
+
+                for (let k = -radius; k <= radius; k++) {
+                    const q = result[(i + k + result.length) % result.length];
+                    sx += q.x;
+                    sy += q.y;
+                    n++;
+                }
+
+                const ax = sx / n;
+                const ay = sy / n;
+
+                return {
+                    x: p.x + (ax - p.x) * strength,
+                    y: p.y + (ay - p.y) * strength
+                };
+            });
+        }
+
+        return result;
+    }
+
+    captionSmoothPath(points) {
+        if (!points || points.length < 2) return "";
+
+        let d = `M ${points[0].x} ${points[0].y}`;
+
+        for (let i = 0; i < points.length; i++) {
+            const p0 = points[(i - 1 + points.length) % points.length];
+            const p1 = points[i];
+            const p2 = points[(i + 1) % points.length];
+            const p3 = points[(i + 2) % points.length];
+
+            const c1 = {
+                x: p1.x + (p2.x - p0.x) / 6,
+                y: p1.y + (p2.y - p0.y) / 6
+            };
+
+            const c2 = {
+                x: p2.x - (p3.x - p1.x) / 6,
+                y: p2.y - (p3.y - p1.y) / 6
+            };
+
+            d += ` C ${c1.x} ${c1.y} ${c2.x} ${c2.y} ${p2.x} ${p2.y}`;
+        }
+
+        d += " Z";
+        return d;
+    }
 
     captionAngle(a) { //esimese korraga ei läinud
         if (a === undefined || a === null) return 180;
