@@ -2146,7 +2146,7 @@ class HennStonehengeCard extends HTMLElement {
                   fill="${color}">${text}</text>`;
     }
 
-    captionAngle(a) {
+    captionAngle(a) { //esimese korraga ei läinud
         if (a === undefined || a === null) return 180;
 
         const s = String(a).trim().toUpperCase();
