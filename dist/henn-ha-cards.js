@@ -2131,12 +2131,15 @@ class HennStonehengeCard extends HTMLElement {
         const textAnchor = cap.text_align || "middle";
 
         const angle = this.captionAngle(cap.alignment ?? "S")
+
+        const angle2 = angle
             + (textAnchor === "start" || textAnchor === "left" ? -span/2
             : textAnchor === "end" || textAnchor === "right" ? span/2
                 : 0)
             ;
         const a = ((angle % 360) + 360) % 360;
-        const south = a > 90 && a < 270;
+        const a2 = ((angle2 % 360) + 360) % 360;
+        const south = a2 > 90 && a2 < 270;
         
         const font = cap.font || {};
         const size = Number(font.size ?? 5);
