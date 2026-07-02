@@ -2128,7 +2128,7 @@ class HennStonehengeCard extends HTMLElement {
         const pos = String(cap.position || "up").toLowerCase();
         const gap = Number(cap.gap || 0);
 
-        const angle = this.captionAngle(cap.alignement ?? "S");
+        const angle = this.captionAngle(cap.alignment ?? "S");
         const a = ((angle % 360) + 360) % 360;
         const south = a > 90 && a < 270;
 
@@ -2137,8 +2137,8 @@ class HennStonehengeCard extends HTMLElement {
         const color = font.color || "black";
         const fill = font.fill || "none";
         const dy = Number(font.gap ?? size * 0.5);
-        const startAnchor = cap.path_ancor || "middle";
-        const textAnchor = cap.text_ancor || "middle";
+        const startAnchor = cap.path_anchor || "middle";
+        const textAnchor = cap.text_anchor || "middle";
         const startOffset =
             textAnchor === "start" ? "5%" :
                 textAnchor === "end" ? "95%" :
@@ -2192,7 +2192,7 @@ class HennStonehengeCard extends HTMLElement {
         <text font-size="${size}" fill="${color}" dy="${dy}">
             <textPath href="#${id}"
                       startOffset="${startOffset}"
-                      textAnchor="${textAnchor}">${text}</textPath>
+                      text-anchor="${textAnchor}">${text}</textPath>
         </text>`;
     }
 
