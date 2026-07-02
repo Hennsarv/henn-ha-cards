@@ -2245,6 +2245,14 @@ class HennStonehengeCard extends HTMLElement {
         }).filter(p => p);
     }
 
+    captionPolylinePath(points) {
+        if (!points || points.length < 2) return "";
+
+        return points
+            .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
+            .join(" ");
+    }
+
     captionSlicePoints(points, centerAngle, span) {
         if (!points?.length) return [];
 
