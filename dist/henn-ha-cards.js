@@ -1808,6 +1808,9 @@ class HennStonehengeCard extends HTMLElement {
                 show: false,
                 position: "up",
                 alignment: "S",
+                path: 180,
+                path_ancor: "middle",
+                text_ancor: "middle",
                 gap: 0,
                 ...(s.caption || {}),
                 font: {
@@ -2125,7 +2128,7 @@ class HennStonehengeCard extends HTMLElement {
         const pos = String(cap.position || "up").toLowerCase();
         const gap = Number(cap.gap || 0);
 
-        const angle = this.captionAngle(cap.alignement ?? cap.alignment ?? "S");
+        const angle = this.captionAngle(cap.alignement ?? "S");
         const a = ((angle % 360) + 360) % 360;
         const south = a > 90 && a < 270;
 
@@ -2134,6 +2137,12 @@ class HennStonehengeCard extends HTMLElement {
         const color = font.color || "black";
         const fill = font.fill || "none";
         const dy = Number(font.gap ?? size * 0.5);
+        const startAnchor = cap.path_ancor || "middle";
+        const textAnchor = cap.text_ancor || "middle";
+        const startOffset =
+            textAnchor === "start" ? "5%" :
+                textAnchor === "end" ? "95%" :
+                    "50%";
 
         const span = Number(cap.span ?? 180);
         if (!isFinite(span) || span <= 0) return "";
@@ -2182,8 +2191,8 @@ class HennStonehengeCard extends HTMLElement {
         <path id="${id}" d="${path}" fill="none" stroke="${fill}" stroke-width="${size + 2}" stroke-linecap="round"></path>
         <text font-size="${size}" fill="${color}" dy="${dy}">
             <textPath href="#${id}"
-                      startOffset="50%"
-                      text-anchor="middle">${text}</textPath>
+                      startOffset="${startOffset}"
+                      text-anchor="${textAnchor}">${text}</textPath>
         </text>`;
     }
 
