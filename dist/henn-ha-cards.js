@@ -1815,11 +1815,10 @@ class HennStonehengeCard extends HTMLElement {
                     color: "black",
                     ...(s.caption?.font || {}),
                 },
-                smooth: {
-                    iterations: 3,
+                quide: {
+                    mode: "raw",
                     strength: 0.5,
-                    radius: 2,
-                    ...(s.caption?.smooth || {})
+                    ...(s.caption?.quide || {})
                 }
             },
 
@@ -2116,7 +2115,7 @@ class HennStonehengeCard extends HTMLElement {
 
     }
 
-    renderCaption(c, buckets, lower, upper) { // veel paa varianti
+    renderCaption(c, buckets, lower, upper) { // line raw tagasi
         const cap = c.caption || {};
         if (cap.show !== true) return "";
 
@@ -2134,11 +2133,31 @@ class HennStonehengeCard extends HTMLElement {
         const size = Number(font.size ?? 5);
         const color = font.color || "black";
 
+        const span = Number(cap.span ?? 180);
+        if (!isFinite(span) || span <= 0) return "";
+
         const id = `caption-path-${this._renderCount || 0}-${Math.random().toString(36).slice(2)}`;
 
         let path = "";
 
- 
+        if (pos === "line") {
+            let points = this.captionLinePoints(c, buckets, lower, upper);
+
+            points = this.captionSlicePoints(points, a, span);
+
+            if (gap) {
+                points = points.map(p => {
+                    const r = p.r + gap;
+                    return { ...this.polar(50, 50, r, p.angle), angle: p.angle, r };
+                });
+            }
+
+            if (south) points.reverse();
+
+            path = this.captionPolylinePath(points);
+            if (!path) return "";
+        }
+        else {
             let radius;
 
             if (pos === "down" || pos === "low") {
@@ -2153,12 +2172,9 @@ class HennStonehengeCard extends HTMLElement {
 
             if (!isFinite(radius) || radius <= 0) return "";
 
-            const span = Number(cap.span ?? 180);
-            if (!isFinite(span) || span <= 0) return "";
-
             const side = south ? "low" : "up";
             path = this.captionArcPath(50, 50, radius, a, span, side);
-        
+        }
 
         return `
         <path id="${id}" d="${path}" fill="none" stroke="none"></path>
@@ -2168,7 +2184,6 @@ class HennStonehengeCard extends HTMLElement {
                       text-anchor="middle">${text}</textPath>
         </text>`;
     }
-
 
     captionAngle(a) { //esimese korraga ei läinud
         if (a === undefined || a === null) return 180;
