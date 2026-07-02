@@ -2225,6 +2225,10 @@ class HennStonehengeCard extends HTMLElement {
 
         if (!values.length) return [];
 
+        if (c.anchor === "upper") {
+            [lower, upper] = [upper, lower];
+        }
+
         const min = Math.min(...values);
         const max = Math.max(...values);
         const span = max - min || 1;
