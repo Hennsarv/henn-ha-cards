@@ -2133,8 +2133,7 @@ class HennStonehengeCard extends HTMLElement {
         const size = Number(font.size ?? 5);
         const color = font.color || "black";
         const fill = font.fill || "none";
-        const fgap = Number(font.gap ?? 0);
-        const dy = -(size * 0.5) + fgap;
+        const dy = Number(font.gap ?? size * 0.5);
 
         const span = Number(cap.span ?? 180);
         if (!isFinite(span) || span <= 0) return "";
@@ -2181,9 +2180,9 @@ class HennStonehengeCard extends HTMLElement {
 
         return `
         <path id="${id}" d="${path}" fill="none" stroke="${fill}" stroke-width="${size + 2}" stroke-linecap="round"></path>
-        <text font-size="${size}" fill="${color}">
+        <text font-size="${size}" fill="${color}" dy="${dy}">
             <textPath href="#${id}"
-                      startOffset="50%" dy="${dy}"
+                      startOffset="50%"
                       text-anchor="middle">${text}</textPath>
         </text>`;
     }
