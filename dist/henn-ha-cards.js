@@ -2160,7 +2160,7 @@ class HennStonehengeCard extends HTMLElement {
 
         if (pos === "line") {
             let points = this.captionLinePoints(c, buckets, lower, upper);
-
+            points = this.captionGuidePoints(cap.guide, points);
             points = this.captionSlicePoints(points, a, span);
 
             if (gap) {
@@ -2277,6 +2277,54 @@ class HennStonehengeCard extends HTMLElement {
         return points
             .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
             .join(" ");
+    }
+
+    flatTowards(x, a, c) {
+        return a + (x - a) * c;
+    }
+
+    wrapIndex(i, n) {
+        return ((i % n) + n) % n;
+    }
+
+    captionGuidePoints(guide, points) {
+        const mode = String(guide?.mode || "raw").toLowerCase();
+        const strength = Number(guide?.strength ?? 0.5);
+
+        if (!points?.length || mode === "raw") return points;
+
+        const rs = points.map(p => p.r);
+
+        if (mode === "average" || mode === "avg") {
+            const avg = rs.reduce((a, b) => a + b, 0) / rs.length;
+
+            return points.map(p => {
+                const r = this.flatTowards(p.r, avg, strength);
+                return { ...p, r, ...this.polar(50, 50, r, p.angle) };
+            });
+        }
+
+        if (mode === "sliding" || mode === "slider") {
+            const n = points.length;
+            const neighbors = Number(guide?.neighbors ?? 2);
+
+            return points.map((p, i) => {
+                let sum = 0;
+                let count = 0;
+
+                for (let k = -neighbors; k <= neighbors; k++) {
+                    sum += rs[this.wrapIndex(i + k, n)];
+                    count++;
+                }
+
+                const avg = sum / count;
+                const r = this.flatTowards(p.r, avg, strength);
+
+                return { ...p, r, ...this.polar(50, 50, r, p.angle) };
+            });
+        }
+
+        return points;
     }
 
     captionSlicePoints(points, centerAngle, span) {
