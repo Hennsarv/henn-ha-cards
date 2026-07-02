@@ -1809,8 +1809,7 @@ class HennStonehengeCard extends HTMLElement {
                 position: "up",
                 alignment: "S",
                 path: 180,
-                path_ancor: "middle",
-                text_ancor: "middle",
+                text_align: "middle",
                 gap: 0,
                 ...(s.caption || {}),
                 font: {
@@ -2127,25 +2126,30 @@ class HennStonehengeCard extends HTMLElement {
 
         const pos = String(cap.position || "up").toLowerCase();
         const gap = Number(cap.gap || 0);
+        const span = Number(cap.path ?? 180);
+        if (!isFinite(span) || span <= 0) return "";
+        const textAnchor = cap.text_align || "middle";
 
-        const angle = this.captionAngle(cap.alignment ?? "S");
+        const angle = this.captionAngle(cap.alignment ?? "S")
+            + (textAnchor === "start" || textAnchor === "left" ? -span/2
+            : textAnchor === "end" || textAnchor === "right" ? span/2
+                : 0)
+            ;
         const a = ((angle % 360) + 360) % 360;
         const south = a > 90 && a < 270;
-
+        
         const font = cap.font || {};
         const size = Number(font.size ?? 5);
         const color = font.color || "black";
         const fill = font.fill || "none";
         const dy = Number(font.gap ?? size * 0.5);
-        const startAnchor = cap.path_anchor || "middle";
-        const textAnchor = cap.text_anchor || "middle";
+        // text-align: start, middle, end, left, center, right
         const startOffset =
-            textAnchor === "start" ? "5%" :
-                textAnchor === "end" ? "95%" :
-                    textAnchor === "middle" ? "50%" : textAnchor;
+            textAnchor === "start" || textAnchor === "left" ? "5%" :
+                textAnchor === "end" || textAnchor === "right" ? "95%" :
+                    textAnchor === "middle" || textAnchor === "center" ? "50%" : textAnchor;
 
-        const span = Number(cap.span ?? 180);
-        if (!isFinite(span) || span <= 0) return "";
+
 
         const id = `caption-path-${this._renderCount || 0}-${Math.random().toString(36).slice(2)}`;
 
@@ -2196,15 +2200,19 @@ class HennStonehengeCard extends HTMLElement {
         </text>`;
     }
 
-    captionAngle(a) { //esimese korraga ei läinud
+    captionAngle(a) { 
         if (a === undefined || a === null) return 180;
 
         const s = String(a).trim().toUpperCase();
 
         if (s === "N") return 0;
+        if (s === "NE") return 45;
         if (s === "E") return 90;
+        if (s === "SE") return 135;
         if (s === "S") return 180;
+        if (s === "SW") return 225;
         if (s === "W") return 270;
+        if (s === "NW") return 315;
 
         const n = Number(s);
         return isNaN(n) ? 180 : n;
