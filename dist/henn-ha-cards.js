@@ -2139,7 +2139,7 @@ class HennStonehengeCard extends HTMLElement {
             ;
         const a1 = ((angle1 % 360) + 360) % 360;
         const a = ((angle2 % 360) + 360) % 360;
-        const south = a1 > 90 && a1 < 270;
+        const south = a1 >= 90 && a1 <= 270;
         
         const font = cap.font || {};
         const size = Number(font.size ?? 5);
@@ -2374,7 +2374,57 @@ class HennStonehengeCard extends HTMLElement {
         </svg>
       </ha-card>
     `; 
+
+        this._svg = this.querySelector("svg");
+
+        this._svg.addEventListener("pointerdown", this._stonePointerDown.bind(this));
+        this._svg.addEventListener("pointermove", this._stonePointerMove.bind(this));
+        this._svg.addEventListener("pointerup", this._stonePointerUp.bind(this));
+        this._svg.addEventListener("pointercancel", this._stonePointerUp.bind(this));
+
     }
+
+    // need on pildi käsitsi keeramise värk
+    _stoneAngleFromEvent(e) {
+        const r = this._svg.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+
+        return Math.atan2(e.clientY - cy, e.clientX - cx) * 180 / Math.PI;
+    }
+
+    _stonePointerDown(e) {
+        e.preventDefault();
+
+        this._draggingStone = true;
+        this._dragStartAngle = this._stoneAngleFromEvent(e);
+        this._dragStartRotation = this._dragRotation ?? 0;
+
+        this._svg.setPointerCapture(e.pointerId);
+        this._svg.style.cursor = "grabbing";
+    }
+
+    _stonePointerMove(e) {
+        if (!this._draggingStone) return;
+
+        const angle = this._stoneAngleFromEvent(e);
+        this._dragRotation = this._dragStartRotation + angle - this._dragStartAngle;
+
+        this._svg.style.transform = `rotate(${this._dragRotation}deg)`;
+    }
+
+    _stonePointerUp(e) {
+        if (!this._draggingStone) return;
+
+        this._draggingStone = false;
+
+        try {
+            this._svg.releasePointerCapture(e.pointerId);
+        } catch { }
+
+        this._svg.style.cursor = "grab";
+    }
+    // kuni siiani on ainult pointerdown, pointermove, pointerup, pointercancel
 
     norm(v, min, span) {
         if (v === null || isNaN(v)) return 0;
