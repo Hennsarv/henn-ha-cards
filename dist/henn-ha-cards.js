@@ -2218,6 +2218,55 @@ class HennStonehengeCard extends HTMLElement {
         return `M ${p1.x} ${p1.y} A ${r} ${r} 0 ${largeArc} ${sweep} ${p2.x} ${p2.y}`;
     }
 
+    captionLinePoints(c, buckets, lower, upper) {
+        const values = buckets
+            .map(b => this.captionBucketValue(b))
+            .filter(v => isFinite(v));
+
+        if (!values.length) return [];
+
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        const span = max - min || 1;
+
+        return buckets.map((b, i) => {
+            const v = this.captionBucketValue(b);
+            if (!isFinite(v)) return null;
+
+            const t = (v - min) / span;
+            const r = lower + (upper - lower) * t;
+            const angle = i / buckets.length * 360;
+
+            return {
+                ...this.polar(50, 50, r, angle),
+                angle,
+                r
+            };
+        }).filter(p => p);
+    }
+
+    captionSlicePoints(points, centerAngle, span) {
+        if (!points?.length) return [];
+
+        const n = points.length;
+        const a = ((centerAngle % 360) + 360) % 360;
+
+        const center = Math.round(a / 360 * n) % n;
+        const count = Math.max(4, Math.round(span / 360 * n));
+        const half = Math.floor(count / 2);
+
+        const out = [];
+
+        for (let i = -half; i <= half; i++) {
+            out.push(points[(center + i + n) % n]);
+        }
+
+        return out;
+    }
+
+    captionBucketValue(b) {
+        return Number(b.value);
+    }
 
     render(seriesBody) {
         this._renderCount = (this._renderCount ?? 0) + 1;
