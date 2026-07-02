@@ -2142,7 +2142,7 @@ class HennStonehengeCard extends HTMLElement {
         const startOffset =
             textAnchor === "start" ? "5%" :
                 textAnchor === "end" ? "95%" :
-                    "50%";
+                    textAnchor === "middle" ? "50%" : textAnchor;
 
         const span = Number(cap.span ?? 180);
         if (!isFinite(span) || span <= 0) return "";
@@ -2191,7 +2191,7 @@ class HennStonehengeCard extends HTMLElement {
         <path id="${id}" d="${path}" fill="none" stroke="${fill}" stroke-width="${size + 2}" stroke-linecap="round"></path>
         <text font-size="${size}" fill="${color}" dy="${dy}">
             <textPath href="#${id}"
-                      startOffset="${startOffset}"
+                      start-offset="${startOffset}"
                       text-anchor="${textAnchor}">${text}</textPath>
         </text>`;
     }
