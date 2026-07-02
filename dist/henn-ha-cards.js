@@ -2191,8 +2191,8 @@ class HennStonehengeCard extends HTMLElement {
         <path id="${id}" d="${path}" fill="none" stroke="${fill}" stroke-width="${size + 2}" stroke-linecap="round"></path>
         <text font-size="${size}" fill="${color}" dy="${dy}">
             <textPath href="#${id}"
-                      start-offset="${startOffset}"
-                      text-anchor="${textAnchor}">${text}</textPath>
+                      startOffset="${startOffset}"
+                      textAnchor="${textAnchor}">${text}</textPath>
         </text>`;
     }
 
