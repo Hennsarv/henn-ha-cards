@@ -4289,44 +4289,6 @@ class HennLayeredCardEditor extends HTMLElement {
         this.innerHTML = `
             ${HENN_EDITOR_STYLE}
             <style>
-                .henn-layer-root {
-                    display: grid;
-                    gap: 12px;
-                }
-                .henn-layer-section {
-                    border: 1px solid var(--divider-color, #ddd);
-                    border-radius: 12px;
-                    overflow: hidden;
-                }
-                .henn-layer-section-body {
-                    display: grid;
-                    gap: 12px;
-                    padding: 12px;
-                }
-                .henn-layer-header {
-                    display: grid;
-                    grid-template-columns: auto minmax(0, 1fr) auto;
-                    gap: 8px;
-                    align-items: center;
-                    padding: 10px 12px;
-                    background: var(--secondary-background-color, rgba(0, 0, 0, 0.04));
-                }
-                .henn-layer-header-title {
-                    min-width: 0;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    font-weight: 600;
-                }
-                .henn-layer-header-actions {
-                    display: flex;
-                    gap: 6px;
-                }
-                .henn-layer-grid {
-                    display: grid;
-                    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-                    gap: 8px;
-                }
                 .henn-layer-json {
                     box-sizing: border-box;
                     width: 100%;
@@ -4342,23 +4304,8 @@ class HennLayeredCardEditor extends HTMLElement {
                 .henn-layer-json.invalid {
                     border-color: var(--error-color, #db4437);
                 }
-                .henn-layer-child-host {
-                    display: grid;
-                    gap: 8px;
-                    padding-top: 4px;
-                }
-                .henn-layer-help {
-                    color: var(--secondary-text-color);
-                    font-size: 12px;
-                    line-height: 1.4;
-                }
-                @media (max-width: 520px) {
-                    .henn-layer-grid {
-                        grid-template-columns: 1fr;
-                    }
-                }
             </style>
-            <div class="henn-editor-root henn-layer-root">
+            <div class="henn-editor-root">
                 <div id="layer-root-section" class="henn-editor-section"></div>
                 <div id="layer-globals-section" class="henn-editor-section"></div>
                 <div id="layer-list-section" class="henn-editor-section"></div>
@@ -4379,16 +4326,7 @@ class HennLayeredCardEditor extends HTMLElement {
         const nulls = this._config.order?.nulls || "last";
 
         body.appendChild(
-            hennSegmentRow(
-                "Layer sequence",
-                reverse ? "ascending" : "descending",
-                [
-                    ["descending", "Descending"],
-                    ["ascending", "Ascending"]
-                ],
-                "descending",
-                value => this._setOrder({ reverse: value === "ascending" })
-            )
+            hennCheckboxRow(this, "Ascending layer sequence", "order.reverse", reverse, false)
         );
 
         body.appendChild(
@@ -4428,7 +4366,7 @@ class HennLayeredCardEditor extends HTMLElement {
         body.appendChild(this._jsonField(
             "globals",
             this._config.globals ?? [],
-            "Object or list. Use value_source for an entity-backed global."
+            "Object or list; value_source may refer to an entity."
         ));
         host.appendChild(body);
     }
@@ -4443,7 +4381,7 @@ class HennLayeredCardEditor extends HTMLElement {
         if (!layers.length) {
             host.appendChild(
                 hennDiv("henn-editor-section-body")
-                    .appendChilds(hennDiv("henn-layer-help").setTextContent("No layers yet. Add one with +."))
+                    .appendChilds(hennSubTitle("No layers yet. Add one with +."))
             );
             return;
         }
@@ -4455,58 +4393,51 @@ class HennLayeredCardEditor extends HTMLElement {
 
     _renderLayer(layer, index, token) {
         const open = layer._editor_open !== false;
-        const wrap = hennDiv("henn-layer-section");
+        const wrap = hennDiv().addStyle({ display: "grid" });
         const type = layer.type || "Choose a card";
 
-        const move = hennDiv("henn-layer-header-actions").appendChilds([
+        const move = hennDiv().addStyle({ display: "flex", gap: "6px" }).appendChilds([
             hennIconButton("↑", false, () => this._moveLayer(index, -1)),
             hennIconButton("↓", false, () => this._moveLayer(index, 1))
         ]);
 
-        const actions = hennDiv("henn-layer-header-actions").appendChilds([
+        const actions = hennDiv().addStyle({ display: "flex", gap: "6px", alignItems: "center" }).appendChilds([
             hennIconButton("↺", false, () => this._changeLayerType(index)),
             hennIconButton("🗑️", true, () => this._deleteLayer(index)),
             hennIconButton(open ? "▾" : "▸", false, () => this._setLayerPath(index, "_editor_open", !open))
         ]);
 
         wrap.appendChild(
-            hennDiv("henn-layer-header").appendChilds([
+            hennDiv("henn-series-header").appendChilds([
                 move,
-                hennDiv("henn-layer-header-title").setTextContent(`${index + 1}. ${type}`),
+                hennDiv().setTextContent(`${index + 1}. ${type}`),
                 actions
             ])
         );
 
         if (!open) return wrap;
 
-        const body = hennDiv("henn-layer-section-body");
-        const metaGrid = hennDiv("henn-layer-grid");
+        const body = hennDiv("henn-serie-body");
 
-        metaGrid.appendChild(
-            hennFieldRow(
-                "Layer sequence",
-                hennNumberInput(this, `layers.${index}.layer_seq`, layer.layer_seq ?? "", undefined, {
-                    onChange: (path, value) => {
-                        this._config = hennSetPath(this._config, path, value);
-                        hennFireConfigChanged(this);
-                    }
-                })
-            )
+        body.appendChild(
+            hennNumberRow(this, "Layer sequence", `layers.${index}.layer_seq`, layer.layer_seq ?? "", undefined)
         );
-        metaGrid.appendChild(this._jsonField(
+
+        body.appendChild(createSeparator());
+        body.appendChild(this._jsonField(
             `layers.${index}.style`,
             layer.style ?? {},
             "Wrapper CSS object"
         ));
-        body.appendChild(metaGrid);
-
+        body.appendChild(createSeparator());
         body.appendChild(this._jsonField(
             `layers.${index}.henn_resolve`,
             layer.henn_resolve ?? [],
-            "Optional declarative resolution rules"
+            "Declarative resolution rules"
         ));
+        body.appendChild(createSeparator());
 
-        const childHost = hennDiv("henn-layer-child-host");
+        const childHost = hennDiv().addStyle({ display: "grid", gap: "8px" });
         childHost.appendChild(hennSubTitle("Card configuration"));
         body.appendChild(childHost);
         wrap.appendChild(body);
@@ -4550,14 +4481,14 @@ class HennLayeredCardEditor extends HTMLElement {
             const getEditor = card?.constructor?.getConfigElement;
 
             if (typeof getEditor !== "function") {
-                host.appendChild(this._childJsonFallback(index, childConfig));
+                host.appendChild(this._childEditorFallback(index, childConfig));
                 return;
             }
 
             const editor = await getEditor.call(card.constructor);
             if (token !== this._renderToken || !host.isConnected) return;
             if (!editor || typeof editor.setConfig !== "function") {
-                host.appendChild(this._childJsonFallback(index, childConfig));
+                host.appendChild(this._childEditorFallback(index, childConfig));
                 return;
             }
 
@@ -4580,31 +4511,42 @@ class HennLayeredCardEditor extends HTMLElement {
         catch (error) {
             console.warn("henn-layered-card child editor error", error);
             if (token === this._renderToken && host.isConnected) {
-                host.appendChild(this._childJsonFallback(index, this._childConfig(layer)));
+                host.appendChild(this._childEditorFallback(index, this._childConfig(layer)));
             }
         }
     }
 
-    _childJsonFallback(index, childConfig) {
-        return this._jsonField(
-            `layers.${index}`,
-            childConfig,
-            "This card has no visual editor. Edit its configuration as JSON.",
-            value => ({ ...value, ...this._layerMeta(this._config.layers?.[index] || {}) })
-        );
+    _childEditorFallback(index, childConfig) {
+        const editor = document.createElement("hui-card-element-editor");
+        editor.classList.add("henn-layer-child-editor");
+        editor.hass = this._hass;
+        editor.lovelace = { views: [] };
+        editor.value = childConfig;
+        editor.addEventListener("config-changed", event => {
+            event.stopPropagation();
+            if (!editor.isConnected) return;
+            const child = event.detail?.config;
+            if (!child) return;
+            const current = this._config.layers?.[index] || {};
+            this._replaceLayer(index, {
+                ...child,
+                ...this._layerMeta(current)
+            }, false);
+        });
+        return editor;
     }
 
-    _jsonField(path, value, help, transform = null) {
+    _jsonField(path, value, help) {
         const wrap = hennDiv().addStyle({ display: "grid", gap: "6px" });
         const area = document.createElement("textarea");
         area.className = "henn-layer-json";
         area.value = JSON.stringify(value, null, 2);
         area.addEventListener("change", () => {
             try {
-                let parsed = JSON.parse(area.value || "null");
-                if (transform) parsed = transform(parsed);
+                const parsed = JSON.parse(area.value || "null");
                 this._config = hennSetPath(this._config, path, parsed);
                 area.classList.remove("invalid");
+                area.title = "";
                 hennFireConfigChanged(this);
             }
             catch (error) {
@@ -4613,8 +4555,189 @@ class HennLayeredCardEditor extends HTMLElement {
             }
         });
         wrap.appendChild(area);
-        wrap.appendChild(hennDiv("henn-layer-help").setTextContent(help));
+        wrap.appendChild(hennSubTitle(help));
         return wrap;
+    }
+
+    _renderStyleRows(host, layer, index) {
+        const style = layer.style || {};
+        const entries = Object.entries(style);
+        const add = hennIconButton("+", true, () => this._addStyleEntry(index));
+        add.title = "Add style property";
+        host.appendChild(hennTitle("Wrapper style", add, { className: "henn-editor-section-title" }));
+
+        if (!entries.length) {
+            host.appendChild(hennSubTitle("No wrapper style properties."));
+            return;
+        }
+
+        entries.forEach(([key, value]) => {
+            host.appendChild(hennMultiRow("", [
+                hennTextInput(this, "", key, "", {
+                    onChange: (_path, newKey) => this._renameStyleEntry(index, key, newKey)
+                }),
+                hennTextInput(this, "", value, "", {
+                    onChange: (_path, newValue) => this._setStyleValue(index, key, newValue)
+                }),
+                hennIconButton("🗑️", true, () => this._deleteStyleEntry(index, key))
+            ], { rowClassName: "henn-editor-row" }));
+        });
+    }
+
+    _renderResolveRows(host, layer, index) {
+        const rules = Array.isArray(layer.henn_resolve) ? layer.henn_resolve : [];
+        const add = hennIconButton("+", true, () => this._addResolveRule(index));
+        add.title = "Add resolve rule";
+        host.appendChild(hennTitle("Resolve rules", add, { className: "henn-editor-section-title" }));
+
+        if (!rules.length) {
+            host.appendChild(hennSubTitle("No resolve rules."));
+            return;
+        }
+
+        rules.forEach((rule, ruleIndex) => {
+            const path = `layers.${index}.henn_resolve.${ruleIndex}`;
+            const section = hennDiv("henn-editor-section");
+            section.appendChild(hennTitle(
+                `Rule ${ruleIndex + 1}`,
+                hennIconButton("🗑️", true, () => this._deleteResolveRule(index, ruleIndex)),
+                { className: "henn-editor-section-title" }
+            ));
+
+            const body = hennDiv("henn-editor-section-body");
+            const entityHost = hennDiv("henn-editor-row")
+                .appendChilds([hennLabel("Entity"), hennDiv()]);
+            body.appendChild(entityHost);
+            this._addEntityPickerTo(entityHost.lastElementChild, rule.entity || "", value => {
+                this._config = hennSetPath(this._config, `${path}.entity`, value);
+                hennFireConfigChanged(this);
+            });
+            body.appendChild(hennTextRow(this, "Attribute", `${path}.attribute`, rule.attribute ?? "", ""));
+            body.appendChild(hennTextRow(this, "Template", `${path}.template`, rule.template ?? "", ""));
+            body.appendChild(hennTextRow(this, "Target", `${path}.target`, rule.target ?? "", ""));
+            section.appendChild(body);
+            host.appendChild(section);
+        });
+    }
+
+    _normalizeGlobals(globals) {
+        if (Array.isArray(globals)) return globals.map(item => ({ ...(item || {}) }));
+        if (!globals || typeof globals !== "object") return [];
+        return Object.entries(globals).map(([name, item]) => {
+            if (item && typeof item === "object" && item.value_source !== undefined) {
+                return { name, value_source: item.value_source };
+            }
+            if (item && typeof item === "object" && item.value !== undefined) {
+                return { name, value: item.value };
+            }
+            return { name, value: item };
+        });
+    }
+
+    _globalsAsList() {
+        return Array.isArray(this._config.globals) ? this._config.globals : [];
+    }
+
+    _addGlobal() {
+        const globals = [...this._globalsAsList(), { name: "", value: "" }];
+        this._config = { ...this._config, globals };
+        hennFireConfigChanged(this);
+        this.render();
+    }
+
+    _deleteGlobal(index) {
+        const globals = [...this._globalsAsList()];
+        globals.splice(index, 1);
+        this._config = { ...this._config, globals };
+        hennFireConfigChanged(this);
+        this.render();
+    }
+
+    _patchGlobal(index, patch) {
+        const globals = [...this._globalsAsList()];
+        globals[index] = { ...(globals[index] || {}), ...patch };
+        this._config = { ...this._config, globals };
+        hennFireConfigChanged(this);
+    }
+
+    _setGlobalMode(index, mode) {
+        const globals = [...this._globalsAsList()];
+        const item = { ...(globals[index] || {}) };
+        if (mode === "entity") {
+            delete item.value;
+            item.value_source = "";
+        }
+        else {
+            delete item.value_source;
+            item.value = "";
+        }
+        globals[index] = item;
+        this._config = { ...this._config, globals };
+        hennFireConfigChanged(this);
+        this.render();
+    }
+
+    _addStyleEntry(index) {
+        const layer = this._config.layers?.[index] || {};
+        const style = { ...(layer.style || {}) };
+        let key = "property";
+        let suffix = 2;
+        while (Object.prototype.hasOwnProperty.call(style, key)) key = `property_${suffix++}`;
+        style[key] = "";
+        this._setLayerStyle(index, style, true);
+    }
+
+    _renameStyleEntry(index, oldKey, newKey) {
+        newKey = String(newKey || "").trim();
+        if (!newKey || newKey === oldKey) return;
+        const layer = this._config.layers?.[index] || {};
+        const entries = Object.entries(layer.style || {}).map(([key, value]) =>
+            [key === oldKey ? newKey : key, value]
+        );
+        this._setLayerStyle(index, Object.fromEntries(entries), true);
+    }
+
+    _setStyleValue(index, key, value) {
+        const layer = this._config.layers?.[index] || {};
+        this._setLayerStyle(index, { ...(layer.style || {}), [key]: value }, false);
+    }
+
+    _deleteStyleEntry(index, key) {
+        const layer = this._config.layers?.[index] || {};
+        const style = { ...(layer.style || {}) };
+        delete style[key];
+        this._setLayerStyle(index, style, true);
+    }
+
+    _setLayerStyle(index, style, rerender) {
+        const layer = { ...(this._config.layers?.[index] || {}), style };
+        this._replaceLayer(index, layer, rerender);
+    }
+
+    _addResolveRule(index) {
+        const layer = this._config.layers?.[index] || {};
+        const rules = Array.isArray(layer.henn_resolve) ? [...layer.henn_resolve] : [];
+        rules.push({ entity: "", target: "" });
+        this._replaceLayer(index, { ...layer, henn_resolve: rules });
+    }
+
+    _deleteResolveRule(index, ruleIndex) {
+        const layer = this._config.layers?.[index] || {};
+        const rules = Array.isArray(layer.henn_resolve) ? [...layer.henn_resolve] : [];
+        rules.splice(ruleIndex, 1);
+        this._replaceLayer(index, { ...layer, henn_resolve: rules });
+    }
+
+    _addEntityPickerTo(host, value, onChanged) {
+        customElements.whenDefined("ha-selector").then(() => {
+            if (!host) return;
+            const selector = document.createElement("ha-selector");
+            selector.hass = this._hass;
+            selector.value = value || "";
+            selector.selector = { entity: {} };
+            selector.addEventListener("value-changed", event => onChanged(event.detail.value));
+            host.appendChild(selector);
+        });
     }
 
     _layerMeta(layer) {

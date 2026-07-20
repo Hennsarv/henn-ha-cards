@@ -106,15 +106,15 @@ layers:
 Choose **Henn Layered Card** in Home Assistant's card picker. The editor follows the same shared helper controls and section styling as the Stonehenge editor.
 
 - **Layered Card** controls whether numeric `layer_seq` values sort ascending or descending and whether layers without a sequence come first or last.
-- **Globals** edits the supported object or list form as JSON.
+- **Globals** edits the supported object or list form as JSON because the structure is open-ended.
 - **Layers** adds, reorders, collapses, replaces, and deletes layers. Each layer exposes `layer_seq`, wrapper `style`, and `henn_resolve` rules.
 - Press **+** to add a layer, then choose its child card through Home Assistant's card picker.
 - When the selected child card implements `getConfigElement()`, its own visual editor is mounted directly inside the layer. Changes from that editor are merged back while preserving `layer_seq`, `style`, and `henn_resolve`.
-- When a child card has no visual editor or its editor cannot be created, the child configuration is shown as editable JSON instead.
+- When a child card has no visual editor or its editor cannot be created, it falls back to Home Assistant's card-element editor.
 - Press **↺** on a layer to discard its current child-card configuration and return to the card picker. Layer metadata is preserved.
 
-The JSON fields validate on change. Invalid JSON is marked with the error color and is not written to the card configuration. YAML code mode remains available for configurations where YAML is more convenient.
+Wrapper CSS and resolution rules are edited as JSON because their structures are open-ended and have no matching shared helper. Invalid JSON is marked with the error color and is not written to the configuration. Ordering, sequence numbers, choices, and boolean values use the same shared helpers as the Stonehenge editor. YAML code mode remains available when it is more convenient.
 
 ## Manual checks
 
-Start with two Markdown cards and distinct `z-index` or positioning styles so stacking is obvious. Add one through the Layered editor and verify that the Markdown card's own editor appears and persists its changes. Add a custom card with an editor and one card without an editor to exercise both the nested GUI and JSON fallback. Change `layer_seq`, `order.reverse`, and `order.nulls` independently and verify the visible order. Test object-form and list-form globals, an entity shorthand, and a `henn_resolve` rule for both state and attribute. Replace a child type with **↺**, reorder and delete layers, save, and reopen the dashboard. Use an invalid entity once and confirm its reference remains visible or its rule is skipped. Check the browser console if a child card type is not installed, a nested editor fails, or a template expression fails.
+Start with two Markdown cards and distinct `z-index` or positioning styles so stacking is obvious. Add one through the Layered editor and verify that the Markdown card's own editor appears and persists its changes. Add a custom card with an editor and one card without an editor to exercise both the nested GUI and Home Assistant fallback. Change `layer_seq`, `order.reverse`, and `order.nulls` independently and verify the visible order. Test object-form and list-form globals, an entity shorthand, and a `henn_resolve` rule for both state and attribute. Replace a child type with **↺**, reorder and delete layers, save, and reopen the dashboard. Use an invalid entity once and confirm its reference remains visible or its rule is skipped. Check the browser console if a child card type is not installed, a nested editor fails, or a template expression fails.
