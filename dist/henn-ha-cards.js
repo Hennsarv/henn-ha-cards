@@ -846,6 +846,24 @@ const HENN_STONE_STYLE = `
         min-width: 0;
     }
 
+    .henn-editor-textarea {
+        width: 100%;
+        min-height: 110px;
+        box-sizing: border-box;
+        resize: vertical;
+        padding: 8px;
+        border: 1px solid var(--divider-color, #ccc);
+        border-radius: 4px;
+        background: var(--card-background-color, white);
+        color: var(--primary-text-color, black);
+        font: inherit;
+        font-family: monospace;
+    }
+
+    .henn-editor-textarea.invalid {
+        border-color: var(--error-color, #db4437);
+    }
+
     .henn-editor-button {
         height: 32px;
         border: 1px solid var(--divider-color, #ccc);
@@ -3948,6 +3966,10 @@ const HENN_LAYER_GLOBALS_DEFAULT = {
 class HennLayeredCard extends HTMLElement {
 
     setConfig(config) {
+        const configuredGlobals = Array.isArray(config.globals) && config.globals.length === 0
+            ? undefined
+            : config.globals;
+
         this.config = {
             globals: { ...HENN_LAYER_GLOBALS_DEFAULT },
             order: {
@@ -3955,7 +3977,8 @@ class HennLayeredCard extends HTMLElement {
                 nulls: "last"
             },
             layers: [],
-            ...config
+            ...config,
+            globals: configuredGlobals ?? { ...HENN_LAYER_GLOBALS_DEFAULT }
         };
 
         this.render();
@@ -4275,6 +4298,10 @@ class HennLayeredCardEditor extends HTMLElement {
     setConfig(config) {
         const nextConfig = { ...config };
 
+        if (Array.isArray(nextConfig.globals) && nextConfig.globals.length === 0) {
+            delete nextConfig.globals;
+        }
+
         if (this._config && hennDeepEqual(this._config, nextConfig)) return;
 
         this._config = nextConfig;
@@ -4290,23 +4317,6 @@ class HennLayeredCardEditor extends HTMLElement {
         this.innerHTML = `
             ${HENN_EDITOR_STYLE}
             ${HENN_STONE_STYLE}
-            <style>
-                .henn-layer-json {
-                    box-sizing: border-box;
-                    width: 100%;
-                    min-height: 90px;
-                    resize: vertical;
-                    padding: 8px;
-                    border: 1px solid var(--divider-color, #bbb);
-                    border-radius: 8px;
-                    color: var(--primary-text-color);
-                    background: var(--card-background-color, transparent);
-                    font-family: monospace;
-                }
-                .henn-layer-json.invalid {
-                    border-color: var(--error-color, #db4437);
-                }
-            </style>
             <div class="henn-editor-root">
                 <div id="layer-root-section" class="henn-editor-section"></div>
                 <div id="layer-globals-section" class="henn-editor-section"></div>
@@ -4370,11 +4380,17 @@ class HennLayeredCardEditor extends HTMLElement {
         if (!open) return;
 
         const body = hennDiv("henn-editor-section-body");
-        body.appendChild(this._jsonField(
+        body.appendChild(hennTextAreaField(
+            this,
+            null,
             "globals",
-            this._config.globals ?? HENN_LAYER_GLOBALS_DEFAULT,
-            "For use in child-card configuration: {@@main_entity}, {@@outside_temp}, or {@@accent}.",
-            HENN_LAYER_GLOBALS_DEFAULT
+            this._config.globals,
+            HENN_LAYER_GLOBALS_DEFAULT,
+            {
+                format: value => JSON.stringify(value, null, 2),
+                parse: text => JSON.parse(text || "null"),
+                help: "Use in child-card configuration, for example: {@@main_entity}."
+            }
         ));
         host.appendChild(body);
     }
@@ -4469,19 +4485,29 @@ class HennLayeredCardEditor extends HTMLElement {
                     gap: "10px",
                     alignItems: "start"
                 }).appendChilds([
-                    this._jsonField(
+                    hennTextAreaField(
+                        this,
+                        "Wrapper CSS object",
                         `layers.${index}.style`,
-                        layer.style ?? {},
-                        "CSS properties for the absolute layer wrapper.",
+                        layer.style,
                         {},
-                        "Wrapper CSS object"
+                        {
+                            format: value => JSON.stringify(value, null, 2),
+                            parse: text => JSON.parse(text || "null"),
+                            help: "CSS properties for the absolute layer wrapper."
+                        }
                     ),
-                    this._jsonField(
+                    hennTextAreaField(
+                        this,
+                        "Declarative resolution rules",
                         `layers.${index}.henn_resolve`,
-                        layer.henn_resolve ?? [],
-                        "Entity-driven assignments into the child-card configuration.",
+                        layer.henn_resolve,
                         [],
-                        "Declarative resolution rules"
+                        {
+                            format: value => JSON.stringify(value, null, 2),
+                            parse: text => JSON.parse(text || "null"),
+                            help: "Entity-driven assignments into the child-card configuration."
+                        }
                     )
                 ])
             );
@@ -4588,32 +4614,6 @@ class HennLayeredCardEditor extends HTMLElement {
             }, false);
         });
         return editor;
-    }
-
-    _jsonField(path, value, help, defaultValue = undefined, title = null) {
-        const wrap = hennDiv().addStyle({ display: "grid", gap: "6px" });
-        const area = document.createElement("textarea");
-        area.className = "henn-layer-json";
-        area.value = JSON.stringify(value, null, 2);
-        area.addEventListener("change", () => {
-            try {
-                const parsed = JSON.parse(area.value || "null");
-                this._config = defaultValue === undefined
-                    ? hennSetPath(this._config, path, parsed)
-                    : hennSetOrDeleteDefault(this._config, path, parsed, defaultValue);
-                area.classList.remove("invalid");
-                area.title = "";
-                hennFireConfigChanged(this);
-            }
-            catch (error) {
-                area.classList.add("invalid");
-                area.title = error.message;
-            }
-        });
-        if (title) wrap.appendChild(hennSubTitle(title));
-        wrap.appendChild(area);
-        wrap.appendChild(hennSubTitle(help));
-        return wrap;
     }
 
     _renderStyleRows(host, layer, index) {
@@ -6689,6 +6689,43 @@ function hennColorPicker(owner, path, value, defaultValue = null, opt = {}) {
 
 function hennTextRow(owner, label, path, value, defaultValue = "", opt = {}) {
     return hennFieldRow(label, hennTextInput(owner, path, value, defaultValue, opt), opt);
+}
+
+function hennTextAreaField(owner, label, path, value, defaultValue = "", opt = {}) {
+    const {
+        parse = text => text,
+        format = item => String(item ?? ""),
+        help = null,
+        minHeight = null
+    } = opt || {};
+
+    const effectiveValue = hennValueOrDefault(value, defaultValue);
+    const wrap = hennDiv().addStyle({ display: "grid", gap: "6px" });
+    const area = document.createElement("textarea").addClasses("henn-editor-textarea");
+    area.value = format(effectiveValue);
+
+    if (minHeight !== null && minHeight !== undefined) {
+        area.style.minHeight = `${minHeight}px`;
+    }
+
+    area.addEventListener("change", () => {
+        try {
+            const parsed = parse(area.value);
+            owner._config = hennSetOrDeleteDefault(owner._config, path, parsed, defaultValue);
+            area.classList.remove("invalid");
+            area.title = "";
+            hennFireConfigChanged(owner);
+        }
+        catch (error) {
+            area.classList.add("invalid");
+            area.title = error.message;
+        }
+    });
+
+    if (label) wrap.appendChild(hennSubTitle(label));
+    wrap.appendChild(area);
+    if (help) wrap.appendChild(hennSubTitle(help));
+    return wrap;
 }
 
 function hennNumberRow(owner, label, path, value, defaultValue, opt = {}) {
