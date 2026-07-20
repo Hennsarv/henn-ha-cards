@@ -9,7 +9,7 @@ Before creating each child card, it resolves global and entity references throug
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
 | `type` | string | required | Must be `custom:henn-layered-card`. |
-| `globals` | object or list | `[]` | Named constant values or entity-backed values used by `{@@name}` references. Both supported shapes are shown below. |
+| `globals` | object or list | sample object | Named constant values or entity-backed values used by `{@@name}` references. The default object contains `main_entity`, `outside_temp`, and `accent`; both supported shapes are shown below. |
 | `order` | object | see below | Controls sorting by `layer_seq`. |
 | `order.reverse` | boolean | `false` | Due to the implemented comparison, `false` sorts numeric sequence values descending and `true` sorts them ascending. |
 | `order.nulls` | string | `last` | `first` places layers without `layer_seq` first; every other value places them last. Their original relative order is retained. |
@@ -27,6 +27,15 @@ Every other key in a `layers[]` item is the embedded card's own configuration. T
 ## References and globals
 
 `{@sensor.entity_id}` is replaced with that entity's current **state**. Attributes are not supported by this shorthand. `{@@name}` is replaced with a global value. Replacement traverses strings inside nested objects and arrays. References embedded in a longer string become strings; unresolved references remain unchanged.
+
+When `globals` is omitted, the card uses this default object. The editor displays it but does not write it to YAML unless it is changed:
+
+```yaml
+globals:
+  main_entity: light.elutuba
+  outside_temp: sensor.outdoor_temperature
+  accent: "#00aaff"
+```
 
 Globals may use an object:
 
@@ -107,7 +116,7 @@ Choose **Henn Layered Card** in Home Assistant's card picker. The editor follows
 
 - **Layered Card** controls whether numeric `layer_seq` values sort ascending or descending and whether layers without a sequence come first or last.
 - **Globals** edits the supported object or list form as JSON because the structure is open-ended.
-- **Layers** adds, reorders, collapses, replaces, and deletes layers. Each layer exposes `layer_seq`, wrapper `style`, and `henn_resolve` rules.
+- **Layers** adds, collapses, replaces, and deletes layers. Each layer has a Stonehenge-style header and a collapsible **Card settings** section for `layer_seq`, wrapper `style`, and `henn_resolve` rules.
 - Press **+** to add a layer, then choose its child card through Home Assistant's card picker.
 - When the selected child card implements `getConfigElement()`, its own visual editor is mounted directly inside the layer. Changes from that editor are merged back while preserving `layer_seq`, `style`, and `henn_resolve`.
 - When a child card has no visual editor or its editor cannot be created, it falls back to Home Assistant's card-element editor.
