@@ -4268,7 +4268,7 @@ class HennLayeredCardEditor extends HTMLElement {
     }
 
     setConfig(config) {
-        this._config = {
+        const nextConfig = {
             globals: [],
             order: {
                 reverse: false,
@@ -4277,6 +4277,10 @@ class HennLayeredCardEditor extends HTMLElement {
             layers: [],
             ...config
         };
+
+        if (this._config && hennDeepEqual(this._config, nextConfig)) return;
+
+        this._config = nextConfig;
         this.render();
     }
 
@@ -4288,6 +4292,7 @@ class HennLayeredCardEditor extends HTMLElement {
 
         this.innerHTML = `
             ${HENN_EDITOR_STYLE}
+            ${HENN_STONE_STYLE}
             <style>
                 .henn-layer-json {
                     box-sizing: border-box;
@@ -4329,18 +4334,14 @@ class HennLayeredCardEditor extends HTMLElement {
             hennCheckboxRow(this, "Ascending layer sequence", "order.reverse", reverse, false)
         );
 
-        body.appendChild(
-            hennSegmentRow(
-                "Layers without sequence",
-                nulls,
-                [
-                    ["last", "Last"],
-                    ["first", "First"]
-                ],
-                "last",
-                value => this._setOrder({ nulls: value })
-            )
-        );
+        body.appendChild(hennSegmentButtonRow(
+            this,
+            "Layers without sequence",
+            "order.nulls",
+            nulls,
+            "last",
+            [["last", "Last"], ["first", "First"]]
+        ));
 
         host.appendChild(body);
     }
@@ -4395,6 +4396,7 @@ class HennLayeredCardEditor extends HTMLElement {
         const open = layer._editor_open !== false;
         const wrap = hennDiv().addStyle({ display: "grid" });
         const type = layer.type || "Choose a card";
+        const title = layer.title || layer.name || type;
 
         const move = hennDiv().addStyle({ display: "flex", gap: "6px" }).appendChilds([
             hennIconButton("↑", false, () => this._moveLayer(index, -1)),
@@ -4407,10 +4409,15 @@ class HennLayeredCardEditor extends HTMLElement {
             hennIconButton(open ? "▾" : "▸", false, () => this._setLayerPath(index, "_editor_open", !open))
         ]);
 
+        const text = hennDiv().appendChilds([
+            hennDiv().setTextContent(`${index + 1}. ${title}`),
+            hennDiv("henn-editor-small").setTextContent(type)
+        ]);
+
         wrap.appendChild(
             hennDiv("henn-series-header").appendChilds([
                 move,
-                hennDiv().setTextContent(`${index + 1}. ${type}`),
+                text,
                 actions
             ])
         );
