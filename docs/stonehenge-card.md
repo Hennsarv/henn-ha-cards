@@ -244,6 +244,8 @@ Choose **Henn Stonehenge Card** in Home Assistant's card picker. The editor cont
 - **Seeriate vaikimisi seaded**: bucket size, aggregation, diagram type, anchor, history period, shared line/fill/rails, radii, and gradient controls;
 - **Seeriad**: add, reorder, show/hide, collapse, or delete series; choose an entity and override the shared settings for that series.
 
+Drag a series by its **↕** handle. The upper and lower halves of each series header are the “before” and “after” drop zones; an accent line previews where the series will be inserted.
+
 The editor offers history shortcuts including `1w`, `1mo`, and `1y`, but the current history parser only handles the formats documented in the root table. Those shortcuts therefore fall back to one day; enter an equivalent supported value such as `7d`, `30d`, or `365d` in YAML when required. Changing bucketing in the editor resets root `bucket_size` to `10m`, `6h`, or `7d` for day, month, or year respectively.
 
 ## Manual checks

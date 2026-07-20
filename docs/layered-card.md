@@ -119,6 +119,7 @@ Choose **Henn Layered Card** in Home Assistant's card picker. The editor follows
 - **Globals** edits the supported object or list form as JSON because the structure is open-ended.
 - **Layers** adds, collapses, shows/hides, and deletes layers. Each layer has a Stonehenge-style header and a collapsible **Card settings** section for `layer_seq`, wrapper `style`, and `henn_resolve` rules.
 - Press **+** to add a layer, then choose its child card through Home Assistant's card picker.
+- Drag a layer by its **↕** handle. Dropping on the upper half of another header inserts it before that layer; dropping on the lower half inserts it after. The highlighted edge previews the insertion point. This rearranges the YAML `layers` list; explicit `layer_seq` values may still determine runtime stacking order.
 - When the selected child card implements `getConfigElement()`, its own visual editor is mounted directly inside the layer. Changes from that editor are merged back while preserving `layer_seq`, `style`, and `henn_resolve`.
 - When a child card has no visual editor or its editor cannot be created, it falls back to Home Assistant's card-element editor.
 - The checkmark toggles `show`. For deletion safety, the trash button appears only after the layer has been hidden.

@@ -109,7 +109,7 @@ Add a card through **Edit dashboard → Add card** and search for **Henn Wind Ro
 
 - The **Wind Rose editor** selects two sensor entities and edits period, bucket size, color, rotation, radii, and opacity range.
 - The **Stonehenge editor** edits the time scale, dial, shared series defaults, and a reorderable list of series. Add a series with **+**, choose its entity, and use the per-series controls to override shared defaults. The checkmark shows or hides a series and the trash button removes it.
-- The **Layered editor** manages ordering, globals, layer sequence, wrapper style, resolution rules, and embedded cards. Add a layer with **+**, select a child card, and configure it with that card's own visual editor. The checkmark shows or hides a layer; the delete button appears only while it is hidden. Cards without their own editor fall back to Home Assistant's card-element editor.
+- The **Layered editor** manages ordering, globals, layer sequence, wrapper style, resolution rules, and embedded cards. Add a layer with **+**, drag layers by their **↕** handles, and configure each child with its own visual editor. The checkmark shows or hides a layer; the delete button appears only while it is hidden. Cards without their own editor fall back to Home Assistant's card-element editor.
 
 The editors may omit default-valued keys from the saved YAML. This is expected: the card restores those defaults at runtime.
 

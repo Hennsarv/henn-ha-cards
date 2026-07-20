@@ -1038,6 +1038,27 @@ const HENN_STONE_STYLE = `
         white-space: nowrap;
     }
 
+    .henn-drag-handle {
+        cursor: grab;
+        user-select: none;
+    }
+
+    .henn-drag-handle:active {
+        cursor: grabbing;
+    }
+
+    .henn-dragging {
+        opacity: .45;
+    }
+
+    .henn-drag-before {
+        box-shadow: inset 0 3px 0 var(--primary-color, #03a9f4);
+    }
+
+    .henn-drag-after {
+        box-shadow: inset 0 -3px 0 var(--primary-color, #03a9f4);
+    }
+
     .henn-series-body {
         border: 1px solid var(--divider-color, #ddd);
         border-top: none;
@@ -1650,6 +1671,143 @@ class HennWindRoseCardEditor extends HTMLElement {
 
 
 customElements.define("henn-windrose-card-editor", HennWindRoseCardEditor);
+
+const HENN_COLLECTION_DRAG_STATE = {
+    owner: null,
+    collectionPath: null,
+    sourceIndex: null,
+    dragElement: null,
+    dropElement: null,
+    position: null
+};
+
+function hennBindCollectionDrag(owner, handle, dropElement, dragElement, collectionPath, index) {
+    if (!owner || !handle || !dropElement || !dragElement) return;
+
+    handle.draggable = true;
+    handle.classList.add("henn-drag-handle");
+    handle._hennDragContext = { owner, collectionPath, index, dragElement };
+    dropElement._hennDropContext = { owner, collectionPath, index };
+
+    handle.addEventListener("dragstart", hennCollectionDragStart);
+    handle.addEventListener("dragend", hennCollectionDragEnd);
+    dropElement.addEventListener("dragover", hennCollectionDragOver);
+    dropElement.addEventListener("dragleave", hennCollectionDragLeave);
+    dropElement.addEventListener("drop", hennCollectionDrop);
+}
+
+function hennCollectionDragStart(event) {
+    const context = event.currentTarget?._hennDragContext;
+    if (!context) return;
+
+    HENN_COLLECTION_DRAG_STATE.owner = context.owner;
+    HENN_COLLECTION_DRAG_STATE.collectionPath = context.collectionPath;
+    HENN_COLLECTION_DRAG_STATE.sourceIndex = context.index;
+    HENN_COLLECTION_DRAG_STATE.dragElement = context.dragElement;
+    HENN_COLLECTION_DRAG_STATE.dropElement = null;
+    HENN_COLLECTION_DRAG_STATE.position = null;
+
+    context.dragElement.classList.add("henn-dragging");
+    if (event.dataTransfer) {
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", `${context.collectionPath}:${context.index}`);
+    }
+}
+
+function hennCollectionDragOver(event) {
+    const context = event.currentTarget?._hennDropContext;
+    if (!hennCollectionDragMatches(context)) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    const position = event.clientY < rect.top + rect.height / 2 ? "before" : "after";
+
+    if (HENN_COLLECTION_DRAG_STATE.dropElement !== event.currentTarget
+        || HENN_COLLECTION_DRAG_STATE.position !== position) {
+        hennClearCollectionDropMarker(context.owner);
+        event.currentTarget.classList.add(position === "before" ? "henn-drag-before" : "henn-drag-after");
+        HENN_COLLECTION_DRAG_STATE.dropElement = event.currentTarget;
+        HENN_COLLECTION_DRAG_STATE.position = position;
+    }
+}
+
+function hennCollectionDragLeave(event) {
+    if (HENN_COLLECTION_DRAG_STATE.dropElement !== event.currentTarget) return;
+    if (event.relatedTarget && event.currentTarget.contains(event.relatedTarget)) return;
+    hennClearCollectionDropMarker(HENN_COLLECTION_DRAG_STATE.owner);
+}
+
+function hennCollectionDrop(event) {
+    const context = event.currentTarget?._hennDropContext;
+    if (!hennCollectionDragMatches(context)) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const state = HENN_COLLECTION_DRAG_STATE;
+    const collection = hennGetPath(context.owner._config, context.collectionPath);
+    if (!Array.isArray(collection)) {
+        hennResetCollectionDrag();
+        return;
+    }
+
+    const sourceIndex = Number(state.sourceIndex);
+    const targetIndex = Number(context.index);
+    let insertIndex = targetIndex + (state.position === "after" ? 1 : 0);
+    const reordered = [...collection];
+    const [item] = reordered.splice(sourceIndex, 1);
+
+    if (sourceIndex < insertIndex) insertIndex--;
+    insertIndex = Math.max(0, Math.min(reordered.length, insertIndex));
+
+    hennClearCollectionDropMarker(context.owner);
+    state.dragElement?.classList.remove("henn-dragging");
+
+    if (item === undefined || insertIndex === sourceIndex) {
+        hennResetCollectionDrag();
+        return;
+    }
+
+    reordered.splice(insertIndex, 0, item);
+    context.owner._config = hennSetPath(context.owner._config, context.collectionPath, reordered);
+    hennResetCollectionDrag();
+    hennFireConfigChanged(context.owner);
+    context.owner.render();
+}
+
+function hennCollectionDragEnd() {
+    const owner = HENN_COLLECTION_DRAG_STATE.owner;
+    HENN_COLLECTION_DRAG_STATE.dragElement?.classList.remove("henn-dragging");
+    hennClearCollectionDropMarker(owner);
+    hennResetCollectionDrag();
+}
+
+function hennCollectionDragMatches(context) {
+    return !!context
+        && context.owner === HENN_COLLECTION_DRAG_STATE.owner
+        && context.collectionPath === HENN_COLLECTION_DRAG_STATE.collectionPath
+        && HENN_COLLECTION_DRAG_STATE.sourceIndex !== null;
+}
+
+function hennClearCollectionDropMarker(owner) {
+    owner?.querySelectorAll?.(".henn-drag-before, .henn-drag-after").forEach(element => {
+        element.classList.remove("henn-drag-before", "henn-drag-after");
+    });
+    HENN_COLLECTION_DRAG_STATE.dropElement = null;
+    HENN_COLLECTION_DRAG_STATE.position = null;
+}
+
+function hennResetCollectionDrag() {
+    HENN_COLLECTION_DRAG_STATE.owner = null;
+    HENN_COLLECTION_DRAG_STATE.collectionPath = null;
+    HENN_COLLECTION_DRAG_STATE.sourceIndex = null;
+    HENN_COLLECTION_DRAG_STATE.dragElement = null;
+    HENN_COLLECTION_DRAG_STATE.dropElement = null;
+    HENN_COLLECTION_DRAG_STATE.position = null;
+}
 
 class HennStonehengeCard extends HTMLElement {
     setConfig(config) {
@@ -3344,6 +3502,14 @@ class HennStonehengeCardEditor extends HTMLElement {
             ]);
         header.append(reorder, text, right);
         wrap.appendChild(header);
+        hennBindCollectionDrag(
+            this,
+            reorder.querySelector(".henn-editor-button"),
+            header,
+            wrap,
+            "series",
+            index
+        );
 
         if (!open) return wrap;
 
@@ -4446,12 +4612,19 @@ class HennLayeredCardEditor extends HTMLElement {
             hennDiv("henn-editor-small").setTextContent(type)
         ]);
 
-        wrap.appendChild(
-            hennDiv("henn-series-header").appendChilds([
-                move,
-                text,
-                actions
-            ])
+        const header = hennDiv("henn-series-header").appendChilds([
+            move,
+            text,
+            actions
+        ]);
+        wrap.appendChild(header);
+        hennBindCollectionDrag(
+            this,
+            move.querySelector(".henn-editor-button"),
+            header,
+            wrap,
+            "layers",
+            index
         );
 
         if (!open) return wrap;
