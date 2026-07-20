@@ -4010,7 +4010,9 @@ class HennLayeredCard extends HTMLElement {
 
         this._cards = [];
 
-        const layers = this.getOrderedLayers(this.config.layers || []);
+        const layers = this.getOrderedLayers(
+            (this.config.layers || []).filter(layer => layer && layer.show !== false)
+        );
 
         for (const layerConfig of layers) {
 
@@ -4029,6 +4031,7 @@ class HennLayeredCard extends HTMLElement {
             const rawConfig = { ...layerConfig };
             delete rawConfig.style;
             delete rawConfig.layer_seq;
+            delete rawConfig.show;
 
             const cardConfig = this.resolveConfig(rawConfig);
 
@@ -4417,21 +4420,26 @@ class HennLayeredCardEditor extends HTMLElement {
 
     _renderLayer(layer, index, token) {
         const open = layer._editor_open !== false;
+        const shown = layer.show !== false;
         const wrap = hennDiv().addStyle({ display: "grid" });
         const type = layer.type || "Choose a card";
         const title = layer.title || layer.name || type;
 
-        const move = hennDiv().appendChilds(
-            hennIconButton("↕", false)
-        );
+        const move = hennDiv().setHtml(`
+            <button class="henn-editor-button" data-action="up">↕</button>
+        `);
 
-        const actions = hennDiv().addStyle({ display: "flex", gap: "6px", alignItems: "center" }).appendChilds([
-            hennIconButton("↺", false, () => this._changeLayerType(index)),
-            hennIconButton("🗑️", true, () => this._deleteLayer(index)),
-            hennIconButton(open ? "▾" : "▸", false, () =>
-                this._setLayerPathOrDefault(index, "_editor_open", !open, true)
-            )
-        ]);
+        const actions = hennDiv()
+            .addStyle({ display: "flex", gap: "6px", alignItems: "center" })
+            .appendChilds(hennIconButton("🗑️", true, () => this._deleteLayer(index)), !shown)
+            .appendChilds([
+                hennIconButton("✓", shown, () =>
+                    this._setLayerPathOrDefault(index, "show", !shown, true)
+                ),
+                hennIconButton(open ? "▾" : "▸", false, () =>
+                    this._setLayerPathOrDefault(index, "_editor_open", !open, true)
+                )
+            ]);
 
         const text = hennDiv().appendChilds([
             hennDiv().setTextContent(`${index + 1}. ${title}`),
@@ -4448,15 +4456,14 @@ class HennLayeredCardEditor extends HTMLElement {
 
         if (!open) return wrap;
 
-        const body = hennDiv("henn-serie-body");
+        const body = hennDiv("henn-serie-body").addClasses("henn-editor-muted", !shown);
         const settingsOpen = layer._editor_settings_open !== false;
-        const settings = hennDiv("henn-editor-section");
+        const settings = hennDiv();
         settings.appendChild(hennTitle(
             "Card settings",
             hennIconButton(settingsOpen ? "▾" : "▸", false, () =>
                 this._setLayerPathOrDefault(index, "_editor_settings_open", !settingsOpen, true)
-            ),
-            { className: "henn-editor-section-title" }
+            )
         ));
 
         if (settingsOpen) {
@@ -4799,7 +4806,7 @@ class HennLayeredCardEditor extends HTMLElement {
 
     _layerMeta(layer) {
         const meta = {};
-        for (const key of ["layer_seq", "style", "henn_resolve", "_editor_open", "_editor_settings_open"]) {
+        for (const key of ["layer_seq", "style", "henn_resolve", "show", "_editor_open", "_editor_settings_open"]) {
             if (layer[key] !== undefined) meta[key] = layer[key];
         }
         return meta;
@@ -4810,6 +4817,7 @@ class HennLayeredCardEditor extends HTMLElement {
         delete child.layer_seq;
         delete child.style;
         delete child.henn_resolve;
+        delete child.show;
         delete child._editor_open;
         delete child._editor_settings_open;
         return child;
@@ -4862,20 +4870,6 @@ class HennLayeredCardEditor extends HTMLElement {
         this.render();
     }
 
-    _moveLayer(index, delta) {
-        const target = index + delta;
-        const layers = [...(this._config.layers || [])];
-        if (target < 0 || target >= layers.length) return;
-        [layers[index], layers[target]] = [layers[target], layers[index]];
-        this._config = { ...this._config, layers };
-        hennFireConfigChanged(this);
-        this.render();
-    }
-
-    _changeLayerType(index) {
-        const old = this._config.layers?.[index] || {};
-        this._replaceLayer(index, this._layerMeta(old));
-    }
 }
 
 customElements.define("henn-layered-card-editor", HennLayeredCardEditor);
